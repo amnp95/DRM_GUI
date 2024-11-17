@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import (QLabel, QPushButton, QVBoxLayout, QWidget, QGroupBox, 
-                           QGridLayout, QTabWidget, QHBoxLayout, QFrame, QLineEdit,
-                           QSpinBox, QDoubleSpinBox, QComboBox)
-from Validator import DoubleValidator, IntValidator
-import Styles
+                           QGridLayout, QTabWidget, QHBoxLayout, QLineEdit)
+from drm_analyzer.utils.validator import DoubleValidator, IntValidator
 
 
 

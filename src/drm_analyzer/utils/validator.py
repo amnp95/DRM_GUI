@@ -13,3 +13,8 @@ class IntValidator(QIntValidator):
             return (QIntValidator.Invalid, input_string, pos)
         return super().validate(input_string, pos)
     
+class PositiveDoubleValidator(QDoubleValidator):
+    def validate(self, input_string, pos):
+        if ',' in input_string or float(input_string) <= 0:
+            return (QDoubleValidator.Invalid, input_string, pos)
+        return super().validate(input_string, pos)

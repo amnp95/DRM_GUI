@@ -1,0 +1,9 @@
+name: PYQT
+channels:
+  - conda-forge
+dependencies:
+  - pyqt
+  - pyvista
+  - pyvistaqt
+  - qtconsole
+  - ipykernel
