@@ -126,7 +126,7 @@ class MainWindow(QMainWindow):
         if self.current_theme == Themes.DARK:
             self.console.set_default_style(colors='linux')
             self.console.syntax_style = 'monokai'
-            self.plotter.set_background('black')
+            self.plotter.set_background((0.2, 0.2, 0.4), top=(0.6, 0.6, 0.9))
         else:
             self.console.set_default_style(colors='lightbg')
             self.console.syntax_style = 'default'

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
                            QTabWidget, QLabel)
-from drm_analyzer.components.soil import SoilBlocks
+from drm_analyzer.components.SoilMesh.soilSections import soilSections
 
 class LeftPanel(QFrame):
     '''
@@ -33,7 +33,7 @@ class LeftPanel(QFrame):
 
         # Add tabs to the tab widget
         self.tabs.addTab(self.material_tab, "Material")
-        self.tabs.addTab(self.soil_tab, "Soil")
+        self.tabs.addTab(self.soil_tab, "Soil Mesh")
         self.tabs.addTab(self.drm_tab, "DRM")
         self.tabs.addTab(self.absorbing_tab, "Absorbing")
         self.tabs.addTab(self.partition_tab, "Partition")
@@ -42,7 +42,7 @@ class LeftPanel(QFrame):
     def setup_tab_contents(self):
         # Soil tab
         self.soil_tab.layout = QVBoxLayout()
-        self.soil_tab.layout.addWidget(SoilBlocks())
+        self.soil_tab.layout.addWidget(soilSections())
         self.soil_tab.setLayout(self.soil_tab.layout)
 
         # DRM tab
