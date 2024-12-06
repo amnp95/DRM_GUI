@@ -162,6 +162,8 @@ class BaseGridTab(QWidget):
         
         self.plot_button = QPushButton('Plot Grid Block')
         self.form_layout.addWidget(self.plot_button, row, 0, 1, 2)
+        self.plot_button.setToolTip("This will replace the existing grid block and plot the new one.")
+
         
         self.delete_button = QPushButton('Delete Grid Block')
         self.form_layout.addWidget(self.delete_button, row + 1, 0, 1, 2)
