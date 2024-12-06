@@ -1,7 +1,7 @@
 import numpy as np 
 import h5py
 import pyvista as pv
-from PyQt5.QtWidgets import (QLineEdit, QComboBox, QGroupBox, 
+from PySide6.QtWidgets import (QLineEdit, QComboBox, QGroupBox, 
                              QLabel, QGridLayout, QStackedWidget,QWidget,
                              QMessageBox,QPushButton,QFileDialog,QTextEdit, QProgressBar)
 from .base_creator import DRMCreatorDialog

@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, 
-                           QVBoxLayout, QHBoxLayout, QSplitter, QAction)
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout , QSplitter)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
 import pyvistaqt
 import pyvista as pv
 

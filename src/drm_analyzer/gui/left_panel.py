@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
+from PySide6.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
                            QTabWidget, QLabel)
 from drm_analyzer.components.SoilMesh.soilSections import soilSections
 

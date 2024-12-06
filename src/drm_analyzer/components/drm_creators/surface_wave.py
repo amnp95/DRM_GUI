@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QLabel
+from PySide6.QtWidgets import QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QLabel
 from .base_creator import DRMCreatorDialog
 
 

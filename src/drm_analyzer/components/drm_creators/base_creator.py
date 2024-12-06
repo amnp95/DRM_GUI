@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QGridLayout,QDialogButtonBox
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QGridLayout,QDialogButtonBox
 
 class DRMCreatorDialog(QDialog):
     def __init__(self, parent=None):

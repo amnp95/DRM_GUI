@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QLabel, QLineEdit, QComboBox, QPushButton, 
+from PySide6.QtWidgets import (QLabel, QLineEdit, QComboBox, QPushButton, 
                            QGridLayout, QWidget, QDialog, QVBoxLayout,
                            QHBoxLayout, QDialogButtonBox)
 import numpy as np

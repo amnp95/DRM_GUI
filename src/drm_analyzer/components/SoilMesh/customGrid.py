@@ -1,5 +1,5 @@
 # drm_analyzer/components/soil/custom_grid.py
-from PyQt5.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel
 from .baseGrid import BaseGridTab
 
 class CustomGridTab(BaseGridTab):

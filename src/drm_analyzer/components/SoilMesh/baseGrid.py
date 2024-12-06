@@ -1,14 +1,14 @@
-from PyQt5.QtWidgets import (QLabel, QPushButton, QVBoxLayout, QWidget, 
+from PySide6.QtWidgets import (QLabel, QPushButton, QVBoxLayout, QWidget, 
                            QGridLayout, QLineEdit, QGroupBox, QSlider, QComboBox,
                            QCheckBox, QHBoxLayout, QColorDialog, QFrame)
-from PyQt5.QtCore import Qt,pyqtSignal
+from PySide6.QtCore import Qt, Signal
 from drm_analyzer.utils.validator import DoubleValidator, IntValidator
-from PyQt5.QtGui import QColor
+from PySide6.QtGui import QColor
 
 
 class ColorButton(QFrame):
     """Custom color button that shows current color and opens color picker"""
-    colorChanged = pyqtSignal(tuple)
+    colorChanged = Signal(tuple)
 
     def __init__(self, parent=None):
         super().__init__(parent)

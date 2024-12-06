@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QLabel, QLineEdit
+from PySide6.QtWidgets import QLabel, QLineEdit
 import numpy as np
 import pyvista as pv
 from .baseGrid import BaseGridTab

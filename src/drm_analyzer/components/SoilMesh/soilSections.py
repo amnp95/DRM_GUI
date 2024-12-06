@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, 
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, 
                            QPushButton, QTabWidget, QComboBox)
 from .rectangularGrid import RectangularGridTab
 from .sphericalGrid import SphericalGridTab

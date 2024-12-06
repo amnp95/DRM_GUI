@@ -6,7 +6,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
-        "PyQt5",
+        "PySide6",
         "pyvista",
         "pyvistaqt",
         "qtconsole",
