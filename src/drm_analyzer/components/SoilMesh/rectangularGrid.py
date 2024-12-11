@@ -180,7 +180,8 @@ class RectangularGridTab(BaseGridTab):
             if any(spacing is None for spacing in [x_spacing, y_spacing, z_spacing]):
                 return None
             
-            grid = pv.RectilinearGrid(x_spacing, y_spacing, z_spacing)
+            X, Y, Z = np.meshgrid(x_spacing, y_spacing, z_spacing, indexing='ij')
+            grid = pv.StructuredGrid(X, Y, Z)
             return grid
             
         except ValueError:
