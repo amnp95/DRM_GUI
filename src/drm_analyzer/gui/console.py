@@ -23,3 +23,18 @@ class InteractiveConsole(RichJupyterWidget):
         # Configure appearance
         self.syntax_style = 'solarized-dark'
         self.set_default_style(colors='linux')
+
+
+
+    def print(self, message):
+        '''
+        Print a message to the console output.
+
+        Args:
+            message (str): The string message to display in the console.
+        '''
+        if not isinstance(message, str):
+            raise ValueError("The message must be a string.")
+        
+        # Use the kernel to execute a Python print command
+        self.kernel_client.execute(f'print("{message}")')
