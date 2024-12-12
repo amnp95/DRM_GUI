@@ -134,6 +134,25 @@ class Themes:
             border-radius: 8px;
             padding: 4px;
         }}
+
+        QHeaderView::section {{
+            background-color: {colors['bg_tertiary']}; /* Or any suitable background */
+            color: {colors['text_primary']};
+            padding: 4px; /* Adjust vertical padding as needed */
+            border: 1px solid {colors['border']};
+            font-weight: bold; /* Optional: Make header text bold */
+            min-height: 25px; /* Set a minimum height for the header */
+        }}
+
+        QTableWidget {{
+            gridline-color: {colors['border']}; /* Optional: Set grid line color */
+        }}
+
+        QTableWidget QTableCornerButton::section {{
+            background: {colors['bg_tertiary']}; /* Optional: Style the top-left corner */
+            border: 1px solid {colors['border']};
+        }}
+
         
         QTabWidget::pane {{
             border: 1px solid {colors['border']};
