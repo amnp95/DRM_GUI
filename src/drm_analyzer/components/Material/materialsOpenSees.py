@@ -16,13 +16,6 @@ class ElasticIsotropicMaterial(Material):
     def get_parameters(cls) -> List[str]:
         return ["E", "nu", "rho"]
 
-    def get_values(self, keys: List[str]) -> Dict[str, float]:
-        return {key: self.params.get(key) for key in keys}
-
-    def update_values(self, values: Dict[str, float]) -> None:
-        self.params.update(values)
-        print(f"Updated parameters: {self.params}")
-
 
 class ManzariDafaliasMaterial(Material):
     def __init__(self, user_name: str = "Unnamed", **kwargs):
@@ -35,17 +28,10 @@ class ManzariDafaliasMaterial(Material):
 
     @classmethod 
     def get_parameters(cls) -> List[str]:
-        return ['G0', 'nu', 'e_init', 'Mc', 'c',
-                'lambda_c', 'e0', 'ksi', 'P_atm',
-                'm', 'h0', 'ch', 'nb', 'A0',
-                'nd', 'z_max', 'cz', 'Den']
-
-    def get_values(self, keys: List[str]) -> Dict[str, float]:
-        return {key: self.params.get(key) for key in keys}
-
-    def update_values(self, values: Dict[str, float]) -> None:
-        self.params.update(values)
-        print(f"Updated parameters: {self.params}")
+        return ['G₀', 'ν', 'eᵢₙᵢₜ', 'Μc', 'c',
+        'λc', 'e₀', 'ξ', 'Pₐₜₘ',
+        'm', 'h₀', 'ch', 'nᵦ', 'Α₀',
+        'nᵈ', 'zₘₐₓ', 'c𝓏', 'ρ']
 
 
 class ElasticUniaxialMaterial(Material):
@@ -61,12 +47,7 @@ class ElasticUniaxialMaterial(Material):
     def get_parameters(cls) -> List[str]:
         return ["E", "eta"]
 
-    def get_values(self, keys: List[str]) -> Dict[str, float]:
-        return {key: self.params.get(key) for key in keys}
 
-    def update_values(self, values: Dict[str, float]) -> None:
-        self.params.update(values)
-        print(f"Updated parameters: {self.params}")
 
 
 # Register material types

@@ -164,29 +164,6 @@ class Material(ABC):
         pass
 
     @abstractmethod
-    def get_values(self, keys: List[str]) -> Dict[str, float]:
-        """
-        Retrieve values for specific parameters.
-        
-        Args:
-            keys (List[str]): List of parameter names to retrieve
-        
-        Returns:
-            Dict[str, float]: Dictionary of parameter values
-        """
-        pass
-
-    @abstractmethod
-    def update_values(self, values: Dict[str, float]) -> None:
-        """
-        Update material parameters.
-        
-        Args:
-            values (Dict[str, float]): Dictionary of parameter names and values to update
-        """
-        pass
-
-    @abstractmethod
     def __str__(self) -> str:
         """
         String representation of the material for OpenSees or other purposes.
@@ -195,6 +172,30 @@ class Material(ABC):
             str: Formatted material definition string
         """
         pass
+
+    def get_values(self, keys: List[str]) -> Dict[str, float]:
+        """
+        Default implementation to retrieve values for specific parameters.
+        
+        Args:
+            keys (List[str]): List of parameter names to retrieve
+        
+        Returns:
+            Dict[str, float]: Dictionary of parameter values
+        """
+        return {key: self.params.get(key) for key in keys}
+    
+
+    def update_values(self, values: Dict[str, float]) -> None:
+        """
+        Default implementation to update material parameters.
+        
+        Args:
+            values (Dict[str, float]): Dictionary of parameter names and values to update
+        """
+        self.params.clear()
+        self.params.update(values)
+        print(f"Updated parameters: {self.params}")
 
 
 class MaterialRegistry:
