@@ -1,11 +1,8 @@
-from PySide6.QtGui import QAction
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout , QSplitter)
+from PySide6.QtGui import QAction,QPalette, QColor, QFont
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout , QSplitter, QStyleFactory)
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
 import pyvistaqt
 import pyvista as pv
-
-from drm_analyzer.styles.themes import Themes
 from drm_analyzer.gui.left_panel import LeftPanel
 from drm_analyzer.gui.console import InteractiveConsole
 from drm_analyzer.components.drm_creators.drm_manager import DRMManager
@@ -14,8 +11,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.font_size = 10
-        self.current_theme = Themes.DARK
+        self.current_theme = "Light"
         self.drm_manager = DRMManager(self)
+        self.create_palettes()
         self.init_ui()
         
     def init_ui(self):
@@ -87,11 +85,11 @@ class MainWindow(QMainWindow):
         theme_menu = menubar.addMenu("Theme")
         
         dark_theme_action = QAction("Dark Theme", self)
-        dark_theme_action.triggered.connect(lambda: self.switch_theme(Themes.DARK))
+        dark_theme_action.triggered.connect(lambda: self.switch_theme("Dark"))
         theme_menu.addAction(dark_theme_action)
         
         light_theme_action = QAction("Light Theme", self)
-        light_theme_action.triggered.connect(lambda: self.switch_theme(Themes.LIGHT))
+        light_theme_action.triggered.connect(lambda: self.switch_theme("Light"))
         theme_menu.addAction(light_theme_action)
 
         # Add DRM menu
@@ -109,29 +107,73 @@ class MainWindow(QMainWindow):
 
 
 
-    def switch_theme(self, theme):
-        self.current_theme = theme
-        self.apply_theme()
-
     def update_font_and_resize(self):
         font = QFont('Segoe UI', self.font_size)
         QApplication.setFont(font)
         self.apply_theme()
         self.update()
 
-    def apply_theme(self):
-        style = Themes.get_dynamic_style(self.current_theme, self.font_size)
-        self.setStyleSheet(style)
+
+    def create_palettes(self):
+        """Create light and dark palettes for Fusion style"""
+        # Dark Palette
+        self.dark_palette = QPalette()
+        self.dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+        self.dark_palette.setColor(QPalette.WindowText, Qt.white)
+        self.dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+        self.dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+        self.dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
+        self.dark_palette.setColor(QPalette.ToolTipText, Qt.white)
+        self.dark_palette.setColor(QPalette.Text, Qt.white)
+        self.dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+        self.dark_palette.setColor(QPalette.ButtonText, Qt.white)
+        self.dark_palette.setColor(QPalette.BrightText, Qt.red)
+        self.dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+        self.dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+        self.dark_palette.setColor(QPalette.HighlightedText, Qt.black)
+
+        # Light Palette (system default)
+        self.light_palette = QApplication.style().standardPalette()
         
-        if self.current_theme == Themes.DARK:
+
+    def switch_theme(self, theme):
+        """Switch between dark and light themes"""
+        if theme == "Dark":
+            QApplication.setPalette(self.dark_palette)
+            self.console.set_default_style(colors='linux')
+            self.console.syntax_style = 'monokai'
+            self.plotter.set_background('#52576eff')
+            self.current_theme = "Dark"
+        else:
+            QApplication.setPalette(self.light_palette)
+            self.console.set_default_style(colors='lightbg')
+            self.console.syntax_style = 'default'
+            self.plotter.set_background('white')
+            self.current_theme = "Light"
+        
+        # Ensure Fusion style is applied
+        QApplication.setStyle(QStyleFactory.create('Fusion'))
+
+
+
+    def apply_theme(self):
+        """Apply the current theme"""
+        # Use Fusion style
+        QApplication.setStyle(QStyleFactory.create('Fusion'))
+        
+        # Apply the current theme's palette
+        if self.current_theme == "Dark":
+            QApplication.setPalette(self.dark_palette)
             self.console.set_default_style(colors='linux')
             self.console.syntax_style = 'monokai'
             self.plotter.set_background('#52576eff')
         else:
+            QApplication.setPalette(self.light_palette)
             self.console.set_default_style(colors='lightbg')
             self.console.syntax_style = 'default'
             self.plotter.set_background('white')
         
+        # Update font
         console_font = QFont('Monospace', self.font_size)
         self.console.font = console_font
     
