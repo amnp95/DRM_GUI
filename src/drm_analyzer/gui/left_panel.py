@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
                            QTabWidget, QLabel)
 from drm_analyzer.components.SoilMesh.soilSections import soilSections
+from drm_analyzer.components.Material.materialGUI import MaterialManagerTab
 
 class LeftPanel(QFrame):
     '''
@@ -64,3 +65,8 @@ class LeftPanel(QFrame):
         self.partition_tab.layout = QVBoxLayout()
         self.partition_tab.layout.addWidget(QLabel("Partition content here"))
         self.partition_tab.setLayout(self.partition_tab.layout)
+
+        # Material tab
+        self.material_tab.layout = QVBoxLayout()
+        self.material_tab.layout.addWidget(MaterialManagerTab())
+        self.material_tab.setLayout(self.material_tab.layout)
