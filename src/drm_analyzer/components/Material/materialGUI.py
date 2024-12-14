@@ -163,13 +163,30 @@ class MaterialCreationDialog(QDialog):
 
         # Parameter inputs
         self.param_inputs = {}
-        for param in material_class.get_parameters():
+        description = material_class.get_description()
+
+        # Create a grid layout for input fields
+        grid_layout = QGridLayout()
+
+        # Add label and input fields to the grid layout
+        row = 0
+        for param, desc in zip(material_class.get_parameters(), description):
             label = QLabel(param)
             input_field = QLineEdit()
-            form_layout.addRow(label, input_field)
-            self.param_inputs[param] = input_field
+            description_label = QLabel(desc)
 
+            # Add the label and input field to the grid
+            grid_layout.addWidget(label, row, 0)  # Label in column 0
+            grid_layout.addWidget(input_field, row, 1)  # Input field in column 1
+            grid_layout.addWidget(description_label, row, 2)  # Description in column 2
+
+            self.param_inputs[param] = input_field
+            row += 1
+
+        # Add the grid layout to the form
+        form_layout.addRow(grid_layout)
         layout.addLayout(form_layout)
+
 
         btn_layout = QHBoxLayout()
         create_btn = QPushButton("Create Material")
@@ -235,19 +252,38 @@ class MaterialEditDialog(QDialog):
         self.user_name_input.setReadOnly(True)
         form_layout.addRow("Material Name:", self.user_name_input)
 
+        # Create a grid layout for parameter inputs
+        grid_layout = QGridLayout()
+
         # Parameter inputs
         self.param_inputs = {}
         params = self.material.get_parameters()
+        description = self.material.get_description()
         current_values = self.material.get_values(params)
 
-        for param in params:
+        # Add label and input fields to the grid layout
+        row = 0
+        for param,desc in zip(params, description):
             label = QLabel(param)
             input_field = QLineEdit()
+            
+            # Set the current value if available
             if current_values.get(param) is not None:
                 input_field.setText(str(current_values[param]))
-            form_layout.addRow(label, input_field)
+            
+            # Add the label and input field to the grid
+            grid_layout.addWidget(label, row, 0)  # Label in column 0
+            grid_layout.addWidget(input_field, row, 1)  # Input field in column 1
+            grid_layout.addWidget(QLabel(desc), row, 2)  # Description in column 2
+            
+            # Store the input field for future reference
             self.param_inputs[param] = input_field
+            row += 1
 
+        # Add the grid layout to the form layout
+        form_layout.addRow(grid_layout)
+
+        # Add the form layout to the main layout
         layout.addLayout(form_layout)
 
         btn_layout = QHBoxLayout()

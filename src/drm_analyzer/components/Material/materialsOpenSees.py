@@ -9,12 +9,21 @@ class ElasticIsotropicMaterial(Material):
         self.params = kwargs if kwargs else {}
 
     def __str__(self):
-        params_str = " ".join(str(value) for value in self.params.values())
+        param_order = self.get_parameters()
+        params_str = " ".join(str(self.params[param]) for param in param_order if param in self.params)
+
         return f"{self.material_type} ElasticIsotropic {self.tag} {params_str} # {self.user_name}"
 
     @classmethod 
     def get_parameters(cls) -> List[str]:
-        return ["E", "nu", "rho"]
+        return ["E", "ν", "ρ"]
+    
+    @classmethod
+    def get_description(cls) -> List[str]:
+        return ['Young\'s modulus', 
+                'Poisson\'s ratio', 
+                'Mass density of the material']
+
 
 
 class ManzariDafaliasMaterial(Material):
@@ -23,7 +32,8 @@ class ManzariDafaliasMaterial(Material):
         self.params = kwargs if kwargs else {}
 
     def __str__(self):
-        params_str = " ".join(str(value) for value in self.params.values())
+        param_order = self.get_parameters()
+        params_str = " ".join(str(self.params[param]) for param in param_order if param in self.params)
         return f"{self.material_type} ManzariDafalias {self.tag} {params_str} # {self.user_name}"
 
     @classmethod 
@@ -32,6 +42,28 @@ class ManzariDafaliasMaterial(Material):
         'λc', 'e₀', 'ξ', 'Pₐₜₘ',
         'm', 'h₀', 'ch', 'nᵦ', 'Α₀',
         'nᵈ', 'zₘₐₓ', 'c𝓏', 'ρ']
+    
+    @classmethod
+    def get_description(cls) -> List[str]:
+        return ['Shear modulus', 
+                'Poisson\'s ratio',
+                'Initial void ratio',
+                'Critical state stress ratio',
+                'Ratio of critical state stress ratio in extension and compression',
+                'Critical state line constant',
+                'Critical void ratio at p = 0',
+                'Critical state line constant',
+                'Atmospheric pressure',
+                'Yield surface constant',
+                'Constant parameter',   
+                'Constant parameter',
+                'Bounding surface parameter',
+                'Dilatancy parameter',
+                'Dilatancy surface parameter',
+                'Fabric-dilatancy tensor parameter',
+                'Fabric-dilatancy tensor parameter',
+                'Mass density of the material'
+                ]
 
 
 class ElasticUniaxialMaterial(Material):
@@ -40,12 +72,19 @@ class ElasticUniaxialMaterial(Material):
         self.params = kwargs if kwargs else {}
 
     def __str__(self):
-        params_str = " ".join(str(value) for value in self.params.values())
+        param_order = self.get_parameters()
+        params_str = " ".join(str(self.params[param]) for param in param_order if param in self.params)
         return f"{self.material_type} Elastic {self.tag} {params_str} # {self.user_name}"
 
     @classmethod 
     def get_parameters(cls) -> List[str]:
-        return ["E", "eta"]
+        return ["E", "η", "E<sub>neg</sub>"]
+    
+    @classmethod
+    def get_description(cls) -> List[str]:
+        return ['Tangent', 
+                'Damping tangent (optional, default=0.0)',
+                'Tangent in compression (optional, default=E)']
 
 
 

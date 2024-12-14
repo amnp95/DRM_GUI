@@ -163,6 +163,17 @@ class Material(ABC):
         """
         pass
 
+    @classmethod  
+    @abstractmethod
+    def get_description(cls) -> List[str]:
+        """
+        Get the list of descriptions for the parameters of this material type.
+        
+        Returns:
+            List[str]: List of parameter descriptions
+        """
+        pass
+
     @abstractmethod
     def __str__(self) -> str:
         """
