@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.font_size = 10
-        self.current_theme = "Light"
+        self.current_theme = "Dark"
         self.drm_manager = DRMManager(self)
         self.create_palettes()
         self.init_ui()
