@@ -6,9 +6,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from .materialBase import Material, MaterialRegistry
-from .materialsOpenSees import (
-    ElasticIsotropicMaterial, ManzariDafaliasMaterial, ElasticUniaxialMaterial
-)
+from .materialsOpenSees import *
 
 
 class MaterialManagerTab(QWidget):
