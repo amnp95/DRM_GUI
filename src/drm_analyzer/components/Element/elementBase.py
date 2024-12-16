@@ -214,17 +214,6 @@ class Element(ABC):
 
     @classmethod
     @abstractmethod
-    def get_parameters_type(cls) -> List[str]:
-        """
-        Get the list of parameter types for this element type.
-        
-        Returns:
-            List[str]: List of parameter types
-        """
-        pass
-
-    @classmethod
-    @abstractmethod
     def validate_element_parameters(self, **kwargs) -> Dict[str, Union[int, float, str]]:
         """
         Check if the element input parameters are valid.
