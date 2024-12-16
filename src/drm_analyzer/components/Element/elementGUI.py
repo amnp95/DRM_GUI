@@ -192,7 +192,7 @@ class ElementCreationDialog(QDialog):
         btn_layout.addWidget(cancel_btn)
         layout.addLayout(btn_layout)
 
-    def create_element(self):
+    def create_element(self) -> Element:
         try:
             # Assign material if selected
             material_index = self.material_combo.currentIndex()
@@ -227,8 +227,10 @@ class ElementCreationDialog(QDialog):
                 material=material,
                 **params
             )
-
             self.accept()
+            
+            # Return the created element
+            return self.created_element
 
         except ValueError as e:
             QMessageBox.warning(self, "Input Error",
