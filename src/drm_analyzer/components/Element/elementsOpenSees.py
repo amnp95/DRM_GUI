@@ -18,7 +18,7 @@ class SSPQuadElement(Element):
         keys = self.get_parameters()
         params_str = " ".join(str(self.params[key]) for key in keys if key in self.params)
 
-        return f"element SSPquad {self._material.tag} {params_str}"
+        return f"{self._material.tag} {params_str}"
 
     @classmethod 
     def get_parameters(cls) -> List[str]:
@@ -88,16 +88,6 @@ class SSPQuadElement(Element):
                 'Constant body forces in global y direction'] 
     
     @classmethod
-    def get_parameters_type(cls) -> List[str]:
-        """
-        Get the list of parameter types for this element type.
-        
-        Returns:
-            List[str]: List of parameter types
-        """
-        return ['str', 'float', 'float', 'float']
-    
-    @classmethod
     def validate_element_parameters(self, **kwargs) -> Dict[str, Union[int, float, str]]:
         """
         Check if the element input parameters are valid.
@@ -134,7 +124,124 @@ class SSPQuadElement(Element):
         
         
 
+
+class stdBrickElement(Element):
+    def __init__(self, ndof: int, material: Material, **kwargs):
+        super().__init__('stdBrick', ndof, material)
+        self.params = kwargs if kwargs else {}
+
+    def __str__(self):
+        """
+        Generate the OpenSees element string representation
+        
+        Example: element stdBrick $b1, $b2, $b3
+
+        """
+        keys = self.get_parameters()
+        params_str = " ".join(str(self.params[key]) for key in keys if key in self.params)
+        return f"{self._material.tag} {params_str}"
+    
+    @classmethod
+    def get_parameters(cls) -> List[str]:
+        """
+        Specific parameters for stdBrickElement
+        
+        Returns:
+            List[str]: Parameters for stdBrick element
+        """
+        return ["b1", "b2", "b3"]
+    
+    def get_values(self, keys: List[str]) -> Dict[str, Union[int, float, str]]:
+        """
+        Retrieve values for specific parameters
+        
+        Args:
+            keys (List[str]): List of parameter names to retrieve
+        
+        Returns:
+            Dict[str, Union[int, float, str]]: Dictionary of parameter values
+        """
+        return {key: self.params.get(key) for key in keys}
+    
+    def update_values(self, values: Dict[str, Union[int, float, str]]) -> None:
+        """
+        Update element parameters
+        
+        Args:
+            values (Dict[str, Union[int, float, str]]): Dictionary of parameter names and values to update
+        """
+        self.params.clear()
+        self.params.update(values)
+
+    @classmethod
+    def _is_material_compatible(self, material: Material) -> bool:
+        """
+        Check material compatibility for stdBrick Element
+        
+        Returns:
+            bool: True if material is a 3D (nDMaterial) type
+        """
+        return material.material_type == 'nDMaterial'
+    
+    @classmethod
+    def get_possible_dofs(cls) -> List[str]:
+        """
+        Get the number of possible DOFs for this element type.
+        
+        Returns:
+            List[str]: List of number of possible DOFs
+        """
+        return ['3']
+    
+    @classmethod
+    def get_description(cls) -> List[str]:
+        """
+        Get the list of parameter descriptions for this element type.
+        
+        Returns:
+            List[str]: List of parameter descriptions
+        """
+        return ['Constant body forces in global x direction',
+                'Constant body forces in global y direction',
+                'Constant body forces in global z direction']
+    
+    @classmethod
+    def validate_element_parameters(self, **kwargs) -> Dict[str, Union[int, float, str]]:
+        """
+        Check if the element input parameters are valid.
+
+        Returns:
+            Dict[str, Union[int, float, str]]: Dictionary of parmaeters with valid values
+        """
+        if "b1" in kwargs:
+            try:
+                kwargs['b1'] = float(kwargs['b1'])
+            except ValueError:
+                raise ValueError("b1 must be a float number")
+        
+        if "b2" in kwargs:
+            try:
+                kwargs['b2'] = float(kwargs['b2'])
+            except ValueError:
+                raise ValueError("b2 must be a float number")
+        
+        if "b3" in kwargs:
+            try:
+                kwargs['b3'] = float(kwargs['b3'])
+            except ValueError:
+                raise ValueError("b3 must be a float number")
+            
+        return kwargs
+
+    
+    
+
+
+        
+
+
 # =================================================================================================
 # Register element types
 # =================================================================================================
 ElementRegistry.register_element_type('SSPQuad', SSPQuadElement)
+ElementRegistry.register_element_type('stdBrick', stdBrickElement)
