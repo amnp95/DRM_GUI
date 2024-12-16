@@ -90,6 +90,9 @@ class Material(ABC):
         
         # Generate a unique integer tag
         self.tag = tag_manager.generate_tag()
+
+        if user_name in self._names:
+            raise ValueError(f"Material name '{user_name}' already exists")
         
         self.material_type = material_type
         self.material_name = material_name
