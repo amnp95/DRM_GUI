@@ -1,21 +1,78 @@
-from PySide6.QtGui import QAction,QPalette, QColor, QFont
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout , QSplitter, QStyleFactory)
+from PySide6.QtGui import QAction, QPalette, QColor, QFont
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QSplitter, QStyleFactory)
 from PySide6.QtCore import Qt
 import pyvistaqt
 import pyvista as pv
 from drm_analyzer.gui.left_panel import LeftPanel
 from drm_analyzer.gui.console import InteractiveConsole
 from drm_analyzer.components.drm_creators.drm_manager import DRMManager
+from drm_analyzer.gui.plotter import PlotterManager
+
 
 class MainWindow(QMainWindow):
+    _instance = None  # Class variable to store the single instance
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Override __new__ to implement singleton pattern.
+        Ensures only one instance of the class is created.
+        """
+        if not cls._instance:
+            cls._instance = super(MainWindow, cls).__new__(cls)
+        return cls._instance
+
+    @classmethod
+    def get_instance(cls):
+        """
+        Class method to get the singleton instance of MainWindow.
+        
+        Returns:
+            MainWindow: The single instance of the MainWindow class.
+        
+        Raises:
+            RuntimeError: If the instance has not been created yet.
+        """
+        if cls._instance is None:
+            raise RuntimeError("MainWindow instance has not been created yet. "
+                             "Create an instance first before calling get_instance().")
+        return cls._instance
+
+    @classmethod
+    def get_plotter(cls):
+        """
+        Class method to get the plotter from the singleton instance.
+        
+        Returns:
+            pyvistaqt.BackgroundPlotter: The plotter instance.
+        
+        Raises:
+            RuntimeError: If the MainWindow instance or plotter has not been created yet.
+        """
+        instance = cls.get_instance()
+        if not hasattr(instance, 'plotter'):
+            raise RuntimeError("Plotter has not been initialized yet.")
+        return instance.plotter
+
     def __init__(self):
+        """
+        Initialize the MainWindow if it hasn't been initialized before.
+        If already initialized, this method does nothing.
+        """
+        # Check if already initialized to prevent re-initialization
+        if hasattr(self, '_initialized'):
+            return
+        
         super().__init__()
+        
+        # Mark as initialized
+        self._initialized = True
+        
         self.font_size = 10
         self.current_theme = "Dark"
         self.drm_manager = DRMManager(self)
         self.create_palettes()
         self.init_ui()
-        
+
     def init_ui(self):
         """Initialize the user interface"""
         self.setWindowTitle("DRM Analyzer")
@@ -30,6 +87,8 @@ class MainWindow(QMainWindow):
         self.apply_theme()
         
         self.showMaximized()
+
+
 
     def setup_main_layout(self):
         main_widget = QWidget()
@@ -49,6 +108,9 @@ class MainWindow(QMainWindow):
         self.plotter_widget = self.plotter.app_window
         self.plotter_widget.setMinimumHeight(400)
         self.right_panel.addWidget(self.plotter_widget)
+
+        # Set the global plotter
+        PlotterManager.set_plotter(self.plotter)
 
     def setup_console(self):
         self.console = InteractiveConsole()
