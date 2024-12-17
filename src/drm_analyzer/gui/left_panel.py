@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
                            QTabWidget, QLabel)
-from drm_analyzer.components.SoilMesh.soilSections import soilSections
 from drm_analyzer.components.Material.materialGUI import MaterialManagerTab
+from drm_analyzer.components.Mesh.meshPartGUI import MeshPartManagerTab
 
 class LeftPanel(QFrame):
     '''
@@ -43,7 +43,7 @@ class LeftPanel(QFrame):
     def setup_tab_contents(self):
         # Soil tab
         self.soil_tab.layout = QVBoxLayout()
-        self.soil_tab.layout.addWidget(soilSections())
+        self.soil_tab.layout.addWidget(MeshPartManagerTab())
         self.soil_tab.setLayout(self.soil_tab.layout)
 
         # DRM tab
