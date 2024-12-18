@@ -28,9 +28,11 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineE
     QDialog, QGroupBox, QMessageBox, QHeaderView, QGridLayout, QCheckBox, QDialogButtonBox,QColorDialog, QSlider
 )
 from PySide6.QtCore import Qt
-from drm_analyzer.components.Mesh.meshPart import MeshPart, MeshPartRegistry
-from drm_analyzer.components.Element.element import ElementRegistry, ElementCreationDialog
+from drm_analyzer.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
+from drm_analyzer.components.Element.elementBase import ElementRegistry
+from drm_analyzer.components.Element.elementGUI import ElementCreationDialog
 from drm_analyzer.gui.plotter import PlotterManager
+from drm_analyzer.components.Mesh.meshPartInstance import *
 
 
 class MeshPartManagerTab(QWidget):
@@ -154,6 +156,7 @@ class MeshPartManagerTab(QWidget):
             delete_btn.clicked.connect(lambda checked, un=user_name: self.delete_mesh_part(un))
             self.mesh_parts_table.setCellWidget(row, 5, delete_btn)
 
+
     def open_mesh_part_edit_dialog(self, mesh_part):
         """
         Open dialog to edit an existing mesh part
@@ -172,6 +175,8 @@ class MeshPartManagerTab(QWidget):
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         
         if reply == QMessageBox.Yes:
+            actor = MeshPart._mesh_parts[user_name].actor
+            PlotterManager.get_plotter().remove_actor(actor)
             MeshPart.delete_mesh_part(user_name)
             self.refresh_mesh_parts_list()
 
@@ -255,8 +260,8 @@ class MeshPartViewOptionsDialog(QDialog):
     
     def toggle_visibility(self, state):
         """Toggle mesh part visibility"""
-        if hasattr(self.mesh_part, 'grid_actor') and self.mesh_part.grid_actor is not None:
-            self.mesh_part.grid_actor.visibility = bool(state)
+        self.mesh_part.actor.visibility = bool(state)
+
 
 class MeshPartCreationDialog(QDialog):
     """
