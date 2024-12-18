@@ -2,6 +2,7 @@ from PySide6.QtWidgets import (QFrame, QVBoxLayout, QWidget,
                            QTabWidget, QLabel)
 from drm_analyzer.components.Material.materialGUI import MaterialManagerTab
 from drm_analyzer.components.Mesh.meshPartGUI import MeshPartManagerTab
+from drm_analyzer.components.Assemble.AssemblerGUI import AssemblyManagerTab
 
 class LeftPanel(QFrame):
     '''
@@ -26,30 +27,33 @@ class LeftPanel(QFrame):
 
     def create_tabs(self):
         self.material_tab = QWidget()
-        self.soil_tab = QWidget()
-        self.drm_tab = QWidget()
+        self.mesh_tab = QWidget()
+        self.Assemble_tab = QWidget()
         self.absorbing_tab = QWidget()
         self.analysis_tab = QWidget()
-        self.partition_tab = QWidget()
 
         # Add tabs to the tab widget
         self.tabs.addTab(self.material_tab, "Material")
-        self.tabs.addTab(self.soil_tab, "Soil Mesh")
-        self.tabs.addTab(self.drm_tab, "DRM")
+        self.tabs.addTab(self.mesh_tab, "Mesh")
+        self.tabs.addTab(self.Assemble_tab, "Assemble")
         self.tabs.addTab(self.absorbing_tab, "Absorbing")
-        self.tabs.addTab(self.partition_tab, "Partition")
         self.tabs.addTab(self.analysis_tab, "Analysis")
 
     def setup_tab_contents(self):
-        # Soil tab
-        self.soil_tab.layout = QVBoxLayout()
-        self.soil_tab.layout.addWidget(MeshPartManagerTab())
-        self.soil_tab.setLayout(self.soil_tab.layout)
+        # Material tab
+        self.material_tab.layout = QVBoxLayout()
+        self.material_tab.layout.addWidget(MaterialManagerTab())
+        self.material_tab.setLayout(self.material_tab.layout)
 
-        # DRM tab
-        self.drm_tab.layout = QVBoxLayout()
-        self.drm_tab.layout.addWidget(QLabel("DRM content here"))
-        self.drm_tab.setLayout(self.drm_tab.layout)
+        # Mesh tab
+        self.mesh_tab.layout = QVBoxLayout()
+        self.mesh_tab.layout.addWidget(MeshPartManagerTab())
+        self.mesh_tab.setLayout(self.mesh_tab.layout)
+
+        # Assemble tab
+        self.Assemble_tab.layout = QVBoxLayout()
+        self.Assemble_tab.layout.addWidget(AssemblyManagerTab())
+        self.Assemble_tab.setLayout(self.Assemble_tab.layout)
 
         # Absorbing tab
         self.absorbing_tab.layout = QVBoxLayout()
@@ -61,12 +65,3 @@ class LeftPanel(QFrame):
         self.analysis_tab.layout.addWidget(QLabel("Analysis content here"))
         self.analysis_tab.setLayout(self.analysis_tab.layout)
 
-        # Partition tab
-        self.partition_tab.layout = QVBoxLayout()
-        self.partition_tab.layout.addWidget(QLabel("Partition content here"))
-        self.partition_tab.setLayout(self.partition_tab.layout)
-
-        # Material tab
-        self.material_tab.layout = QVBoxLayout()
-        self.material_tab.layout.addWidget(MaterialManagerTab())
-        self.material_tab.setLayout(self.material_tab.layout)
