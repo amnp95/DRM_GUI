@@ -20,6 +20,7 @@ Usage:
     defining and manipulating 3D structured rectangular mesh parts.
 """
 from typing import Dict, List, Tuple, Union
+from abc import ABC, abstractmethod
 import numpy as np
 import pyvista as pv
 from drm_analyzer.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
@@ -47,6 +48,7 @@ class StructuredRectangular3D(MeshPart):
         )
         kwargs = self.validate_parameters(**kwargs)
         self.params = kwargs if kwargs else {}
+        self.generate_mesh()
 
 
     def generate_mesh(self) -> pv.UnstructuredGrid:
