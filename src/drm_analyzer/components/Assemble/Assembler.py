@@ -161,6 +161,7 @@ class Assembler:
         """
         return self._assembly_sections[tag]
     
+
     def list_assembly_sections(self) -> List[int]:
         """
         List all tags of assembly sections.
@@ -170,11 +171,13 @@ class Assembler:
         """
         return list(self._assembly_sections.keys())
     
+
     def clear_assembly_sections(self) -> None:
         """
         Clear all tracked assembly sections.
         """
         self._assembly_sections.clear()
+
 
     def get_sections(self) -> Dict[int, 'AssemblySection']:
         """
@@ -184,6 +187,22 @@ class Assembler:
             Dict[int, AssemblySection]: Dictionary of all assembly sections, keyed by their tags
         """
         return self._assembly_sections.copy()
+    
+
+    def get_section(self, tag: int) -> 'AssemblySection':
+        """
+        Get an assembly section by its tag.
+        
+        Args:
+            tag (int): Tag of the assembly section to retrieve
+        
+        Returns:
+            AssemblySection: The requested assembly section
+        
+        Raises:
+            KeyError: If no assembly section with the given tag exists
+        """
+        return self._assembly_sections[tag]
 
 
 
@@ -218,6 +237,15 @@ class AssemblySection:
         if self.partition_algorithm not in ["kd-tree"]:
             raise ValueError(f"Invalid partition algorithm: {self.partition_algorithm}")
 
+        if self.partition_algorithm == "kd-tree" :
+            # If a non-power of two value is specified for 
+            # n_partitions, then the load balancing simply 
+            # uses the power-of-two greater than the requested value
+            if self.num_partitions & (self.num_partitions - 1) != 0:
+                self.num_partitions = 2**self.num_partitions.bit_length()
+
+
+
         # Initialize tag to None
         self._tag = None
         self.merging_points = merging_points
@@ -226,9 +254,8 @@ class AssemblySection:
         self.mesh: Optional[pv.UnstructuredGrid] = None
         self.elements : List[Element] = []
         self.materials : List[Material] = []
-        
 
-        
+
         # Assemble the mesh first
         try:
             self._assemble_mesh()
@@ -239,6 +266,7 @@ class AssemblySection:
             # If mesh assembly fails, raise the original exception
             raise
 
+        self.actor = None
 
     @property
     def tag(self) -> int:
@@ -255,16 +283,6 @@ class AssemblySection:
             raise ValueError("AssemblySection has not been successfully created")
         return self._tag
 
-    def __del__(self):
-        """
-        Ensure the assembly section is removed from the Assembler when deleted.
-        """
-        if self._tag is not None:
-            try:
-                Assembler.get_instance()._remove_assembly_section(self._tag)
-            except (KeyError, AttributeError):
-                # Ignore if already removed or Assembler no longer exists
-                pass
     
     def _validate_mesh_parts(self, meshpart_names: List[str]) -> List[MeshPart]:
         """
@@ -388,6 +406,16 @@ class AssemblySection:
             List[str]: Names of mesh parts
         """
         return [meshpart.user_name for meshpart in self.meshparts_list]
+    
+
+    def assign_actor(self, actor) -> None:
+        """
+        Assign a PyVista actor to the assembly section.
+        
+        Args:
+            actor: PyVista actor to assign
+        """
+        self.actor = actor
 
         
 
