@@ -3,13 +3,14 @@ from typing import List
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QApplication, QPushButton, QVBoxLayout, QHBoxLayout, 
-    QWidget, QDialog, QCheckBox, QLabel, QListWidget, QListWidgetItem, 
+    QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout,
+    QWidget, QDialog, QCheckBox, QLabel, QListWidget, QListWidgetItem, QSlider, QColorDialog,
     QSpinBox, QComboBox, QMessageBox,QHeaderView, QTableWidget, QTableWidgetItem, QDialogButtonBox
 )
 
 from drm_analyzer.components.Mesh.meshPartBase import MeshPart
 from drm_analyzer.components.Assemble.Assembler import Assembler
+from drm_analyzer.gui.plotter import PlotterManager
 
 class AssemblyManagerTab(QWidget):
     def __init__(self, parent=None):
@@ -25,13 +26,15 @@ class AssemblyManagerTab(QWidget):
         
         # Assembly sections table
         self.assembly_sections_table = QTableWidget()
-        self.assembly_sections_table.setColumnCount(5)  # Tag, Mesh Parts, Partitions, View, Delete
+        self.assembly_sections_table.setColumnCount(6)  # Tag, Mesh Parts, Partitions, View, Solo, Delete
         self.assembly_sections_table.setHorizontalHeaderLabels([
-            "Name", "Mesh Parts", "Partitions", "View", "Delete"
+            "Name", "Mesh Parts", "Partitions", "View", "Solo View", "Delete"
         ])
         header = self.assembly_sections_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         
         layout.addWidget(self.assembly_sections_table)
         
@@ -42,18 +45,30 @@ class AssemblyManagerTab(QWidget):
         
         # Initial refresh
         self.refresh_assembly_sections_list()
+
     
-    def open_assembly_section_creation_dialog(self):
+    def solo_view_section(self, current_tag):
         """
-        Open dialog to create a new assembly section
+        Show only the selected section by hiding all other sections
         """
-        from drm_analyzer.components.Assemble.AssemblerGUI import AssemblySectionCreationDialog
-        
-        dialog = AssemblySectionCreationDialog(self)
-        
-        # Refresh the list if a new section was created
-        if dialog.exec() == QDialog.Accepted:
-            self.refresh_assembly_sections_list()
+        try:
+            assembler = Assembler.get_instance()
+            plotter = PlotterManager.get_plotter()
+            
+            # Get all assembly sections
+            sections = assembler.get_sections()
+            
+            # Iterate through all sections
+            for tag, section in sections.items():
+                if tag == current_tag:
+                    # Show the current section
+                    section.actor.SetVisibility(True)
+                else:
+                    # Hide all other sections
+                    section.actor.SetVisibility(False)
+            
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
     
     def refresh_assembly_sections_list(self):
         """
@@ -94,16 +109,21 @@ class AssemblyManagerTab(QWidget):
             view_btn.clicked.connect(lambda checked, s=section: self.open_section_view_dialog(s))
             self.assembly_sections_table.setCellWidget(row, 3, view_btn)
             
+            # Solo View button
+            solo_btn = QPushButton("Solo View")
+            solo_btn.clicked.connect(lambda checked, t=tag: self.solo_view_section(t))
+            self.assembly_sections_table.setCellWidget(row, 4, solo_btn)
+            
             # Delete button
             delete_btn = QPushButton("Delete")
             delete_btn.clicked.connect(lambda checked, t=tag: self.delete_assembly_section(t))
-            self.assembly_sections_table.setCellWidget(row, 4, delete_btn)
+            self.assembly_sections_table.setCellWidget(row, 5, delete_btn)
     
     def open_section_view_dialog(self, section):
         """
         Open a dialog to view assembly section details
         """
-        dialog = AssemblySectionViewDialog(section, self)
+        dialog = AssemblySectionViewOptionsDialog(section, self)
         dialog.exec()
     
     def delete_assembly_section(self, tag):
@@ -120,48 +140,141 @@ class AssemblyManagerTab(QWidget):
         )
         
         if reply == QMessageBox.Yes:
-            assembler = Assembler.get_instance()
-            assembler.delete_section(tag)
+            try:
+                assembler = Assembler.get_instance()
+                # remove the actor from the plotter
+                plotter = PlotterManager.get_plotter()
+                plotter.remove_actor(assembler.get_section(tag).actor)
+                assembler.delete_section(tag)
+                self.refresh_assembly_sections_list()
+            except KeyError:
+                QMessageBox.warning(self, "Error", f"Assembly section with tag '{tag}' not found")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+    def open_assembly_section_creation_dialog(self):
+        """
+        Open dialog to create a new assembly section
+        """
+        from drm_analyzer.components.Assemble.AssemblerGUI import AssemblySectionCreationDialog
+        
+        dialog = AssemblySectionCreationDialog(self)
+        
+        # Refresh the list if a new section was created
+        if dialog.exec() == QDialog.Accepted:
             self.refresh_assembly_sections_list()
 
-
-class AssemblySectionViewDialog(QDialog):
+class AssemblySectionViewOptionsDialog(QDialog):
     """
-    Dialog for viewing details of an assembly section
+    Dialog for modifying view options of an Assembly Section
     """
     def __init__(self, section, parent=None):
         super().__init__(parent)
         self.section = section
-        self.setWindowTitle(f"Assembly Section Details")
+        self.setWindowTitle(f"View Options for Section{section.tag}")
+        self.plotter = PlotterManager.get_plotter()
         
-        # Main Layout
+        # Main layout
         layout = QVBoxLayout(self)
         
-        # Section Details Group
-        details_layout = QVBoxLayout()
+        # Create a grid layout for organized options
+        options_grid = QGridLayout()
+        options_grid.setSpacing(10)
         
-        # Mesh Parts
-        mesh_parts_label = QLabel(f"Mesh Parts: {', '.join(section.meshparts)}")
-        details_layout.addWidget(mesh_parts_label)
+        row = 0
+
+
+
+        # sclars dropdown
+        scalars_label = QLabel("Scalars:")
+        self.scalars_combobox = QComboBox()
+        self.scalars_combobox.addItems(section.mesh.array_names)
+        active_scalars = section.mesh.active_scalars_name
+        current_index = self.scalars_combobox.findText(active_scalars)
+        self.scalars_combobox.currentIndexChanged.connect(self.update_scalars)
+        options_grid.addWidget(scalars_label, row, 0)
+        options_grid.addWidget(self.scalars_combobox, row, 1)
+        row += 1
+
+        # Opacity slider
+        opacity_label = QLabel("Opacity:")
+        self.opacity_slider = QSlider(Qt.Horizontal)
+        self.opacity_slider.setMinimum(0)
+        self.opacity_slider.setMaximum(100)
+        self.opacity_slider.setValue(int(section.actor.GetProperty().GetOpacity() * 100))
+        self.opacity_slider.valueChanged.connect(self.update_opacity)
         
-        # Partitions
-        partitions_label = QLabel(f"Number of Partitions: {section.num_partitions}")
-        details_layout.addWidget(partitions_label)
+        options_grid.addWidget(opacity_label, row, 0)
+        options_grid.addWidget(self.opacity_slider, row, 1)
+        row += 1
         
-        # Partition Algorithm
-        algo_label = QLabel(f"Partition Algorithm: {section.partition_algorithm}")
-        details_layout.addWidget(algo_label)
+        # Visibility checkbox
+        self.visibility_checkbox = QCheckBox("Visible")
+        self.visibility_checkbox.setChecked(section.actor.GetVisibility())
+        self.visibility_checkbox.stateChanged.connect(self.toggle_visibility)
+        options_grid.addWidget(self.visibility_checkbox, row, 0, 1, 2)
+        row += 1
         
-        # Merge Points
-        merge_label = QLabel(f"Merge Points: {'Yes' if section.merging_points else 'No'}")
-        details_layout.addWidget(merge_label)
+        # Show edges checkbox
+        self.show_edges_checkbox = QCheckBox("Show Edges")
+        self.show_edges_checkbox.setChecked(section.actor.GetProperty().GetEdgeVisibility())
+        self.show_edges_checkbox.stateChanged.connect(self.update_edge_visibility)
+        options_grid.addWidget(self.show_edges_checkbox, row, 0, 1, 2)
+        row += 1
         
-        layout.addLayout(details_layout)
+        # Color selection
+        color_label = QLabel("Color:")
+        self.color_button = QPushButton("Choose Color")
+        self.color_button.clicked.connect(self.choose_color)
         
-        # OK Button
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok)
+        options_grid.addWidget(color_label, row, 0)
+        options_grid.addWidget(self.color_button, row, 1)
+        
+        # Add the grid layout to the main layout
+        layout.addLayout(options_grid)
+        
+        # OK and Cancel buttons
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
         layout.addWidget(button_box)
+
+
+    def update_scalars(self):
+        """Update the scalars for the assembly section"""
+        scalars_name = self.scalars_combobox.currentText()
+        self.section.mesh.active_scalars_name = scalars_name
+        self.section.actor.mapper.array_name = scalars_name
+        self.section.actor.mapper.scalar_range = self.section.mesh.get_data_range(scalars_name)
+
+        # self.plotter.update_scalar_bar_title(scalars_name)
+        self.plotter.update_scalar_bar_range(self.section.mesh.get_data_range(scalars_name))
+        self.plotter.update()
+        self.plotter.render()
+    
+    def update_opacity(self, value):
+        """Update assembly section opacity"""
+        self.section.actor.GetProperty().SetOpacity(value / 100.0)
+    
+    def update_edge_visibility(self, state):
+        """Toggle edge visibility"""
+        self.section.actor.GetProperty().SetEdgeVisibility(bool(state))
+    
+    def choose_color(self):
+        """Open color picker dialog"""
+        color = QColorDialog.getColor()
+        if color.isValid():
+            # Convert QColor to VTK color (0-1 range)
+            vtk_color = (
+                color.redF(),
+                color.greenF(),
+                color.blueF()
+            )
+            self.section.actor.GetProperty().SetColor(vtk_color)
+    
+    def toggle_visibility(self, state):
+        """Toggle assembly section visibility"""
+        self.section.actor.SetVisibility(bool(state))
 
 
 
@@ -173,6 +286,7 @@ class AssemblySectionCreationDialog(QDialog):
         self.setWindowTitle("Add Assembly Section")
         self.setModal(True)
         self.Assembler = Assembler.get_instance()
+        self.plotter = PlotterManager.get_plotter()
         
         # Main layout
         main_layout = QVBoxLayout()
@@ -282,21 +396,42 @@ class AssemblySectionCreationDialog(QDialog):
         Create the assembly section based on the selected mesh parts and settings.
         """
         try:
-            self.Assembler.create_section( 
+            self.section = self.Assembler.create_section( 
                 meshparts=self.get_selected_mesh_parts(),
                 num_partitions=self.num_partitions_spinbox.value(),
                 partition_algorithm=self.partition_algo_combobox.currentText(),
                 merging_points=self.merge_points_checkbox.isChecked()
             )
+            self.update_plotter()
             self.accept()
         except ValueError as e:
             QMessageBox.warning(self, "Input Error",
                                 f"Invalid input: {str(e)}\nPlease enter appropriate values.")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+    def update_plotter(self):
+        """
+        Update the plotter with the new assembly section
+        """
+        meshparts = MeshPart.get_mesh_parts()
+        for mesh_part in self.get_selected_mesh_parts():
+            actor = meshparts[mesh_part].actor
+            if actor is not None:
+                self.plotter.remove_actor(actor)
+        actor = self.plotter.add_mesh(self.section.mesh,
+                                        opacity=1.0,
+                                        scalars = None,
+                                        style='surface',
+                                        color="royalblue",)
+        self.section.assign_actor(actor)
         
 
         
+
+            
+        
+
 
 if __name__ == "__main__":
     '''
