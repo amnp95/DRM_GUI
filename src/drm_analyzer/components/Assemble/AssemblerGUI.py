@@ -1,12 +1,14 @@
 import sys
 from typing import List
 
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout,
+    QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QGroupBox,
     QWidget, QDialog, QCheckBox, QLabel, QListWidget, QListWidgetItem, QSlider, QColorDialog,
     QSpinBox, QComboBox, QMessageBox,QHeaderView, QTableWidget, QTableWidgetItem, QDialogButtonBox
 )
+
 
 from drm_analyzer.components.Mesh.meshPartBase import MeshPart
 from drm_analyzer.components.Assemble.Assembler import Assembler
@@ -42,9 +44,101 @@ class AssemblyManagerTab(QWidget):
         refresh_btn = QPushButton("Refresh Assembly Sections List")
         refresh_btn.clicked.connect(self.refresh_assembly_sections_list)
         layout.addWidget(refresh_btn)
+
+
+        # Group Box for Assembling the whole model
+        groupBox = QGroupBox("Assemble the whole model")
+        groupBoxLayout = QVBoxLayout()
+        groupBox.setLayout(groupBoxLayout)
+        layout.addWidget(groupBox)
+
+        sublayout = QHBoxLayout()
+        # checkbox for merging points
+        self.merge_points_checkbox = QCheckBox("Merge Points")
+        self.merge_points_checkbox.setChecked(True)
+        sublayout.addWidget(self.merge_points_checkbox)
+    
+        # push button for view options
+        view_options_btn = QPushButton("View Options")
+        view_options_btn.clicked.connect(self.open_assembled_mesh_view_options_dialog)
+        sublayout.addWidget(view_options_btn)
+
+        groupBoxLayout.addLayout(sublayout)
+
+
+        # Assemble button
+        assemble_btn = QPushButton("Assemble model")
+        assemble_btn.setStyleSheet("background-color: green")
+        assemble_btn.clicked.connect(self.assemble_model)
+        groupBoxLayout.addWidget(assemble_btn)
+
+
+
+        # delete button
+        delete_btn = QPushButton("Clear Assembled Model")
+        delete_btn.setStyleSheet("background-color: red")
+        delete_btn.clicked.connect(self.delete_assembled_model)
+        groupBoxLayout.addWidget(delete_btn)
+
+
+
+
+
+
+
+
         
         # Initial refresh
         self.refresh_assembly_sections_list()
+
+
+    def open_assembled_mesh_view_options_dialog(self):
+        """
+        Open dialog to modify view options of the assembled mesh
+        """
+        dialog = AssembledMeshViewOptionsDialog(self)
+        dialog.exec()
+
+    def delete_assembled_model(self):
+        """
+        Delete the assembled model
+        """
+        assembler = Assembler.get_instance()
+        plotter = PlotterManager.get_plotter()
+        if assembler.AssembeledActor is not None:
+            plotter.remove_actor(assembler.AssembeledActor)
+            assembler.AssembeledActor = None
+            assembler.AssembeledMesh = None
+            plotter.clear()
+            plotter.update()
+            plotter.render()
+        else:
+            QMessageBox.warning(self, "Error", "No assembled model to delete")
+
+
+    def assemble_model(self):
+        """
+        Assemble the whole model
+        """
+        try:
+            self.refresh_assembly_sections_list()
+            assembler = Assembler.get_instance()
+            assembler.Assemble(merge_points=self.merge_points_checkbox.isChecked())
+            
+            if assembler.AssembeledMesh is not None:
+                self.plotter = PlotterManager.get_plotter()
+                self.plotter.clear()
+                assembler.AssembeledActor = self.plotter.add_mesh(  assembler.AssembeledMesh, 
+                                        opacity=1.0,
+                                        scalars = "Core",
+                                        style='surface')
+        except ValueError as e:
+            QMessageBox.warning(self, "Input Error",
+                                f"Invalid input: {str(e)}\nPlease enter appropriate values.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+
 
     
     def solo_view_section(self, current_tag):
@@ -275,6 +369,125 @@ class AssemblySectionViewOptionsDialog(QDialog):
     def toggle_visibility(self, state):
         """Toggle assembly section visibility"""
         self.section.actor.SetVisibility(bool(state))
+
+
+
+
+class AssembledMeshViewOptionsDialog(QDialog):
+    """
+    Dialog for modifying view options of the assembled mesh
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("View Options for Assembled Mesh")
+        self.plotter = PlotterManager.get_plotter()
+        self.assembler = Assembler.get_instance()
+        
+        # Main layout
+        layout = QVBoxLayout(self)
+        
+        # Create a grid layout for organized options
+        options_grid = QGridLayout()
+        options_grid.setSpacing(10)
+        
+        row = 0
+        
+        # scalars dropdown
+        scalar_label = QLabel("Scalars:")
+        self.scalar_combobox = QComboBox()
+        self.scalar_combobox.addItems(self.assembler.AssembeledMesh.array_names)
+        active_scalar = self.assembler.AssembeledMesh.active_scalars_name
+        current_index = self.scalar_combobox.findText(active_scalar)
+        self.scalar_combobox.currentIndexChanged.connect(self.update_scalars)
+
+        options_grid.addWidget(scalar_label, row, 0)
+        options_grid.addWidget(self.scalar_combobox, row, 1)
+        row += 1
+
+        # Opacity slider
+        opacity_label = QLabel("Opacity:")
+        self.opacity_slider = QSlider(Qt.Horizontal)
+        self.opacity_slider.setMinimum(0)
+        self.opacity_slider.setMaximum(100)
+        self.opacity_slider.setValue(int(self.assembler.AssembeledActor.GetProperty().GetOpacity() * 100))
+        self.opacity_slider.valueChanged.connect(self.update_opacity)
+
+        options_grid.addWidget(opacity_label, row, 0)
+        options_grid.addWidget(self.opacity_slider, row, 1)
+        row += 1
+
+        # Visibility checkbox
+        self.visibility_checkbox = QCheckBox("Visible")
+        self.visibility_checkbox.setChecked(self.assembler.AssembeledActor.GetVisibility())
+        self.visibility_checkbox.stateChanged.connect(self.toggle_visibility)
+        options_grid.addWidget(self.visibility_checkbox, row, 0, 1, 2)
+        row += 1
+
+        # Show edges checkbox
+        self.show_edges_checkbox = QCheckBox("Show Edges")
+        self.show_edges_checkbox.setChecked(self.assembler.AssembeledActor.GetProperty().GetEdgeVisibility())
+        self.show_edges_checkbox.stateChanged.connect(self.update_edge_visibility)
+        options_grid.addWidget(self.show_edges_checkbox, row, 0, 1, 2)
+        row += 1
+
+        # Color selection
+        color_label = QLabel("Color:")
+        self.color_button = QPushButton("Choose Color")
+        self.color_button.clicked.connect(self.choose_color)
+
+        options_grid.addWidget(color_label, row, 0)
+        options_grid.addWidget(self.color_button, row, 1)
+
+
+        # Add the grid layout to the main layout
+        layout.addLayout(options_grid)
+
+        # OK and Cancel buttons
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
+
+    def update_scalars(self):
+        """Update the scalars for the assembled mesh"""
+        scalars_name = self.scalar_combobox.currentText()
+        self.assembler.AssembeledMesh.active_scalars_name = scalars_name
+        self.assembler.AssembeledActor.mapper.array_name = scalars_name
+        self.assembler.AssembeledActor.mapper.scalar_range = self.assembler.AssembeledMesh.get_data_range(scalars_name)
+
+        self.plotter.update_scalar_bar_range(self.assembler.AssembeledMesh.get_data_range(scalars_name))
+        self.plotter.update()
+        self.plotter.render()
+    
+    def update_opacity(self, value):
+        """Update assembled mesh opacity"""
+        self.assembler.AssembeledActor.GetProperty().SetOpacity(value / 100.0)
+
+    def update_edge_visibility(self, state):
+        """Toggle edge visibility"""
+        self.assembler.AssembeledActor.GetProperty().SetEdgeVisibility(bool(state))
+
+    def choose_color(self):
+        """Open color picker dialog"""
+        color = QColorDialog.getColor()
+        if color.isValid():
+            # Convert QColor to VTK color (0-1 range)
+            vtk_color = (
+                color.redF(),
+                color.greenF(),
+                color.blueF()
+            )
+            self.assembler.AssembeledActor.GetProperty().SetColor(vtk_color)
+
+    def toggle_visibility(self, state):
+        """Toggle assembled mesh visibility"""
+        self.assembler.AssembeledActor.SetVisibility(bool(state))
+
+
+
+
+
+
 
 
 
