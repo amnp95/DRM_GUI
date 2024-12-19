@@ -17,6 +17,8 @@ class Assembler:
     """
     _instance = None
     _assembly_sections: Dict[int, 'AssemblySection'] = {}
+    AssembeledMesh = None
+    AssembeledActor = None
     
     def __new__(cls):
         """
@@ -26,6 +28,10 @@ class Assembler:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
+
+
+
+
 
     @classmethod
     def get_instance(cls):
@@ -203,9 +209,55 @@ class Assembler:
             KeyError: If no assembly section with the given tag exists
         """
         return self._assembly_sections[tag]
+    
 
+    def Assemble(self, merge_points: bool = True) -> None:
+        """
+        Assemble all registered AssemblySections into a single mesh.
+        
+        Args:
+            merge_points (bool, optional): Whether to merge points during assembly. Defaults to True.
+        """
+        
+        if self.AssembeledMesh is not None:
+            del self.AssembeledMesh
+            self.AssembeledMesh = None
+        
+        if not self._assembly_sections:
+            raise ValueError("No assembly sections have been created")
+        
+        sorted_sections = sorted(self._assembly_sections.items(), key=lambda x: x[0])
+        
+        self.AssembeledMesh = sorted_sections[0][1].mesh.copy()
+        num_partitions = sorted_sections[0][1].num_partitions
 
+        try :
+            for tag, section in sorted_sections[1:]:
 
+                second_mesh = section.mesh.copy()
+                second_mesh.cell_data["Core"] = second_mesh.cell_data["Core"] + num_partitions
+                num_partitions = num_partitions + section.num_partitions
+                self.AssembeledMesh = self.AssembeledMesh.merge(
+                    second_mesh, 
+                    merge_points=merge_points, 
+                    tolerance=1e-5,
+                    inplace=False,
+                    progress_bar=True
+                )
+                del second_mesh
+        except Exception as e:
+            raise e
+        
+
+    def delete_assembled_mesh(self) -> None:
+        """
+        Delete the assembled mesh.
+        """
+        if self.AssembeledMesh is not None:
+            del self.AssembeledMesh
+            self.AssembeledMesh = None
+        
+            
 
 class AssemblySection:
     def __init__(
@@ -349,6 +401,7 @@ class AssemblySection:
         ndf = first_meshpart.element._ndof
         matTag = first_meshpart.element._material.tag
         EleTag = first_meshpart.element.tag
+
     
         # Add initial metadata to the first mesh
         n_cells = self.mesh.n_cells
@@ -364,6 +417,7 @@ class AssemblySection:
             second_mesh = meshpart.mesh.copy()
             ndf = meshpart.element._ndof
             matTag = meshpart.element._material.tag
+            EleTag = meshpart.element.tag
             
         
             n_cells_second  = second_mesh.n_cells
