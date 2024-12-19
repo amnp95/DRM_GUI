@@ -1,80 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Type, Optional, Union
-from ..Material.materialBase import Material
-
-class ElementTagManager:
-    """
-    Singleton class for generating sequential integer tags for elements
-    """
-    _instance = None
-
-    def __new__(cls):
-        """
-        Override __new__ to ensure only one instance is created
-        """
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-            # Initialize the singleton's attributes
-            cls._instance._current_tag = 1
-            cls._instance._used_tags = set()
-        return cls._instance
-
-    def generate_tag(self) -> int:
-        """
-        Generate a new unique integer tag
-        
-        Returns:
-            int: A unique integer tag
-        """
-        # Find the next available tag
-        while self._current_tag in self._used_tags:
-            self._current_tag += 1
-        
-        # Mark the tag as used
-        self._used_tags.add(self._current_tag)
-        
-        # Return and increment
-        tag = self._current_tag
-        self._current_tag += 1
-        return tag
-
-    def release_tag(self, tag: int):
-        """
-        Release a previously used tag, making it available again
-        
-        Args:
-            tag (int): The tag to release
-        """
-        if tag in self._used_tags:
-            self._used_tags.remove(tag)
-
-    def set_start_tag(self, start_number: int):
-        """
-        Set the starting tag number
-        
-        Args:
-            start_number (int): The first tag number to use
-        """
-        # Only set if no tags have been used yet
-        if not self._used_tags:
-            self._current_tag = start_number
-
-    def reset(self):
-        """
-        Reset the tag manager to its initial state
-        Useful for testing or restarting tag generation
-        """
-        self._current_tag = 1
-        self._used_tags.clear()
-
+from drm_analyzer.components.Material.materialBase import Material
 
 class Element(ABC):
     """
     Base abstract class for all elements with material association
     """
-    _elements = {}  # Class-level dictionary to track all elements
-    _elementTags = {}  # Class-level dictionary to track element tags
-    _class_tag_manager = ElementTagManager()
+    _elements = {}  # Dictionary mapping tags to elements
+    _element_to_tag = {}  # Dictionary mapping elements to their tags
+    _next_tag = 1  # Track the next available tag
 
     def __init__(self, element_type: str, ndof: int, material: Material):
         """
@@ -85,20 +19,110 @@ class Element(ABC):
             ndof (int): Number of degrees of freedom for the element
             material (Material): Material to assign to this element
         """
-        # Generate a unique integer tag
-        self.tag = self._class_tag_manager.generate_tag()
-
         self.element_type = element_type
-        self._ndof = ndof  # Assign ndof directly
+        self._ndof = ndof
 
         # Assign and validate the material
         if not self._is_material_compatible(material):
             raise ValueError(f"Material {material} is not compatible with {self.element_type} element")
         self._material = material
 
-        # Register this element in the class-level tracking dictionary
-        self._elements[self.tag] = self
-        self._elementTags[self] = self.tag
+        # Assign the next available tag
+        self.tag = self._next_tag
+        Element._next_tag += 1
+
+        # Register this element in both mapping dictionaries
+        Element._elements[self.tag] = self
+        Element._element_to_tag[self] = self.tag
+
+    @classmethod
+    def _retag_elements(cls):
+        """
+        Retag all elements sequentially from 1 to n based on their current order.
+        Updates both mapping dictionaries.
+        """
+        # Get all current elements sorted by their tags
+        sorted_elements = sorted(cls._elements.items(), key=lambda x: x[0])
+        
+        # Clear existing mappings
+        cls._elements.clear()
+        cls._element_to_tag.clear()
+        
+        # Reassign tags sequentially
+        for new_tag, (old_tag, element) in enumerate(sorted_elements, start=1):
+            element.tag = new_tag
+            cls._elements[new_tag] = element
+            cls._element_to_tag[element] = new_tag
+        
+        # Update next available tag
+        cls._next_tag = len(sorted_elements) + 1
+
+    @classmethod
+    def delete_element(cls, tag: int) -> None:
+        """
+        Delete an element by its tag and retag remaining elements.
+        
+        Args:
+            tag (int): The tag of the element to delete
+        """
+        if tag in cls._elements:
+            element = cls._elements[tag]
+            # Remove from both dictionaries
+            del cls._elements[tag]
+            del cls._element_to_tag[element]
+            # Retag remaining elements
+            cls._retag_elements()
+
+    @classmethod
+    def get_element_by_tag(cls, tag: int) -> Optional['Element']:
+        """
+        Get an element by its tag.
+        
+        Args:
+            tag (int): The tag to look up
+            
+        Returns:
+            Optional[Element]: The element with the given tag, or None if not found
+        """
+        return cls._elements.get(tag)
+
+    @classmethod
+    def get_tag_by_element(cls, element: 'Element') -> Optional[int]:
+        """
+        Get an element's tag.
+        
+        Args:
+            element (Element): The element to look up
+            
+        Returns:
+            Optional[int]: The tag for the given element, or None if not found
+        """
+        return cls._element_to_tag.get(element)
+
+    @classmethod
+    def set_tag_start(cls, start_number: int):
+        """
+        Set the starting number for element tags and retag all existing elements.
+        
+        Args:
+            start_number (int): The first tag number to use
+        """
+        if not cls._elements:
+            cls._next_tag = start_number
+        else:
+            offset = start_number - 1
+            # Create new mappings with offset tags
+            new_elements = {(tag + offset): element for tag, element in cls._elements.items()}
+            new_element_to_tag = {element: (tag + offset) for element, tag in cls._element_to_tag.items()}
+            
+            # Update all element tags
+            for element in cls._elements.values():
+                element.tag += offset
+            
+            # Replace the mappings
+            cls._elements = new_elements
+            cls._element_to_tag = new_element_to_tag
+            cls._next_tag = max(cls._elements.keys()) + 1
 
     def assign_material(self, material: Material):
         """
