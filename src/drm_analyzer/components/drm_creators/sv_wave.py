@@ -118,6 +118,7 @@ class SvWaveCreator(DRMCreatorDialog):
         self.form_layout.addWidget(self.output_display, 8, 0, 1, 4)
 
         self.progress_bar = QProgressBar()
+        self.progress_bar.setFormat("Processing... %p%")
         self.form_layout.addWidget(self.progress_bar, 9, 0, 1, 4)
 
     def browse_path(self):
@@ -213,9 +214,25 @@ class SvWaveCreator(DRMCreatorDialog):
             dx = dx + 1e-2
             dy = dy + 1e-2
             dz = dz + 1e-2
+            
+            # set the progress bar to 10%
+            self.progress_bar.setFormat("Finding cells within bounds... %p%")
+            self.progress_bar.setValue(0)
             cells = mesh.find_cells_within_bounds([xmin+dx, xmax-dx, ymin+dy, ymax-dy, zmin+dz, zmax+dz])
+            
+            
+            # set the progress bar to 5%
+            self.progress_bar.setFormat("Extracting cells... %p%")
+            self.progress_bar.setValue(5)
             mesh = mesh.extract_cells(cells,invert=True,progress_bar=True)
+            
+            # set the progress bar to 25%
+            self.progress_bar.setFormat("Clearing data... %p%")
+            self.progress_bar.setValue(20)
             mesh.clear_data()
+
+            self.progress_bar.setFormat("Creating coordinates... %p%")
+            self.progress_bar.setValue(25)
             coords = mesh.points
             X = coords[:,0]
             Z = coords[:,2]
@@ -264,10 +281,13 @@ class SvWaveCreator(DRMCreatorDialog):
             Velocity     = np.zeros((3*numpoints,Time.shape[0]))  
             Acceleration = np.zeros((3*numpoints,Time.shape[0]))  
             nstations    = coords.shape[0]                      
-            self.progress_bar.setMaximum(numpoints)
+            
+            self.progress_bar.setFormat("Calculating Displacement... %p%")
+            self.progress_bar.setValue(30)
+
 
             for i in range(numpoints):
-                self.progress_bar.setValue(i)
+                self.progress_bar.setValue(int((i/(numpoints))*50) + 30)
                 NodeX =  X[i]
                 NodeZ = -Z[i]
 
@@ -335,7 +355,10 @@ class SvWaveCreator(DRMCreatorDialog):
                 Acceleration[3*i, :]   = au_s   
                 Acceleration[3*i+2, :] = aw_s
 
-            self.progress_bar.setValue(numpoints)
+
+
+            self.progress_bar.setFormat("Saving DRM Load... %p%")
+            self.progress_bar.setValue(80)
 
             nstations    = coords.shape[0]
             spacing      = [dxx, dyy, dzz]
@@ -419,7 +442,7 @@ class SvWaveCreator(DRMCreatorDialog):
             DRMfile.close()
 
             self.output_display.append(f"DRM Load created successfully\n")
-            self.progress_bar.setValue(0)
+            self.progress_bar.setValue(100)
 
     def DRM_rectangular(self):
         self.rectangularDRM = QWidget()
