@@ -10,7 +10,7 @@ class LeftPanel(QFrame):
     '''
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumWidth(200)
+        self.setMinimumWidth(400)
         self.init_ui()
         
     def init_ui(self):
