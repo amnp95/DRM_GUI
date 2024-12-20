@@ -1,9 +1,16 @@
-name: PYQT
+name: myenv
 channels:
   - conda-forge
+  - defaults
 dependencies:
-  - pyqt
+  - python=3.10
+  - pyside6
+  - pyqt=5
+  - qtpy
   - pyvista
   - pyvistaqt
+  - vtk
   - qtconsole
   - ipykernel
+  - numpy
+  - scipy
