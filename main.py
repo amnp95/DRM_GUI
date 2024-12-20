@@ -1,5 +1,5 @@
 import os
-os.environ["QT_API"] = "pyside2"
+os.environ["QT_API"] = "pyside6"
 import sys
 from qtpy.QtWidgets import QApplication
 from drm_analyzer.gui.main_window import MainWindow
