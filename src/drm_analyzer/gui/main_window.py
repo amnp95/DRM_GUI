@@ -4,10 +4,12 @@ from qtpy.QtCore import Qt
 
 import pyvistaqt
 import pyvista as pv
+from drm_analyzer.components.MeshMaker import MeshMaker
 from drm_analyzer.gui.left_panel import LeftPanel
 from drm_analyzer.gui.console import InteractiveConsole
 from drm_analyzer.components.drm_creators.drm_manager import DRMManager
 from drm_analyzer.gui.plotter import PlotterManager
+from drm_analyzer.gui.toolbar import ToolbarManager
 
 
 class MainWindow(QMainWindow):
@@ -60,6 +62,7 @@ class MainWindow(QMainWindow):
         self.current_theme = "Dark"
         self.drm_manager = DRMManager(self)
         self.create_palettes()
+        self.meshMaker = MeshMaker.get_instance()
         self.init_ui()
 
     def init_ui(self):
@@ -72,7 +75,7 @@ class MainWindow(QMainWindow):
         self.setup_plotter()
         self.setup_console()
         self.setup_splitters()
-        self.create_menu_and_toolbar()
+        self.toolbar_manager = ToolbarManager(self)
         self.apply_theme()
         
         self.showMaximized()
@@ -130,47 +133,6 @@ class MainWindow(QMainWindow):
     def setup_splitters(self):
         self.main_splitter.setSizes([300, 1100])  # Left panel : Right panel ratio
         self.right_panel.setSizes([600, 200])     # Plotter : Console ratio
-
-    def create_menu_and_toolbar(self):
-        menubar = self.menuBar()
-        
-        # View menu
-        view_menu = menubar.addMenu("View")
-        
-        increase_size_action = QAction("Increase Size", self)
-        increase_size_action.setShortcut("Ctrl+=")
-        increase_size_action.triggered.connect(self.increase_font_size)
-        view_menu.addAction(increase_size_action)
-
-        decrease_size_action = QAction("Decrease Size", self)
-        decrease_size_action.setShortcut("Ctrl+-")
-        decrease_size_action.triggered.connect(self.decrease_font_size)
-        view_menu.addAction(decrease_size_action)
-            
-        # Theme menu
-        theme_menu = menubar.addMenu("Theme")
-        
-        dark_theme_action = QAction("Dark Theme", self)
-        dark_theme_action.triggered.connect(lambda: self.switch_theme("Dark"))
-        theme_menu.addAction(dark_theme_action)
-        
-        light_theme_action = QAction("Light Theme", self)
-        light_theme_action.triggered.connect(lambda: self.switch_theme("Light"))
-        theme_menu.addAction(light_theme_action)
-
-        # Add DRM menu
-        drm_menu = menubar.addMenu("DRM Load")
-
-        # Add SV Wave action
-        sv_wave_action = QAction("Create SV Wave", self)
-        sv_wave_action.triggered.connect(self.drm_manager.create_sv_wave)
-        drm_menu.addAction(sv_wave_action)
-        
-        # Add Surface Wave action
-        surface_wave_action = QAction("Create Surface Wave", self)
-        surface_wave_action.triggered.connect(self.drm_manager.create_surface_wave)
-        drm_menu.addAction(surface_wave_action)
-
 
 
     def update_font_and_resize(self):
