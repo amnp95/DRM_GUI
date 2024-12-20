@@ -1,9 +1,9 @@
 # from PySide6.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
 #                            QTabWidget, QLabel)
 from qtpy.QtWidgets import QFrame, QVBoxLayout, QWidget, QTabWidget, QLabel
-from drm_analyzer.components.Material.materialGUI import MaterialManagerTab
-from drm_analyzer.components.Mesh.meshPartGUI import MeshPartManagerTab
-from drm_analyzer.components.Assemble.AssemblerGUI import AssemblyManagerTab
+from meshmaker.components.Material.materialGUI import MaterialManagerTab
+from meshmaker.components.Mesh.meshPartGUI import MeshPartManagerTab
+from meshmaker.components.Assemble.AssemblerGUI import AssemblyManagerTab
 
 class LeftPanel(QFrame):
     '''

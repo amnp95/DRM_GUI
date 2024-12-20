@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Type, Optional, Union
-from drm_analyzer.components.Material.materialBase import Material
+from meshmaker.components.Material.materialBase import Material
 
 class Element(ABC):
     """

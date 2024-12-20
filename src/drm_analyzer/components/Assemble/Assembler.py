@@ -3,9 +3,9 @@ import numpy as np
 import pyvista as pv
 import warnings
 
-from drm_analyzer.components.Mesh.meshPartBase import MeshPart
-from drm_analyzer.components.Element.elementBase import Element
-from drm_analyzer.components.Material.materialBase import Material
+from meshmaker.components.Mesh.meshPartBase import MeshPart
+from meshmaker.components.Element.elementBase import Element
+from meshmaker.components.Material.materialBase import Material
   
 
 class Assembler:

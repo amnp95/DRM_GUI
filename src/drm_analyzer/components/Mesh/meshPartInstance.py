@@ -23,8 +23,8 @@ from typing import Dict, List, Tuple, Union
 from abc import ABC, abstractmethod
 import numpy as np
 import pyvista as pv
-from drm_analyzer.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
-from drm_analyzer.components.Element.elementBase import Element
+from meshmaker.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
+from meshmaker.components.Element.elementBase import Element
 
 
 

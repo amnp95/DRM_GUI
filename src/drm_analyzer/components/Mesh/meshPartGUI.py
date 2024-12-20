@@ -31,11 +31,11 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
-from drm_analyzer.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
-from drm_analyzer.components.Element.elementBase import ElementRegistry
-from drm_analyzer.components.Element.elementGUI import ElementCreationDialog
-from drm_analyzer.gui.plotter import PlotterManager
-from drm_analyzer.components.Mesh.meshPartInstance import *
+from meshmaker.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
+from meshmaker.components.Element.elementBase import ElementRegistry
+from meshmaker.components.Element.elementGUI import ElementCreationDialog
+from meshmaker.gui.plotter import PlotterManager
+from meshmaker.components.Mesh.meshPartInstance import *
 
 
 class MeshPartManagerTab(QWidget):
@@ -507,7 +507,7 @@ if __name__ == "__main__":
     Test the MeshPartManagerTab GUI
     '''
     from PySide6.QtWidgets import QApplication
-    from drm_analyzer.components.Material.materialsOpenSees import ElasticIsotropicMaterial, ElasticUniaxialMaterial
+    from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial, ElasticUniaxialMaterial
     import sys
     # Create the Qt Application
     app = QApplication(sys.argv)

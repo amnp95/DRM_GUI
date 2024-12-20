@@ -4,12 +4,12 @@ from qtpy.QtCore import Qt
 
 import pyvistaqt
 import pyvista as pv
-from drm_analyzer.components.MeshMaker import MeshMaker
-from drm_analyzer.gui.left_panel import LeftPanel
-from drm_analyzer.gui.console import InteractiveConsole
-from drm_analyzer.components.drm_creators.drm_manager import DRMManager
-from drm_analyzer.gui.plotter import PlotterManager
-from drm_analyzer.gui.toolbar import ToolbarManager
+from meshmaker.components.MeshMaker import MeshMaker
+from meshmaker.gui.left_panel import LeftPanel
+from meshmaker.gui.console import InteractiveConsole
+from meshmaker.components.drm_creators.drm_manager import DRMManager
+from meshmaker.gui.plotter import PlotterManager
+from meshmaker.gui.toolbar import ToolbarManager
 
 
 class MainWindow(QMainWindow):

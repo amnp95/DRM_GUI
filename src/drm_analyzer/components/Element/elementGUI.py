@@ -5,9 +5,9 @@ from qtpy.QtWidgets import (
     QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout
 )
 
-from drm_analyzer.components.Element.elementBase import Element, ElementRegistry
-from drm_analyzer.components.Element.elementsOpenSees import *
-from drm_analyzer.components.Material.materialBase import Material
+from meshmaker.components.Element.elementBase import Element, ElementRegistry
+from meshmaker.components.Element.elementsOpenSees import *
+from meshmaker.components.Material.materialBase import Material
 
 
 class ElementManagerTab(QWidget):
@@ -364,7 +364,7 @@ class ElementEditDialog(QDialog):
 if __name__ == '__main__':
     from PySide6.QtWidgets import QApplication
     import sys
-    from drm_analyzer.components.Material.materialsOpenSees import ElasticIsotropicMaterial, ElasticUniaxialMaterial
+    from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial, ElasticUniaxialMaterial
     # Create the Qt Application
     app = QApplication(sys.argv)
     

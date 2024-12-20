@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QLabel, QPushButton, QVBoxLayout, QWidget,
                            QGridLayout, QLineEdit, QGroupBox, QSlider, QComboBox,
                            QCheckBox, QHBoxLayout, QColorDialog, QFrame)
 from PySide6.QtCore import Qt, Signal
-from drm_analyzer.utils.validator import DoubleValidator, IntValidator
+from meshmaker.utils.validator import DoubleValidator, IntValidator
 from PySide6.QtGui import QColor
 
 

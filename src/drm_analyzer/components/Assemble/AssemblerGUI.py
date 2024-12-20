@@ -11,9 +11,9 @@ from qtpy.QtWidgets import (
 
 
 
-from drm_analyzer.components.Mesh.meshPartBase import MeshPart
-from drm_analyzer.components.Assemble.Assembler import Assembler
-from drm_analyzer.gui.plotter import PlotterManager
+from meshmaker.components.Mesh.meshPartBase import MeshPart
+from meshmaker.components.Assemble.Assembler import Assembler
+from meshmaker.gui.plotter import PlotterManager
 
 class AssemblyManagerTab(QWidget):
     def __init__(self, parent=None):
@@ -251,7 +251,7 @@ class AssemblyManagerTab(QWidget):
         """
         Open dialog to create a new assembly section
         """
-        from drm_analyzer.components.Assemble.AssemblerGUI import AssemblySectionCreationDialog
+        from meshmaker.components.Assemble.AssemblerGUI import AssemblySectionCreationDialog
         
         dialog = AssemblySectionCreationDialog(self)
         
@@ -655,9 +655,9 @@ if __name__ == "__main__":
     import sys
 
     # Preliminary setup of mesh parts for testing
-    from drm_analyzer.components.Material.materialsOpenSees import ElasticIsotropicMaterial
-    from drm_analyzer.components.Element.elementsOpenSees import stdBrickElement
-    from drm_analyzer.components.Mesh.meshPartInstance import StructuredRectangular3D
+    from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial
+    from meshmaker.components.Element.elementsOpenSees import stdBrickElement
+    from meshmaker.components.Mesh.meshPartInstance import StructuredRectangular3D
 
     # Create the Qt Application
     app = QApplication(sys.argv)

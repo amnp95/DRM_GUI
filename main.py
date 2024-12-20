@@ -1,18 +1,20 @@
+
 import os
 os.environ["QT_API"] = "pyside6"
 import sys
 from qtpy.QtWidgets import QApplication
-from drm_analyzer.gui.main_window import MainWindow
+from meshmaker.gui.main_window import MainWindow
 import qtpy
+
 DEBUG = True
 
 
 def main():
     # ========================================
     if DEBUG:
-        from drm_analyzer.components.Material.materialsOpenSees import ElasticIsotropicMaterial
-        from drm_analyzer.components.Element.elementsOpenSees import stdBrickElement
-        from drm_analyzer.components.Mesh.meshPartInstance import StructuredRectangular3D
+        from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial
+        from meshmaker.components.Element.elementsOpenSees import stdBrickElement
+        from meshmaker.components.Mesh.meshPartInstance import StructuredRectangular3D
 
         elastic1  = ElasticIsotropicMaterial(user_name="Steel1", E=200e3, ν=0.3,  ρ=7.85e-9)
         elastic2  = ElasticIsotropicMaterial(user_name="Steel2", E=200e3, ν=0.3,  ρ=7.85e-9)

@@ -1,6 +1,6 @@
-from drm_analyzer.components.Material.materialBase import Material
-# from drm_analyzer.components.Element.elementBase import ElementBase
-from drm_analyzer.components.Assemble.Assembler import Assembler
+from meshmaker.components.Material.materialBase import Material
+# from meshmaker.components.Element.elementBase import ElementBase
+from meshmaker.components.Assemble.Assembler import Assembler
 import os
 
 class MeshMaker:

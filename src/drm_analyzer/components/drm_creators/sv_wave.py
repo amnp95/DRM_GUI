@@ -7,7 +7,7 @@ from qtpy.QtWidgets import (QLineEdit, QComboBox, QGroupBox,
                                 QMessageBox, QPushButton, QFileDialog, QTextEdit, QProgressBar)
 
 from .base_creator import DRMCreatorDialog
-from drm_analyzer.utils.validator import DoubleValidator
+from meshmaker.utils.validator import DoubleValidator
 
 class SvWaveCreator(DRMCreatorDialog):
     def __init__(self, parent=None):

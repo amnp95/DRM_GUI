@@ -1,4 +1,4 @@
-# drm_analyzer/components/soil/custom_grid.py
+# meshmaker/components/soil/custom_grid.py
 from PySide6.QtWidgets import QLabel
 from .baseGrid import BaseGridTab
 
