@@ -2,12 +2,13 @@ import sys
 from typing import List
 
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
     QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QGroupBox,
     QWidget, QDialog, QCheckBox, QLabel, QListWidget, QListWidgetItem, QSlider, QColorDialog,
-    QSpinBox, QComboBox, QMessageBox,QHeaderView, QTableWidget, QTableWidgetItem, QDialogButtonBox
+    QSpinBox, QComboBox, QMessageBox, QHeaderView, QTableWidget, QTableWidgetItem, QDialogButtonBox
 )
+
 
 
 from drm_analyzer.components.Mesh.meshPartBase import MeshPart

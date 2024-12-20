@@ -1,5 +1,6 @@
-from PySide6.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
-                           QTabWidget, QLabel)
+# from PySide6.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
+#                            QTabWidget, QLabel)
+from qtpy.QtWidgets import QFrame, QVBoxLayout, QWidget, QTabWidget, QLabel
 from drm_analyzer.components.Material.materialGUI import MaterialManagerTab
 from drm_analyzer.components.Mesh.meshPartGUI import MeshPartManagerTab
 from drm_analyzer.components.Assemble.AssemblerGUI import AssemblyManagerTab

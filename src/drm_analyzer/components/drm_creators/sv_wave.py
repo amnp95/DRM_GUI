@@ -1,9 +1,11 @@
 import numpy as np 
 import h5py
 import pyvista as pv
-from PySide6.QtWidgets import (QLineEdit, QComboBox, QGroupBox, 
-                             QLabel, QGridLayout, QStackedWidget,QWidget,
-                             QMessageBox,QPushButton,QFileDialog,QTextEdit, QProgressBar)
+
+from qtpy.QtWidgets import (QLineEdit, QComboBox, QGroupBox,
+                                QLabel, QGridLayout, QStackedWidget, QWidget,
+                                QMessageBox, QPushButton, QFileDialog, QTextEdit, QProgressBar)
+
 from .base_creator import DRMCreatorDialog
 from drm_analyzer.utils.validator import DoubleValidator
 

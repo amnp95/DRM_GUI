@@ -1,7 +1,10 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
-                               QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
-                               QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout)
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
+    QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
+    QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout
+)
+
 from drm_analyzer.components.Element.elementBase import Element, ElementRegistry
 from drm_analyzer.components.Element.elementsOpenSees import *
 from drm_analyzer.components.Material.materialBase import Material

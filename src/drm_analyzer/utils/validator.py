@@ -1,4 +1,5 @@
-from PySide6.QtGui import QDoubleValidator, QIntValidator
+from qtpy.QtGui import QDoubleValidator, QIntValidator
+
 
 
 class DoubleValidator(QDoubleValidator):

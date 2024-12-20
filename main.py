@@ -1,7 +1,9 @@
+import os
+os.environ["QT_API"] = "pyside2"
 import sys
-from PySide6.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication
 from drm_analyzer.gui.main_window import MainWindow
-
+import qtpy
 DEBUG = True
 
 
@@ -21,10 +23,14 @@ def main():
         StructuredRectangular3D(user_name="middle",  element=stdbrik2, **{'X Min': -50, 'X Max': 50, 'Y Min': -50, 'Y Max': 50, 'Z Min': -20, 'Z Max': -10, 'Nx Cells': 100, 'Ny Cells': 100, 'Nz Cells': 10})
         StructuredRectangular3D(user_name="top",     element=stdbrik3, **{'X Min': -50, 'X Max': 50, 'Y Min': -50, 'Y Max': 50, 'Z Min': -10, 'Z Max':   0, 'Nx Cells': 100, 'Ny Cells': 100, 'Nz Cells': 10})
     # ========================================
+    print(f"Using Qt bindings: {qtpy.API_NAME}")
+
+
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
 
 if __name__ == '__main__':
+
     main()

@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMessageBox
+from qtpy.QtWidgets import QMessageBox
 from .surface_wave import SurfaceWaveCreator
 from .sv_wave import SvWaveCreator
 

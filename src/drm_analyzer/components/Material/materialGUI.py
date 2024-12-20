@@ -1,9 +1,10 @@
-from PySide6.QtWidgets import (
+from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
     QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout
 )
-from PySide6.QtCore import Qt
+from qtpy.QtCore import Qt
+
 
 from .materialBase import Material, MaterialRegistry
 from .materialsOpenSees import *

@@ -23,11 +23,14 @@ Functions:
     save_mesh_part(): Save changes to the mesh part.
 
 '''
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
+from qtpy.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
-    QDialog, QGroupBox, QMessageBox, QHeaderView, QGridLayout, QCheckBox, QDialogButtonBox,QColorDialog, QSlider
+    QDialog, QGroupBox, QMessageBox, QHeaderView, QGridLayout, 
+    QCheckBox, QDialogButtonBox, QColorDialog, QSlider
 )
-from PySide6.QtCore import Qt
+from qtpy.QtCore import Qt
+
 from drm_analyzer.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
 from drm_analyzer.components.Element.elementBase import ElementRegistry
 from drm_analyzer.components.Element.elementGUI import ElementCreationDialog
