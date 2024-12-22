@@ -127,7 +127,8 @@ class MainWindow(QMainWindow):
         # Make plotter available in console namespace
         self.console.kernel_manager.kernel.shell.push({
             'plotter': self.plotter,
-            'pv': pv
+            'pv': pv,
+            'meshMaker': self.meshMaker,
         })
 
     def setup_splitters(self):

@@ -1,7 +1,8 @@
-from meshmaker.components.Material.materialBase import Material
-# from meshmaker.components.Element.elementBase import ElementBase
+from meshmaker.components.Material.materialManager import MaterialManager
+from meshmaker.components.Element.elementBase import Element
 from meshmaker.components.Assemble.Assembler import Assembler
 import os
+from numpy import unique, zeros, arange
 
 class MeshMaker:
     """
@@ -39,6 +40,7 @@ class MeshMaker:
         self.model_name = kwargs.get('model_name')
         self.model_path = kwargs.get('model_path')
         self.assembler = Assembler.get_instance()
+        self.material = MaterialManager.get_instance()
 
     @classmethod
     def get_instance(cls, **kwargs):
@@ -69,7 +71,7 @@ class MeshMaker:
         Raises:
             ValueError: If no filename is provided and model_name/model_path are not set
         """
-        try:
+        if True:
             # Determine the full file path
             if filename is None:
                 if self.model_name is None or self.model_path is None:
@@ -83,19 +85,70 @@ class MeshMaker:
             os.makedirs(os.path.dirname(os.path.abspath(filename)), exist_ok=True)
             
             # Get the assembled content
-            content = "hello world"
+            if self.assembler.AssembeledMesh is None:
+                print("No mesh found")
+                raise ValueError("No mesh found\n Please assemble the mesh first")
             
             # Write to file
             with open(filename, 'w') as f:
-                for tag,mat in Material._materials.items():
+
+                f.write("wipe\n")
+                f.write("model BasicBuilder -ndm 3\n")
+                f.write("set pid [getPID]\n")
+                f.write("set np [getNP]\n")
+
+                # Write the materials
+                f.write("\n# Materials ======================================\n")
+                for tag,mat in self.material.get_all_materials().items():
                     f.write(f"{mat}\n")
-            
+
+                # Write the nodes
+                f.write("\n# Nodes & Elements ======================================\n")
+                cores = self.assembler.AssembeledMesh.cell_data["Core"]
+                num_cores = unique(cores).shape[0]
+                # elements  = self.assembler.AssembeledMesh.cells
+                # offset    = self.assembler.AssembeledMesh.offset
+                nodes     = self.assembler.AssembeledMesh.points
+                ndfs      = self.assembler.AssembeledMesh.point_data["ndf"]
+                num_nodes = self.assembler.AssembeledMesh.n_points
+                wroted    = zeros((num_nodes, num_cores), dtype=bool) # to keep track of the nodes that have been written
+                nodeTags  = arange(1, num_nodes+1, dtype=int)
+                eleTags   = arange(1, self.assembler.AssembeledMesh.n_cells+1, dtype=int)
+
+
+                elementClassTag = self.assembler.AssembeledMesh.cell_data["ElementTag"]
+
+
+                for i in range(self.assembler.AssembeledMesh.n_cells):
+                    cell = self.assembler.AssembeledMesh.get_cell(i)
+                    pids = cell.point_ids
+                    core = cores[i]
+                    f.write("if {$pid ==" + str(core) + "} {\n")
+                    # writing nodes
+                    for pid in pids:
+                        if not wroted[pid][core]:
+                            f.write(f"\tnode {nodeTags[pid]} {nodes[pid][0]} {nodes[pid][1]} {nodes[pid][2]} -ndf {ndfs[pid]}\n")
+                            wroted[pid][core] = True
+                    
+                    eleclass = Element._elements[elementClassTag[i]]
+                    nodeTag = [nodeTags[pid] for pid in pids]
+                    eleTag = eleTags[i]
+                    f.write("\t"+eleclass.toString(eleTag, nodeTag) + "\n")
+                    f.write("}\n")
+
+
+
+
                 
-            return True
+
+
             
-        except Exception as e:
-            print(f"Error exporting to TCL: {str(e)}")
-            return False
+        return True
+        #     return True
+            
+        # except Exception as e:
+        #     print(f"Error exporting to TCL: {str(e)}")
+        #     return False
 
     def set_model_info(self, model_name=None, model_path=None):
         """
