@@ -69,9 +69,9 @@ class StructuredRectangular3D(MeshPart):
         nx = self.params.get('Nx Cells', 10)
         ny = self.params.get('Ny Cells', 10)
         nz = self.params.get('Nz Cells', 10)
-        X = np.linspace(x_min, x_max, nx)
-        Y = np.linspace(y_min, y_max, ny)
-        Z = np.linspace(z_min, z_max, nz)
+        X = np.linspace(x_min, x_max, nx + 1)
+        Y = np.linspace(y_min, y_max, ny + 1)
+        Z = np.linspace(z_min, z_max, nz + 1)
         X, Y, Z = np.meshgrid(X, Y, Z, indexing='ij')
         self.mesh = pv.StructuredGrid(X, Y, Z)
         return self.mesh
