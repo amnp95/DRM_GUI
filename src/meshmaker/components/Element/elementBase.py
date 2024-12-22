@@ -271,12 +271,15 @@ class Element(ABC):
         pass
 
     @abstractmethod
-    def __str__(self) -> str:
+    def toString(self, tag: int, nodes: List[int]) -> str:
         """
-        String representation of the element for OpenSees or other purposes.
+        Convert the element to a string representation.
+        
+        Args:
+            tag (int): The tag of the element
         
         Returns:
-            str: Formatted element definition string
+            str: String representation of the element
         """
         pass
 

@@ -19,6 +19,21 @@ class SSPQuadElement(Element):
         params_str = " ".join(str(self.params[key]) for key in keys if key in self.params)
 
         return f"{self._material.tag} {params_str}"
+    
+    def toString(self, tag :int ,nodes: List[int]) -> str:
+        """
+        Generate the OpenSees element string representation
+        
+        Example: element SSPquad $tag $nodes $matTag $type $thick $b1 $b2
+        """
+        if len(nodes) != 4:
+            raise ValueError("SSPQuad element requires 4 nodes")
+        keys = self.get_parameters()
+        params_str = " ".join(str(self.params[key]) for key in keys if key in self.params)
+        nodes_str = " ".join(str(node) for node in nodes)
+        tag = str(tag)
+        return f"element SSPquad {tag} {nodes_str} {self._material.tag} {params_str}"
+    
 
     @classmethod 
     def get_parameters(cls) -> List[str]:
@@ -129,17 +144,23 @@ class stdBrickElement(Element):
     def __init__(self, ndof: int, material: Material, **kwargs):
         super().__init__('stdBrick', ndof, material)
         self.params = kwargs if kwargs else {}
-
-    def __str__(self):
+        
+    def toString(self, tag :int ,nodes: List[int]) -> str:
         """
         Generate the OpenSees element string representation
         
-        Example: element stdBrick $b1, $b2, $b3
+        Example: element stdBrick tag nodes matTag b1 b2 b3
 
         """
+        if len(nodes) != 8:
+            raise ValueError("stdBrick element requires 8 nodes")
         keys = self.get_parameters()
         params_str = " ".join(str(self.params[key]) for key in keys if key in self.params)
-        return f"{self._material.tag} {params_str}"
+        nodes_str = " ".join(str(node) for node in nodes)
+        tag = str(tag)
+        return f"element stdBrick {tag} {nodes_str} {self._material.tag} {params_str}"
+
+
     
     @classmethod
     def get_parameters(cls) -> List[str]:
