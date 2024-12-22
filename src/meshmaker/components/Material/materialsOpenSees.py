@@ -12,7 +12,7 @@ class ElasticIsotropicMaterial(Material):
         param_order = self.get_parameters()
         params_str = " ".join(str(self.params[param]) for param in param_order if param in self.params)
 
-        return f"{self.material_type} ElasticIsotropic {self.tag} {params_str} # {self.user_name}"
+        return f"{self.material_type} ElasticIsotropic {self.tag} {params_str}; # {self.user_name}"
 
     @classmethod 
     def get_parameters(cls) -> List[str]:
@@ -74,7 +74,7 @@ class ElasticUniaxialMaterial(Material):
     def __str__(self):
         param_order = self.get_parameters()
         params_str = " ".join(str(self.params[param]) for param in param_order if param in self.params)
-        return f"{self.material_type} Elastic {self.tag} {params_str} # {self.user_name}"
+        return f"{self.material_type} Elastic {self.tag} {params_str}; # {self.user_name}"
 
     @classmethod 
     def get_parameters(cls) -> List[str]:
