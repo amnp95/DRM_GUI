@@ -88,8 +88,40 @@ class ElasticUniaxialMaterial(Material):
 
 
 
+class J2CyclicBoundingSurfaceMaterial(Material):
+    def __init__(self, user_name: str = "Unnamed", **kwargs):
+        super().__init__('nDMaterial', 'J2CyclicBoundingSurface', user_name)
+        self.params = kwargs if kwargs else {}
+
+    def __str__(self):
+        param_order = self.get_parameters()
+        params_str = " ".join(str(self.params[param]) for param in param_order if param in self.params)
+        return f"{self.material_type} J2CyclicBoundingSurface {self.tag} {params_str}; # {self.user_name}"
+    
+    # $G $K $Su $Den $h $m $h0 $chi $beta
+    @classmethod
+    def get_parameters(cls) -> List[str]:
+        return ['G', 'K', 'Su', 'Den', 'h', 'm', 'h0', 'chi', 'beta']
+    
+    @classmethod
+    def get_description(cls) -> List[str]:
+        return ['Shear modulus', 
+                'Bulk modulus',
+                'Undrained shear strength',
+                'Mass density',
+                'Hardening parameter',
+                'Hardening exponent',
+                'Initial hardening parameter',
+                'Initial damping (viscous). chi = 2*dr_o/omega (dr_o = damping ratio at zero strain, omega = angular frequency)',
+                'Integration variable (0 = explicit, 1 = implicit, 0.5 = midpoint rule)']
+    
+
+
+
+
 
 # Register material types
 MaterialRegistry.register_material_type('nDMaterial', 'ElasticIsotropic', ElasticIsotropicMaterial)
 MaterialRegistry.register_material_type('nDMaterial', 'ManzariDafalias', ManzariDafaliasMaterial)
 MaterialRegistry.register_material_type('uniaxialMaterial', 'Elastic', ElasticUniaxialMaterial)
+MaterialRegistry.register_material_type('nDMaterial', 'J2CyclicBoundingSurface', J2CyclicBoundingSurfaceMaterial)
