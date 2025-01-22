@@ -4,6 +4,7 @@ from qtpy.QtWidgets import QFrame, QVBoxLayout, QWidget, QTabWidget, QLabel
 from meshmaker.components.Material.materialGUI import MaterialManagerTab
 from meshmaker.components.Mesh.meshPartGUI import MeshPartManagerTab
 from meshmaker.components.Assemble.AssemblerGUI import AssemblyManagerTab
+from .drmGUI import DRMGUI
 
 class LeftPanel(QFrame):
     '''
@@ -37,7 +38,7 @@ class LeftPanel(QFrame):
         self.tabs.addTab(self.material_tab, "Material")
         self.tabs.addTab(self.mesh_tab, "Mesh")
         self.tabs.addTab(self.Assemble_tab, "Assemble")
-        self.tabs.addTab(self.absorbing_tab, "Absorbing")
+        self.tabs.addTab(self.absorbing_tab, "DRM")
         self.tabs.addTab(self.analysis_tab, "Analysis")
 
     def setup_tab_contents(self):
@@ -58,11 +59,12 @@ class LeftPanel(QFrame):
 
         # Absorbing tab
         self.absorbing_tab.layout = QVBoxLayout()
-        self.absorbing_tab.layout.addWidget(QLabel("Absorbing content here"))
+        self.absorbing_tab.layout.addWidget(DRMGUI())
         self.absorbing_tab.setLayout(self.absorbing_tab.layout)
 
         # Analysis tab
         self.analysis_tab.layout = QVBoxLayout()
         self.analysis_tab.layout.addWidget(QLabel("Analysis content here"))
         self.analysis_tab.setLayout(self.analysis_tab.layout)
+
 
