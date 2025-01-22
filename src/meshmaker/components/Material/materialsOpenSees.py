@@ -16,7 +16,7 @@ class ElasticIsotropicMaterial(Material):
 
     @classmethod 
     def get_parameters(cls) -> List[str]:
-        return ["E", "ν", "ρ"]
+        return ["E", "nu", "rho"]
     
     @classmethod
     def get_description(cls) -> List[str]:
