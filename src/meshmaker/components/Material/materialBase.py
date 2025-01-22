@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Type
+from typing import List, Dict, Type, Any
 
 class Material(ABC):
     """
@@ -222,6 +222,18 @@ class Material(ABC):
         self.params.clear()
         self.params.update(values)
         print(f"Updated parameters: {self.params}")
+
+    def get_param(self, key: str)-> Any:
+        """
+        Get the value of a specific parameter.
+        
+        Args:
+            key (str): The parameter name
+        
+        Returns:
+            float: The value of the parameter
+        """
+        return self.params[key]
 
 
 class MaterialRegistry:
