@@ -19,6 +19,8 @@ class Assembler:
     _assembly_sections: Dict[int, 'AssemblySection'] = {}
     AssembeledMesh = None
     AssembeledActor = None
+    AbsorbingMesh = None
+    AbsorbingMeshActor = None
     
     def __new__(cls):
         """
