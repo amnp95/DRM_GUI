@@ -303,12 +303,18 @@ class MeshMaker:
                 mergeFlag = True
                 raise NotImplementedError("ASDA absorbing layer is not implemented yet")
 
-            
         
         mesh = self.assembler.AssembeledMesh.copy()
+        num_partitions  = mesh.cell_data["Core"].max() # previous number of partitions from the assembled mesh
         bounds = mesh.bounds
         eps = 1e-6
         bounds = tuple(array(bounds) + array([eps, -eps, eps, -eps, eps, +10]))
+        
+        # cheking the number of partitions compatibility
+        if numPartitions == 0:
+            if num_partitions > 0:
+                raise ValueError("The number of partitions should be greater than 0 if your model has partitions")
+            
 
         cube = Cube(bounds=bounds)
         cube = cube.clip(normal=[0, 0, 1], origin=[0, 0, bounds[5]-eps])
@@ -444,7 +450,6 @@ class MeshMaker:
 
         Absorbing.cell_data["Core"] = full(Absorbing.n_cells, 0, dtype=int)
 
-        num_partitions  = mesh.cell_data["Core"].max() # previous number of partitions from the assembled mesh
         if numPartitions > 1:
             partitiones = Absorbing.partition(numPartitions,
                                               generate_global_id=True, 
