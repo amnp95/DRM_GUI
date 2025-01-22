@@ -2,7 +2,10 @@ from meshmaker.components.Material.materialManager import MaterialManager
 from meshmaker.components.Element.elementBase import Element
 from meshmaker.components.Assemble.Assembler import Assembler
 import os
-from numpy import unique, zeros, arange
+from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat
+from pyvista import Cube, MultiBlock, StructuredGrid
+import tqdm
+
 
 class MeshMaker:
     """
@@ -134,21 +137,47 @@ class MeshMaker:
                     nodeTag = [nodeTags[pid] for pid in pids]
                     eleTag = eleTags[i]
                     f.write("\t"+eleclass.toString(eleTag, nodeTag) + "\n")
-                    f.write("}\n")
-
-
-
-
-                
-
-
-            
+                    f.write("}\n")      
         return True
-        #     return True
+
+
+
+    def export_to_vtk(self,filename=None):
+        '''
+        Export the model to a vtk file
+
+        Args:
+            filename (str, optional): The filename to export to. If None, 
+                                    uses model_name in model_path
+
+        Returns:
+            bool: True if export was successful, False otherwise
+        '''
+        if True:
+            # Determine the full file path
+            if filename is None:
+                if self.model_name is None or self.model_path is None:
+                    raise ValueError("Either provide a filename or set model_name and model_path")
+                filename = os.path.join(self.model_path, f"{self.model_name}.vtk")
             
-        # except Exception as e:
-        #     print(f"Error exporting to TCL: {str(e)}")
-        #     return False
+            # check if the end is not .vtk then add it
+            if not filename.endswith('.vtk'):
+                filename += '.vtk'
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(os.path.abspath(filename)), exist_ok=True)
+
+            # Get the assembled content
+            if self.assembler.AssembeledMesh is None:
+                print("No mesh found")
+                raise ValueError("No mesh found\n Please assemble the mesh first")
+            
+            # export to vtk
+            # self.assembler.AssembeledMesh.save(filename, binary=True)
+            try:
+                self.assembler.AssembeledMesh.save(filename, binary=True)
+            except Exception as e:
+                raise e
+        return True
 
     def set_model_info(self, model_name=None, model_path=None):
         """
@@ -162,4 +191,278 @@ class MeshMaker:
             self.model_name = model_name
         if model_path is not None:
             self.model_path = model_path
+
+
+    def addAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, geometry:str, progress_callback=None, **kwargs):
+        """
+        Add a rectangular absorbing layer to the model
+        This function is used to add an absorbing layer to the assembled mesh that has a rectangular shape 
+        and has structured mesh. 
+
+        Args:
+            numLayers (int): Number of layers to add
+            numPartitions (int): Number of partitions to divide the absorbing layer
+            partitionAlgo (str): The algorithm to partition the absorbing layer could be ["kd-tree", "metis"]
+            geometry (str): The geometry of the absorbing layer could be ["Rectangular", "Cylindrical"]
+            kwargs (dict): 
+                type (str): Type of the absorbing layer could be ["PML", "Rayleigh", "ASDA"]
+
+
+        Raises:
+            ValueError: If the mesh is not assembled
+            ValueError: If the number of layers is less than 1
+            ValueError: If the number of partitions is less than 0
+            ValueError: If the geometry is not one of ["Rectangular", "Cylindrical"]
         
+        Returns:
+            bool: True if the absorbing layer is added successfully, False otherwise
+
+        
+        Examples:
+            >>> addAbsorbingLayer(2, 2, "metis", "Rectangular", type="PML")
+        """
+        if self.assembler.AssembeledMesh is None:
+            print("No mesh found")
+            raise ValueError("No mesh found\n Please assemble the mesh first")
+        if numLayers < 1:
+            raise ValueError("Number of layers should be greater than 0")
+        
+        if numPartitions < 0:
+            raise ValueError("Number of partitions should be greater or equal to 0")
+        
+        if geometry not in ["Rectangular", "Cylindrical"]:
+            raise ValueError("Geometry should be one of ['Rectangular', 'Cylindrical']")
+        
+        if partitionAlgo not in ["kd-tree", "metis"]:
+            raise ValueError("Partition algorithm should be one of ['kd-tree', 'metis']")
+        
+        if partitionAlgo == "metis":
+            raise NotImplementedError("Metis partitioning algorithm is not implemented yet")
+        
+        if geometry == "Rectangular":
+            return self._addRectangularAbsorbingLayer(numLayers, numPartitions, partitionAlgo, progress_callback, **kwargs)
+        elif geometry == "Cylindrical":
+            raise NotImplementedError("Cylindrical absorbing layer is not implemented yet")
+        
+
+    def _addRectangularAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, progress_callback=None, **kwargs):
+        """
+        Add a rectangular absorbing layer to the model
+        This function is used to add an absorbing layer to the assembled mesh that has a rectangular shape 
+        and has structured mesh. 
+
+        Args:
+            numLayers (int): Number of layers to add
+            numPartitions (int): Number of partitions to divide the absorbing layer
+            partitionAlgo (str): The algorithm to partition the absorbing layer could be ["kd-tree", "metis"]
+            kwargs (dict): 
+                type (str): Type of the absorbing layer could be ["PML", "Rayleigh", "ASDA"]
+
+
+        Raises:
+            ValueError: If the mesh is not assembled
+            ValueError: If the number of layers is less than 1
+            ValueError: If the number of partitions is less than 0
+
+        Returns:
+            bool: True if the absorbing layer is added successfully, False otherwise
+        
+        Examples:
+            >>> _addRectangularAbsorbingLayer(2, 2, "metis", type="PML")
+        """
+
+        if self.assembler.AssembeledMesh is None:
+            print("No mesh found")
+            raise ValueError("No mesh found\n Please assemble the mesh first")
+        if numLayers < 1:
+            raise ValueError("Number of layers should be greater than 0")
+        
+        if numPartitions < 0:
+            raise ValueError("Number of partitions should be greater or equal to 0")
+        
+        if partitionAlgo not in ["kd-tree", "metis"]:
+            raise ValueError("Partition algorithm should be one of ['kd-tree', 'metis']")
+        
+        if partitionAlgo == "metis":
+            raise NotImplementedError("Metis partitioning algorithm is not implemented yet")
+        
+        if 'type' not in kwargs:
+            raise ValueError("Type of the absorbing layer should be provided")
+        else:
+            if kwargs['type'] not in ["PML", "Rayleigh", "ASDA"]:
+                raise ValueError("Type of the absorbing layer should be one of ['PML', 'Rayleigh', 'ASDA']")
+            if kwargs['type'] == "PML":
+                ndof = 9
+                mergeFlag = False
+                raise NotImplementedError("PML absorbing layer is not implemented yet")
+            elif kwargs['type'] == "Rayleigh":
+                ndof = 3
+                mergeFlag = True
+            elif kwargs['type'] == "ASDA":
+                ndof = 3
+                mergeFlag = True
+                raise NotImplementedError("ASDA absorbing layer is not implemented yet")
+
+            
+        
+        mesh = self.assembler.AssembeledMesh.copy()
+        bounds = mesh.bounds
+        eps = 1e-6
+        bounds = tuple(array(bounds) + array([eps, -eps, eps, -eps, eps, +10]))
+
+        cube = Cube(bounds=bounds)
+        cube = cube.clip(normal=[0, 0, 1], origin=[0, 0, bounds[5]-eps])
+        clipped = mesh.copy().clip_surface(cube, invert=False, crinkle=True)
+        
+        
+        # regionize the cells
+        cellCenters = clipped.cell_centers(vertex=True)
+        cellCentersCoords = cellCenters.points
+
+        xmin, xmax, ymin, ymax, zmin, zmax = cellCenters.bounds
+
+        eps = 1e-6
+        left   = abs(cellCentersCoords[:, 0] - xmin) < eps
+        right  = abs(cellCentersCoords[:, 0] - xmax) < eps
+        front  = abs(cellCentersCoords[:, 1] - ymin) < eps
+        back   = abs(cellCentersCoords[:, 1] - ymax) < eps
+        bottom = abs(cellCentersCoords[:, 2] - zmin) < eps
+
+        # create the mask
+        clipped.cell_data['Region'] = zeros(clipped.n_cells, dtype=int)
+        clipped.cell_data['Region'][left]                   = 1
+        clipped.cell_data['Region'][right]                  = 2
+        clipped.cell_data['Region'][front]                  = 3
+        clipped.cell_data['Region'][back]                   = 4
+        clipped.cell_data['Region'][bottom]                 = 5
+        clipped.cell_data['Region'][left & front]           = 6
+        clipped.cell_data['Region'][left & back ]           = 7
+        clipped.cell_data['Region'][right & front]          = 8
+        clipped.cell_data['Region'][right & back]           = 9
+        clipped.cell_data['Region'][left & bottom]          = 10
+        clipped.cell_data['Region'][right & bottom]         = 11
+        clipped.cell_data['Region'][front & bottom]         = 12
+        clipped.cell_data['Region'][back & bottom]          = 13
+        clipped.cell_data['Region'][left & front & bottom]  = 14
+        clipped.cell_data['Region'][left & back & bottom]   = 15
+        clipped.cell_data['Region'][right & front & bottom] = 16
+        clipped.cell_data['Region'][right & back & bottom]  = 17
+
+
+        cellCenters.cell_data['Region'] = clipped.cell_data['Region']
+        normals = [[-1,  0,  0],
+                   [ 1,  0,  0],
+                   [ 0, -1,  0],
+                   [ 0,  1,  0],
+                   [ 0,  0, -1],
+                   [-1, -1,  0],
+                   [-1,  1,  0],
+                   [ 1, -1,  0],
+                   [ 1,  1,  0],
+                   [-1,  0, -1],
+                   [ 1,  0, -1],
+                   [ 0, -1, -1],
+                   [ 0,  1, -1],
+                   [-1, -1, -1],
+                   [-1,  1, -1],
+                   [ 1, -1, -1],
+                   [ 1,  1, -1]]
+
+        Absorbing = MultiBlock()
+        # cellCentersCopy = cellCenters.copy()
+
+        total_cells = clipped.n_cells
+        TQDM_progress = tqdm.tqdm(range(total_cells ))
+        TQDM_progress.reset()
+        material_tags = []
+        absorbing_regions = []
+        element_tags = []
+        
+        for i in range(total_cells ):
+            cell = clipped.get_cell(i)
+            xmin, xmax, ymin, ymax, zmin, zmax = cell.bounds
+            dx = abs((xmax - xmin))
+            dy = abs((ymax - ymin))
+            dz = abs((zmax - zmin))
+
+            region = clipped.cell_data['Region'][i]
+            MaterialTag = clipped.cell_data['MaterialTag'][i]
+            ElementTag = clipped.cell_data['ElementTag'][i]
+            normal = array(normals[region-1])
+            coords = cell.points + normal * numLayers * array([dx, dy, dz])
+            coords = concatenate([coords, cell.points])
+            xmin, ymin, zmin = coords.min(axis=0)
+            xmax, ymax, zmax = coords.max(axis=0)
+            x = arange(xmin, xmax+1e-6, dx)
+            y = arange(ymin, ymax+1e-6, dy)
+            z = arange(zmin, zmax+1e-6, dz)
+            X,Y,Z = meshgrid(x, y, z, indexing='ij')
+            tmpmesh = StructuredGrid(X,Y,Z)
+
+            material_tags.append(MaterialTag)
+            absorbing_regions.append(region)
+            element_tags.append(ElementTag)
+
+            Absorbing.append(tmpmesh)
+            TQDM_progress.update(1)
+            if progress_callback:
+                progress_callback(( i + 1) / total_cells  * 80)
+            del tmpmesh
+
+
+        TQDM_progress.close()
+        for i, block in enumerate(Absorbing):
+            n_cells = block.n_cells
+            block.cell_data['MaterialTag'] = repeat(material_tags[i], n_cells).astype(uint16)
+            block.cell_data['AbsorbingRegion'] = repeat(absorbing_regions[i], n_cells).astype(uint16)
+            block.cell_data['ElementTag'] = repeat(element_tags[i], n_cells).astype(uint16)
+            if progress_callback:
+                progress_callback(( i + 1) / Absorbing.n_blocks  * 20 + 80)
+
+        Absorbing = Absorbing.combine(merge_points=True)
+
+        Absorbingidx = Absorbing.find_cells_within_bounds(cellCenters.bounds)
+        indicies = ones(Absorbing.n_cells, dtype=bool)
+        indicies[Absorbingidx] = False
+        Absorbing = Absorbing.extract_cells(indicies)
+        Absorbing = Absorbing.clean(tolerance=1e-6,
+                                    remove_unused_points=True,
+                                    produce_merge_map=False,
+                                    average_point_data=True,
+                                    progress_bar=False)
+        
+
+        MatTag = Absorbing.cell_data['MaterialTag']
+        EleTag = Absorbing.cell_data['ElementTag']
+        RegTag = Absorbing.cell_data['AbsorbingRegion']
+
+        Absorbing.clear_data()
+        Absorbing.cell_data['MaterialTag'] = MatTag
+        Absorbing.cell_data['ElementTag'] = EleTag
+        Absorbing.cell_data['AbsorbingRegion'] = RegTag
+        Absorbing.point_data['ndf'] = full(Absorbing.n_points, ndof, dtype=uint16)
+
+        Absorbing.cell_data["Core"] = full(Absorbing.n_cells, 0, dtype=int)
+
+        num_partitions  = mesh.cell_data["Core"].max() # previous number of partitions from the assembled mesh
+        if numPartitions > 1:
+            partitiones = Absorbing.partition(numPartitions,
+                                              generate_global_id=True, 
+                                              as_composite=True)
+            
+            for i, partition in enumerate(partitiones):
+                ids = partition.cell_data["vtkGlobalCellIds"]
+                Absorbing.cell_data["Core"][ids] = i + num_partitions + 1
+            
+            del partitiones
+
+        elif numPartitions == 1:
+            Absorbing.cell_data["Core"] = full(Absorbing.n_cells, num_partitions + 1, dtype=int)
+
+        mesh.cell_data["AbsorbingRegion"] = zeros(mesh.n_cells, dtype=uint16)
+        self.assembler.AbsorbingMesh = mesh.merge(Absorbing, 
+                                                  merge_points=mergeFlag, 
+                                                  tolerance=1e-6, 
+                                                  inplace=False, 
+                                                  progress_bar=True)
+        self.assembler.AbsorbingMesh.set_active_scalars("AbsorbingRegion")
