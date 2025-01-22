@@ -371,7 +371,7 @@ if __name__ == '__main__':
     ElasticIsotropicMaterial(user_name="Steel", E=200e3, ν=0.3, ρ=7.85e-9)
     ElasticIsotropicMaterial(user_name="Concrete", E=30e3, ν=0.2, ρ=24e-9)
     ElasticIsotropicMaterial(user_name="Aluminum", E=70e3, ν=0.33, ρ=2.7e-9)
-    ElasticUniaxialMaterial(user_name="Steel", E=200e3, eta=0.1)
+    ElasticUniaxialMaterial(user_name="Steel2", E=200e3, eta=0.1)
     # Create and show the ElementManagerTab directly
     element_manager_tab = ElementManagerTab()
     element_manager_tab.show()
