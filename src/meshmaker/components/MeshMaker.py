@@ -417,15 +417,28 @@ class MeshMaker:
 
 
         TQDM_progress.close()
+
+
+        total_cells     = sum(block.n_cells for block in Absorbing)
+        MaterialTag     = zeros(total_cells, dtype=uint16)
+        AbsorbingRegion = zeros(total_cells, dtype=uint16)
+        ElementTag      = zeros(total_cells, dtype=uint16)
+
+        offset = 0
         for i, block in enumerate(Absorbing):
             n_cells = block.n_cells
-            block.cell_data['MaterialTag'] = repeat(material_tags[i], n_cells).astype(uint16)
-            block.cell_data['AbsorbingRegion'] = repeat(absorbing_regions[i], n_cells).astype(uint16)
-            block.cell_data['ElementTag'] = repeat(element_tags[i], n_cells).astype(uint16)
+            MaterialTag[offset:offset+n_cells] = repeat(material_tags[i], n_cells).astype(uint16)
+            AbsorbingRegion[offset:offset+n_cells] = repeat(absorbing_regions[i], n_cells).astype(uint16)
+            ElementTag[offset:offset+n_cells] = repeat(element_tags[i], n_cells).astype(uint16)
+            offset += n_cells
             if progress_callback:
                 progress_callback(( i + 1) / Absorbing.n_blocks  * 20 + 80)
 
         Absorbing = Absorbing.combine(merge_points=True)
+        Absorbing.cell_data['MaterialTag'] = MaterialTag
+        Absorbing.cell_data['AbsorbingRegion'] = AbsorbingRegion
+        Absorbing.cell_data['ElementTag'] = ElementTag
+        del MaterialTag, AbsorbingRegion, ElementTag
 
         Absorbingidx = Absorbing.find_cells_within_bounds(cellCenters.bounds)
         indicies = ones(Absorbing.n_cells, dtype=bool)
