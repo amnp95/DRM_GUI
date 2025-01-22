@@ -25,10 +25,14 @@ class ToolbarManager:
         file_menu = self.menubar.addMenu("File")
         export_menu = file_menu.addMenu("Export")
 
-        export_tcl_action = QAction("Export to TCL", self.main_window)
-        export_tcl_action.setShortcut("Ctrl+E")
+        export_tcl_action = QAction("Export TCL", self.main_window)
         export_tcl_action.triggered.connect(self.export_to_tcl)
         export_menu.addAction(export_tcl_action)
+
+        export_vtk_action = QAction("Export VTK", self.main_window)
+        export_vtk_action.triggered.connect(self.export_to_vtk)
+        export_menu.addAction(export_vtk_action)
+        
 
     def export_to_tcl(self):
         """Handle the export to TCL action"""
@@ -44,6 +48,40 @@ class ToolbarManager:
             if filename:
                 # Export the file
                 success = self.main_window.meshMaker.export_to_tcl(filename)
+                
+                if success:
+                    QMessageBox.information(
+                        self.main_window,
+                        "Success",
+                        "File exported successfully!"
+                    )
+                else:
+                    QMessageBox.warning(
+                        self.main_window,
+                        "Export Failed",
+                        "Failed to export the file. Please check the console for details."
+                    )
+        except Exception as e:
+            QMessageBox.critical(
+                self.main_window,
+                "Error",
+                f"An error occurred while exporting: {str(e)}"
+            )
+    
+    def export_to_vtk(self):
+        """Handle the export to VTK action"""
+        try:
+            # Get file path from user
+            filename, _ = QFileDialog.getSaveFileName(
+                self.main_window,
+                "Export VTK File",
+                "",
+                "VTK Files (*.vtk);;All Files (*)"
+            )
+            
+            if filename:
+                # Export the file
+                success = self.main_window.meshMaker.export_to_vtk(filename)
                 
                 if success:
                     QMessageBox.information(
