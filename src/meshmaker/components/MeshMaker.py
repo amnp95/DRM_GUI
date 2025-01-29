@@ -100,6 +100,18 @@ class MeshMaker:
                 f.write("set pid [getPID]\n")
                 f.write("set np [getNP]\n")
 
+                # Writ the meshBounds
+                f.write("\n# Mesh Bounds ======================================\n")
+                bounds = self.assembler.AssembeledMesh.bounds
+                f.write(f"set X_MIN {bounds[0]}\n")
+                f.write(f"set X_MAX {bounds[1]}\n")
+                f.write(f"set Y_MIN {bounds[2]}\n")
+                f.write(f"set Y_MAX {bounds[3]}\n")
+                f.write(f"set Z_MIN {bounds[4]}\n")
+                f.write(f"set Z_MAX {bounds[5]}\n")
+
+
+
                 # Write the materials
                 f.write("\n# Materials ======================================\n")
                 for tag,mat in self.material.get_all_materials().items():
