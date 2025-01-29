@@ -478,9 +478,15 @@ class MeshMaker:
             Absorbing.cell_data["Core"] = full(Absorbing.n_cells, num_partitions + 1, dtype=int)
 
         mesh.cell_data["AbsorbingRegion"] = zeros(mesh.n_cells, dtype=uint16)
-        self.assembler.AbsorbingMesh = mesh.merge(Absorbing, 
+        # self.assembler.AbsorbingMesh = mesh.merge(Absorbing, 
+        #                                           merge_points=mergeFlag, 
+        #                                           tolerance=1e-6, 
+        #                                           inplace=False, 
+        #                                           progress_bar=True)
+        # self.assembler.AbsorbingMesh.set_active_scalars("AbsorbingRegion")
+        self.assembler.AssembeledMesh = mesh.merge(Absorbing, 
                                                   merge_points=mergeFlag, 
                                                   tolerance=1e-6, 
                                                   inplace=False, 
                                                   progress_bar=True)
-        self.assembler.AbsorbingMesh.set_active_scalars("AbsorbingRegion")
+        self.assembler.AssembeledMesh.set_active_scalars("AbsorbingRegion")
