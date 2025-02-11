@@ -163,6 +163,16 @@ class MainWindow(QMainWindow):
 
         # Light Palette (system default)
         self.light_palette = QApplication.style().standardPalette()
+        # change background color to white
+        self.light_palette.setColor(QPalette.Window, QColor(237, 241, 247))
+        self.light_palette.setColor(QPalette.Button, QColor(214, 204, 227))
+
+
+        self.brown_palette = QApplication.style().standardPalette()
+        self.brown_palette.setColor(QPalette.Window, QColor(255, 244, 242))
+        # rose gold color
+        self.brown_palette.setColor(QPalette.Button, QColor(237, 213, 217))
+
         
 
     def switch_theme(self, theme):
@@ -174,7 +184,10 @@ class MainWindow(QMainWindow):
             self.plotter.set_background('#52576eff')
             self.current_theme = "Dark"
         else:
-            QApplication.setPalette(self.light_palette)
+            if theme == "Brown":
+                QApplication.setPalette(self.brown_palette)
+            if theme == "Light":
+                QApplication.setPalette(self.light_palette)
             self.console.set_default_style(colors='lightbg')
             self.console.syntax_style = 'default'
             self.plotter.set_background('white')

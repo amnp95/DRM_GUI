@@ -128,6 +128,10 @@ class ToolbarManager:
         light_theme_action.triggered.connect(lambda: self.main_window.switch_theme("Light"))
         theme_menu.addAction(light_theme_action)
 
+        brown_theme_action = QAction("Brown Theme", self.main_window)
+        brown_theme_action.triggered.connect(lambda: self.main_window.switch_theme("Brown"))
+        theme_menu.addAction(brown_theme_action)
+
     def create_tools_menu(self):
         """Create the Tools menu and its items"""
         tools_menu = self.menubar.addMenu("Tools")
