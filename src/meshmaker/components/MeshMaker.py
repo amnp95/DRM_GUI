@@ -1,6 +1,8 @@
 from meshmaker.components.Material.materialManager import MaterialManager
 from meshmaker.components.Element.elementBase import Element
 from meshmaker.components.Assemble.Assembler import Assembler
+from meshmaker.components.Damping.dampingBase import DampingManager
+from meshmaker.components.Region.regionBase import RegionManager
 import os
 from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat
 from pyvista import Cube, MultiBlock, StructuredGrid
@@ -44,6 +46,8 @@ class MeshMaker:
         self.model_path = kwargs.get('model_path')
         self.assembler = Assembler.get_instance()
         self.material = MaterialManager.get_instance()
+        self.damping = DampingManager()
+        self.region = RegionManager()
 
     @classmethod
     def get_instance(cls, **kwargs):
@@ -110,7 +114,12 @@ class MeshMaker:
                 f.write(f"set Z_MIN {bounds[4]}\n")
                 f.write(f"set Z_MAX {bounds[5]}\n")
 
-
+                # # initilize regions list
+                # regions = unique(self.assembler.AssembeledMesh.cell_data["Region"])
+                # f.write("\n# Regions lists ======================================\n")
+                # num_regions = regions.shape[0]
+                # for i in range(num_regions):
+                #     f.write(f"set region_{i} {}\n")
 
                 # Write the materials
                 f.write("\n# Materials ======================================\n")
@@ -149,7 +158,35 @@ class MeshMaker:
                     nodeTag = [nodeTags[pid] for pid in pids]
                     eleTag = eleTags[i]
                     f.write("\t"+eleclass.toString(eleTag, nodeTag) + "\n")
-                    f.write("}\n")      
+                    f.write("}\n")     
+
+                # writ the dampings 
+                f.write("\n# Dampings ======================================\n")
+                if self.damping.get_all_dampings() is not None:
+                    for tag,damp in self.damping.get_all_dampings().items():
+                        f.write(f"{damp.to_tcl()}\n")
+                else:
+                    f.write("# No dampings found\n")
+
+                # write regions
+                f.write("\n# Regions ======================================\n")
+                Regions = unique(self.assembler.AssembeledMesh.cell_data["Region"])
+                for regionTag in Regions:
+                    region = self.region.get_region(regionTag)
+                    if region.get_type().lower() == "noderegion":
+                        raise ValueError(f"""Region {regionTag} is of type NodeTRegion which is not supported in yet""")
+                    
+                    region.setComponent("element", eleTags[self.assembler.AssembeledMesh.cell_data["Region"] == regionTag])
+                    f.write(f"{region.to_tcl()} \n")
+                    del region
+
+                    
+
+
+                    
+
+
+                 
         return True
 
 
@@ -205,7 +242,7 @@ class MeshMaker:
             self.model_path = model_path
 
 
-    def addAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, geometry:str, progress_callback=None, **kwargs):
+    def addAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, geometry:str, rayleighDamping:float=0.95 ,progress_callback=None, **kwargs):
         """
         Add a rectangular absorbing layer to the model
         This function is used to add an absorbing layer to the assembled mesh that has a rectangular shape 
@@ -252,12 +289,12 @@ class MeshMaker:
             raise NotImplementedError("Metis partitioning algorithm is not implemented yet")
         
         if geometry == "Rectangular":
-            return self._addRectangularAbsorbingLayer(numLayers, numPartitions, partitionAlgo, progress_callback, **kwargs)
+            return self._addRectangularAbsorbingLayer(numLayers, numPartitions, partitionAlgo,  rayleighDamping, progress_callback, **kwargs)
         elif geometry == "Cylindrical":
             raise NotImplementedError("Cylindrical absorbing layer is not implemented yet")
         
 
-    def _addRectangularAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, progress_callback=None, **kwargs):
+    def _addRectangularAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, rayleighDamping:float = 0.95 ,progress_callback=None, **kwargs):
         """
         Add a rectangular absorbing layer to the model
         This function is used to add an absorbing layer to the assembled mesh that has a rectangular shape 
@@ -489,6 +526,10 @@ class MeshMaker:
         elif numPartitions == 1:
             Absorbing.cell_data["Core"] = full(Absorbing.n_cells, num_partitions + 1, dtype=int)
 
+        damping = self.damping.create_damping("frequency rayleigh", dampingFactor=rayleighDamping)
+        region  = self.region.create_region("elementRegion", damping=damping)
+        Absorbing.cell_data["Region"] = full(Absorbing.n_cells, region.tag, dtype=uint16)
+        
         mesh.cell_data["AbsorbingRegion"] = zeros(mesh.n_cells, dtype=uint16)
         # self.assembler.AbsorbingMesh = mesh.merge(Absorbing, 
         #                                           merge_points=mergeFlag, 
