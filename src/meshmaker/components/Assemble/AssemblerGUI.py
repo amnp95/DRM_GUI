@@ -69,7 +69,7 @@ class AssemblyManagerTab(QWidget):
 
         # Assemble button
         assemble_btn = QPushButton("Assemble model")
-        assemble_btn.setStyleSheet("background-color: green")
+        assemble_btn.setStyleSheet("background-color: #6b7232")
         assemble_btn.clicked.connect(self.assemble_model)
         groupBoxLayout.addWidget(assemble_btn)
 
@@ -77,7 +77,7 @@ class AssemblyManagerTab(QWidget):
 
         # delete button
         delete_btn = QPushButton("Clear Assembled Model")
-        delete_btn.setStyleSheet("background-color: red")
+        delete_btn.setStyleSheet("background-color: #A85D6E")
         delete_btn.clicked.connect(self.delete_assembled_model)
         groupBoxLayout.addWidget(delete_btn)
 
