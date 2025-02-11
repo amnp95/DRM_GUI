@@ -1,9 +1,11 @@
-# from PySide6.QtWidgets import (QFrame, QVBoxLayout, QWidget, 
-#                            QTabWidget, QLabel)
-from qtpy.QtWidgets import QFrame, QVBoxLayout, QWidget, QTabWidget, QLabel
+from qtpy.QtWidgets import QFrame, QVBoxLayout, QWidget, QTabWidget, QLabel, QPushButton
+from qtpy.QtCore import Qt
+
 from meshmaker.components.Material.materialGUI import MaterialManagerTab
 from meshmaker.components.Mesh.meshPartGUI import MeshPartManagerTab
 from meshmaker.components.Assemble.AssemblerGUI import AssemblyManagerTab
+from meshmaker.components.Damping.dampingGUI import DampingManagerTab
+from meshmaker.components.Region.regionGUI import RegionManagerTab
 from .drmGUI import DRMGUI
 
 class LeftPanel(QFrame):
@@ -21,6 +23,22 @@ class LeftPanel(QFrame):
 
         # Create a tab widget
         self.tabs = QTabWidget()
+        # make the tabs vertical
+        self.tabs.setTabPosition(QTabWidget.West)
+        # make the tabs text horizontal
+        self.tabs.setTabShape(QTabWidget.Triangular)
+
+        self.tabs.setMovable(True)
+
+        # make only the tab headers bold
+        font = self.tabs.font()
+        font.setBold(True)
+        self.tabs.setTabsClosable(False)  # Disable tab closing
+        self.tabs.tabBar().setFont(font)  # Apply bold font only to tab bar
+        # make the order of the tabs from top to bottom
+        self.tabs.setDocumentMode(True)
+
+
         layout.addWidget(self.tabs)
 
         # Create tabs
@@ -32,6 +50,7 @@ class LeftPanel(QFrame):
         self.mesh_tab = QWidget()
         self.Assemble_tab = QWidget()
         self.absorbing_tab = QWidget()
+        self.manage_tab = QWidget()
         self.analysis_tab = QWidget()
 
         # Add tabs to the tab widget
@@ -40,6 +59,11 @@ class LeftPanel(QFrame):
         self.tabs.addTab(self.Assemble_tab, "Assemble")
         self.tabs.addTab(self.absorbing_tab, "DRM")
         self.tabs.addTab(self.analysis_tab, "Analysis")
+        self.tabs.addTab(self.manage_tab, "Manage")
+
+
+
+    
 
     def setup_tab_contents(self):
         # Material tab
@@ -66,5 +90,19 @@ class LeftPanel(QFrame):
         self.analysis_tab.layout = QVBoxLayout()
         self.analysis_tab.layout.addWidget(QLabel("Analysis content here"))
         self.analysis_tab.setLayout(self.analysis_tab.layout)
+
+        # Manage Tab
+        self.manage_tab.layout = QVBoxLayout()
+        self.manage_tab.layout.setAlignment(Qt.AlignTop)
+        DampingButton = QPushButton("Manage Dampings")
+        self.manage_tab.layout.addWidget(DampingButton)
+        self.manage_tab.setLayout(self.manage_tab.layout)
+        DampingButton.clicked.connect(lambda: DampingManagerTab(parent=self).exec_())
+
+        RegionButton = QPushButton("Manage Regions")
+        self.manage_tab.layout.addWidget(RegionButton)
+        self.manage_tab.setLayout(self.manage_tab.layout)
+        RegionButton.clicked.connect(lambda: RegionManagerTab(parent=self).exec_())
+        
 
 
