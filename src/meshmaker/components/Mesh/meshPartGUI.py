@@ -278,7 +278,7 @@ class MeshPartCreationDialog(QDialog):
         # Store the created mesh part
         self.created_mesh_part = None
         self.created_element = None
-        self.plotter = PlotterManager.get_plotter()
+        
 
         # Main Layout
         main_layout = QVBoxLayout(self)
@@ -300,6 +300,15 @@ class MeshPartCreationDialog(QDialog):
         user_element_layout.addWidget(self.element_combo, 1, 1)
         user_element_layout.addWidget(self.create_element_btn, 1, 2)
         self.create_element_btn.clicked.connect(self.open_element_creation_dialog)
+
+        # Region selection
+        self.region_combo = QComboBox()
+        self.refresh_regions()
+        self.edit_region_btn = QPushButton("Manage Regions")
+        self.edit_region_btn.clicked.connect(self.open_region_dialog)
+        user_element_layout.addWidget(QLabel("Region:"), 2, 0)
+        user_element_layout.addWidget(self.region_combo, 2, 1)
+        user_element_layout.addWidget(self.edit_region_btn, 2, 2)
 
         main_layout.addWidget(user_element_group)
 
@@ -329,6 +338,24 @@ class MeshPartCreationDialog(QDialog):
 
         main_layout.addLayout(buttons_layout)
 
+    def refresh_regions(self):
+        """
+        Refresh the regions combo box with current regions
+        """
+        self.region_combo.clear()
+        regions = RegionBase.get_all_regions()
+        for tag, region in regions.items():
+            self.region_combo.addItem(f"{region.name} (Tag: {tag}, Type: {region.get_type()})", region)
+
+    def open_region_dialog(self):
+            """
+            Open the region management dialog and refresh regions when it closes
+            """
+            from meshmaker.components.Region.regionGUI import RegionManagerTab
+            dialog = RegionManagerTab(self)
+            # Connect to the finished signal which is emitted regardless of how the dialog is closed
+            dialog.finished.connect(self.refresh_regions)
+            dialog.exec()
 
     def open_element_creation_dialog(self):
         """
@@ -340,18 +367,14 @@ class MeshPartCreationDialog(QDialog):
             QMessageBox.warning(self, "Error", "Please select an element type before creating.")
             return
         
-
         comp_elements = self.mesh_part_class.get_compatible_elements()
         if element_type not in comp_elements:
             QMessageBox.warning(self, "Error", f"Element type {element_type} is not compatible with this mesh part.\n Compatible elements are: {comp_elements}")
             return
 
-
         dialog = ElementCreationDialog(element_type, parent=self)
         if dialog.exec() == QDialog.Accepted:
             self.created_element = dialog.created_element
-
-            
 
     def create_mesh_part(self):
         """
@@ -366,6 +389,11 @@ class MeshPartCreationDialog(QDialog):
             if not self.created_element:
                 raise ValueError("Please create an element first")
 
+            # Get selected region
+            selected_region = self.region_combo.currentData()
+            if not selected_region:
+                raise ValueError("Please select a region")
+
             # Collect and validate parameters
             params = {name: widget.text().strip() for name, widget in self.parameter_inputs.items()}
 
@@ -377,31 +405,30 @@ class MeshPartCreationDialog(QDialog):
             # Validate parameters and create mesh part
             validated_params = mesh_part_class.validate_parameters(**params)
             mesh_part = mesh_part_class(user_name=user_name,
-                                        element=self.created_element,
-                                        **validated_params)
+                                      element=self.created_element,
+                                      region=selected_region,
+                                      **validated_params)
 
             # Mark as created and accept the dialog
             self.created_mesh_part = mesh_part
             self.update_plotter()
             self.accept()
 
-
         except Exception as e:
             if self.created_element:
                 ElementRegistry.delete_element(self.created_element.user_name)
             QMessageBox.warning(self, "Error", str(e))
 
-
     def update_plotter(self):
         """
         Update the plotter with the new mesh part
         """
+        self.plotter = PlotterManager.get_plotter()
         self.created_mesh_part.generate_mesh()
         self.created_mesh_part.actor = self.plotter.add_mesh(self.created_mesh_part.mesh, 
-                                                                 style= "surface",
-                                                                 opacity=1.0,
-                                                                 show_edges=True)
-
+                                                           style="surface",
+                                                           opacity=1.0,
+                                                           show_edges=True)
 
 class MeshPartEditDialog(QDialog):
     """
@@ -411,9 +438,7 @@ class MeshPartEditDialog(QDialog):
         super().__init__(parent)
         self.mesh_part = mesh_part
         self.setWindowTitle(f"Edit Mesh Part: {mesh_part.user_name}")
-        
-        self.plotter = PlotterManager.get_plotter()
-
+    
         # Main Layout
         main_layout = QVBoxLayout(self)
 
@@ -436,10 +461,26 @@ class MeshPartEditDialog(QDialog):
         material_label = QLabel(f"{mesh_part.element._material.user_name} ({mesh_part.element._material.material_type}-{mesh_part.element._material.material_name})")
         info_layout.addWidget(material_label, 2, 1)
 
-        #ndof (read-only)
+        # ndof (read-only)
         info_layout.addWidget(QLabel("num dof:"), 3, 0)
         ndof_label = QLabel(str(mesh_part.element._ndof))
         info_layout.addWidget(ndof_label, 3, 1)
+
+        # Region selection
+        info_layout.addWidget(QLabel("Region:"), 4, 0)
+        self.region_combo = QComboBox()
+        self.refresh_regions()
+        info_layout.addWidget(self.region_combo, 4, 1)
+        
+        # Set current region
+        current_region_index = self.region_combo.findData(mesh_part.region)
+        if current_region_index >= 0:
+            self.region_combo.setCurrentIndex(current_region_index)
+            
+        # Edit regions button
+        edit_region_btn = QPushButton("Manage Regions")
+        edit_region_btn.clicked.connect(self.open_region_dialog)
+        info_layout.addWidget(edit_region_btn, 4, 2)
 
         main_layout.addWidget(info_group)
 
@@ -471,11 +512,34 @@ class MeshPartEditDialog(QDialog):
 
         main_layout.addLayout(buttons_layout)
 
+    def refresh_regions(self):
+        """
+        Refresh the regions combo box with current regions
+        """
+        self.region_combo.clear()
+        regions = RegionBase.get_all_regions()
+        for tag, region in regions.items():
+            self.region_combo.addItem(f"{region.name} (Tag: {tag}, Type: {region.get_type()})", region)
+
+    def open_region_dialog(self):
+        """
+        Open the region management dialog and refresh regions when it closes
+        """
+        from meshmaker.components.Region.regionGUI import RegionManagerTab
+        dialog = RegionManagerTab(self)
+        dialog.finished.connect(self.refresh_regions)
+        dialog.exec()
+
     def save_mesh_part(self):
         """
         Save changes to the mesh part
         """
         try:
+            # Update region
+            selected_region = self.region_combo.currentData()
+            if selected_region:
+                self.mesh_part.region = selected_region
+            
             # Collect and validate parameters
             params = {}
             for param_name, input_widget in self.parameter_inputs.items():
@@ -484,7 +548,7 @@ class MeshPartEditDialog(QDialog):
             # Validate parameters
             self.mesh_part.update_parameters(**params)
 
-            # Regenerate mesh if needed (you might want to implement this in the MeshPart class)
+            # Regenerate mesh if needed
             self.update_plotter()
             self.accept()
         
@@ -495,13 +559,13 @@ class MeshPartEditDialog(QDialog):
         """
         Update the plotter with the new mesh part
         """
+        self.plotter = PlotterManager.get_plotter()
         self.plotter.remove_actor(self.mesh_part.actor)
         self.mesh_part.generate_mesh()
         self.mesh_part.actor = self.plotter.add_mesh(self.mesh_part.mesh, 
-                                                                 style= "surface",
-                                                                 opacity=1.0,
-                                                                 show_edges=True)
-
+                                                    style="surface",
+                                                    opacity=1.0,
+                                                    show_edges=True)
 if __name__ == "__main__":
     '''
     Test the MeshPartManagerTab GUI

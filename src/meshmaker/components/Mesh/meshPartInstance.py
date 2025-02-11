@@ -25,6 +25,7 @@ import numpy as np
 import pyvista as pv
 from meshmaker.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
 from meshmaker.components.Element.elementBase import Element
+from meshmaker.components.Region.regionBase import RegionBase
 
 
 
@@ -32,7 +33,7 @@ class StructuredRectangular3D(MeshPart):
     """
     Structured Rectangular 3D Mesh Part
     """
-    def __init__(self, user_name: str, element: Element, **kwargs):
+    def __init__(self, user_name: str, element: Element, region: RegionBase=None,**kwargs):
         """
         Initialize a 3D Structured Rectangular Mesh Part
         
@@ -45,6 +46,7 @@ class StructuredRectangular3D(MeshPart):
             mesh_type='Rectangular Grid',
             user_name=user_name,
             element=element,
+            region=region
         )
         kwargs = self.validate_parameters(**kwargs)
         self.params = kwargs if kwargs else {}

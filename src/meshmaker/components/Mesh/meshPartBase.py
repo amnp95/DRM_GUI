@@ -20,8 +20,9 @@ import numpy as np
 import pyvista as pv
 from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple, Type, Union
-from meshmaker.components.Element.elementBase import Element, ElementRegistry
+from meshmaker.components.Element.elementBase import Element
 from meshmaker.components.Material.materialBase import Material
+from meshmaker.components.Region.regionBase import RegionBase, GlobalRegion
 
 
 class MeshPart(ABC):
@@ -31,7 +32,7 @@ class MeshPart(ABC):
     # Class-level tracking of mesh part names to ensure uniqueness
     _mesh_parts = {}
 
-    def __init__(self, category: str, mesh_type: str, user_name: str, element: Element):
+    def __init__(self, category: str, mesh_type: str, user_name: str, element: Element, region: RegionBase=None):
         """
         Initialize a MeshPart instance
 
@@ -40,6 +41,7 @@ class MeshPart(ABC):
             mesh_type (str): Specific type within the category
             user_name (str): User-defined unique name for the mesh part
             element (Optional[Element]): Associated element 
+            region (RegionBase): Region to which the mesh part belongs
         """
         # Validate unique user name
         if user_name in self._mesh_parts:
@@ -49,6 +51,7 @@ class MeshPart(ABC):
         self.mesh_type = mesh_type
         self.user_name = user_name
         self.element = element
+        self.region = region if region is not None else GlobalRegion()
         
         # Generate mesh based on type and kwargs
         self.mesh = None
@@ -189,7 +192,7 @@ class MeshPartRegistry:
         return list(cls._mesh_part_types.keys())
     
     @classmethod
-    def create_mesh_part(cls, category: str, mesh_part_type: str, user_name: str, element: Element, **kwargs) -> MeshPart:
+    def create_mesh_part(cls, category: str, mesh_part_type: str, user_name: str, element: Element, region: RegionBase , **kwargs) -> MeshPart:
         if mesh_part_type not in cls._mesh_part_types.get(category, {}):
             raise KeyError(f"Mesh part type {mesh_part_type} not registered in {category}")
         
