@@ -105,9 +105,9 @@ class DRMGUI(QWidget):
 
         self.plotter = PlotterManager.get_plotter()
 
-        if self.meshmaker.assembler.AbsorbingMeshActor is not None:
-            PlotterManager.get_plotter().renderer.remove_actor(self.meshmaker.assembler.AbsorbingMeshActor)
-            self.meshmaker.assembler.AbsorbingMeshActor = None
+        if self.meshmaker.assembler.AssembeledActor is not None:
+            PlotterManager.get_plotter().renderer.remove_actor(self.meshmaker.assembler.AssembeledActor)
+            self.meshmaker.assembler.AssembeledActor = None
 
         # Get parameters from UI
         geometry = self.absorbingLayerCombox.currentText()
@@ -136,6 +136,7 @@ class DRMGUI(QWidget):
                 num_partitions,
                 partition_algorithm,
                 geometry,
+                damping=0.95,
                 progress_callback=self.update_progress,
                 type=absorbing_layer_type,
             )
@@ -143,8 +144,8 @@ class DRMGUI(QWidget):
 
 
             self.plotter.clear()
-            self.meshmaker.assembler.AbsorbingMeshActor = self.plotter.add_mesh(
-                self.meshmaker.assembler.AbsorbingMesh,
+            self.meshmaker.assembler.AssembeledActor = self.plotter.add_mesh(
+                self.meshmaker.assembler.AssembeledMesh,
                 # color="royalblue",
                 opacity=1.0,
                 show_edges=True,)
@@ -191,8 +192,8 @@ class AbsorbingMeshViewOptionsDialog(QDialog):
         # Scalars dropdown
         scalar_label = QLabel("Scalars:")
         self.scalar_combobox = QComboBox()
-        self.scalar_combobox.addItems(self.meshmaker.assembler.AbsorbingMesh.array_names)
-        active_scalar = self.meshmaker.assembler.AbsorbingMesh.active_scalars_name
+        self.scalar_combobox.addItems(self.meshmaker.assembler.AssembeledMesh.array_names)
+        active_scalar = self.meshmaker.assembler.AssembeledMesh.active_scalars_name
         current_index = self.scalar_combobox.findText(active_scalar)
         self.scalar_combobox.setCurrentIndex(current_index)
         self.scalar_combobox.currentIndexChanged.connect(self.update_scalars)
@@ -206,7 +207,7 @@ class AbsorbingMeshViewOptionsDialog(QDialog):
         self.opacity_slider = QSlider(Qt.Horizontal)
         self.opacity_slider.setMinimum(0)
         self.opacity_slider.setMaximum(100)
-        self.opacity_slider.setValue(int(self.meshmaker.assembler.AbsorbingMeshActor.GetProperty().GetOpacity() * 100))
+        self.opacity_slider.setValue(int(self.meshmaker.assembler.AssembeledActor.GetProperty().GetOpacity() * 100))
         self.opacity_slider.valueChanged.connect(self.update_opacity)
 
         options_grid.addWidget(opacity_label, row, 0)
@@ -215,14 +216,14 @@ class AbsorbingMeshViewOptionsDialog(QDialog):
 
         # Visibility checkbox
         self.visibility_checkbox = QCheckBox("Visible")
-        self.visibility_checkbox.setChecked(self.meshmaker.assembler.AbsorbingMeshActor.GetVisibility())
+        self.visibility_checkbox.setChecked(self.meshmaker.assembler.AssembeledActor.GetVisibility())
         self.visibility_checkbox.stateChanged.connect(self.toggle_visibility)
         options_grid.addWidget(self.visibility_checkbox, row, 0, 1, 2)
         row += 1
 
         # Show edges checkbox
         self.show_edges_checkbox = QCheckBox("Show Edges")
-        self.show_edges_checkbox.setChecked(self.meshmaker.assembler.AbsorbingMeshActor.GetProperty().GetEdgeVisibility())
+        self.show_edges_checkbox.setChecked(self.meshmaker.assembler.AssembeledActor.GetProperty().GetEdgeVisibility())
         self.show_edges_checkbox.stateChanged.connect(self.update_edge_visibility)
         options_grid.addWidget(self.show_edges_checkbox, row, 0, 1, 2)
         row += 1
@@ -247,26 +248,26 @@ class AbsorbingMeshViewOptionsDialog(QDialog):
     def update_scalars(self):
         """Update the scalars for the absorbing mesh"""
         scalars_name = self.scalar_combobox.currentText()
-        self.meshmaker.assembler.AbsorbingMesh.active_scalars_name = scalars_name
-        self.meshmaker.assembler.AbsorbingMeshActor.mapper.array_name = scalars_name
-        self.meshmaker.assembler.AbsorbingMeshActor.mapper.scalar_range = (
-            self.meshmaker.assembler.AbsorbingMesh.get_data_range(scalars_name)
+        self.meshmaker.assembler.AssembeledMesh.active_scalars_name = scalars_name
+        self.meshmaker.assembler.AssembeledActor.mapper.array_name = scalars_name
+        self.meshmaker.assembler.AssembeledActor.mapper.scalar_range = (
+            self.meshmaker.assembler.AssembeledMesh.get_data_range(scalars_name)
         )
 
         self.plotter.update_scalar_bar_range(
-            self.meshmaker.assembler.AbsorbingMesh.get_data_range(scalars_name)
+            self.meshmaker.assembler.AssembeledMesh.get_data_range(scalars_name)
         )
         self.plotter.update()
         self.plotter.render()
     
     def update_opacity(self, value):
         """Update absorbing mesh opacity"""
-        self.meshmaker.assembler.AbsorbingMeshActor.GetProperty().SetOpacity(value / 100.0)
+        self.meshmaker.assembler.AssembeledActor.GetProperty().SetOpacity(value / 100.0)
         self.plotter.render()
 
     def update_edge_visibility(self, state):
         """Toggle edge visibility"""
-        self.meshmaker.assembler.AbsorbingMeshActor.GetProperty().SetEdgeVisibility(bool(state))
+        self.meshmaker.assembler.AssembeledActor.GetProperty().SetEdgeVisibility(bool(state))
         self.plotter.render()
 
     def choose_color(self):
@@ -279,12 +280,12 @@ class AbsorbingMeshViewOptionsDialog(QDialog):
                 color.greenF(),
                 color.blueF()
             )
-            self.meshmaker.assembler.AbsorbingMeshActor.GetProperty().SetColor(vtk_color)
+            self.meshmaker.assembler.AssembeledActor.GetProperty().SetColor(vtk_color)
             self.plotter.render()
 
     def toggle_visibility(self, state):
         """Toggle absorbing mesh visibility"""
-        self.meshmaker.assembler.AbsorbingMeshActor.SetVisibility(bool(state))
+        self.meshmaker.assembler.AssembeledActor.SetVisibility(bool(state))
         self.plotter.render()
 
 if __name__ == '__main__':
