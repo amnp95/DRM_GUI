@@ -19,8 +19,8 @@ class Assembler:
     _assembly_sections: Dict[int, 'AssemblySection'] = {}
     AssembeledMesh = None
     AssembeledActor = None
-    AbsorbingMesh = None
-    AbsorbingMeshActor = None
+    # AbsorbingMesh = None
+    # AbsorbingMeshActor = None
     
     def __new__(cls):
         """
@@ -403,6 +403,8 @@ class AssemblySection:
         ndf = first_meshpart.element._ndof
         matTag = first_meshpart.element._material.tag
         EleTag = first_meshpart.element.tag
+        regionTag = first_meshpart.region.tag
+        
 
     
         # Add initial metadata to the first mesh
@@ -413,6 +415,7 @@ class AssemblySection:
         self.mesh.cell_data["ElementTag"]  = np.full(n_cells, EleTag, dtype=np.uint16)
         self.mesh.cell_data["MaterialTag"] = np.full(n_cells, matTag, dtype=np.uint16)
         self.mesh.point_data["ndf"]        = np.full(n_points, ndf, dtype=np.uint16)
+        self.mesh.cell_data["Region"]      = np.full(n_cells, regionTag, dtype=np.uint16)
         
         # Merge subsequent meshes
         for meshpart in self.meshparts_list[1:]:
@@ -420,6 +423,7 @@ class AssemblySection:
             ndf = meshpart.element._ndof
             matTag = meshpart.element._material.tag
             EleTag = meshpart.element.tag
+            regionTag = meshpart.region.tag
             
         
             n_cells_second  = second_mesh.n_cells
@@ -429,7 +433,7 @@ class AssemblySection:
             second_mesh.cell_data["ElementTag"]  = np.full(n_cells_second, EleTag, dtype=np.uint16)
             second_mesh.cell_data["MaterialTag"] = np.full(n_cells_second, matTag, dtype=np.uint16)
             second_mesh.point_data["ndf"]        = np.full(n_points_second, ndf, dtype=np.uint16)
-            
+            second_mesh.cell_data["Region"]      = np.full(n_cells_second, regionTag, dtype=np.uint16)
             # Merge with tolerance and optional point merging
             self.mesh = self.mesh.merge(
                 second_mesh, 
@@ -458,7 +462,7 @@ class AssemblySection:
         """
         Get the names of mesh parts in this AssemblySection.
         
-        Returns:
+        Returns:S
             List[str]: Names of mesh parts
         """
         return [meshpart.user_name for meshpart in self.meshparts_list]
