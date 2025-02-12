@@ -20,7 +20,7 @@ class SSPQuadElement(Element):
 
         return f"{self._material.tag} {params_str}"
     
-    def toString(self, tag :int ,nodes: List[int]) -> str:
+    def to_tcl(self, tag :int ,nodes: List[int]) -> str:
         """
         Generate the OpenSees element string representation
         
@@ -145,7 +145,7 @@ class stdBrickElement(Element):
         super().__init__('stdBrick', ndof, material)
         self.params = kwargs if kwargs else {}
         
-    def toString(self, tag :int ,nodes: List[int]) -> str:
+    def to_tcl(self, tag :int ,nodes: List[int]) -> str:
         """
         Generate the OpenSees element string representation
         
@@ -255,12 +255,12 @@ class stdBrickElement(Element):
         return kwargs
     
 
-class PML3D(Element):
+class PML3DElement(Element):
     def __init__(self, ndof: int, material: Material, **kwargs):
         super().__init__('PML3D', ndof, material)
         self.params = kwargs if kwargs else {}
 
-    def toString(self, tag :int ,nodes: List[int]) -> str:
+    def to_tcl(self, tag :int ,nodes: List[int]) -> str:
         """
         Generate the OpenSees element string representation
         """
@@ -497,4 +497,4 @@ class PML3D(Element):
 # =================================================================================================
 ElementRegistry.register_element_type('SSPQuad', SSPQuadElement)
 ElementRegistry.register_element_type('stdBrick', stdBrickElement)
-ElementRegistry.register_element_type('PML3D', PML3D)
+ElementRegistry.register_element_type('PML3D', PML3DElement)

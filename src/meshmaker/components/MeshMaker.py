@@ -157,7 +157,7 @@ class MeshMaker:
                     eleclass = Element._elements[elementClassTag[i]]
                     nodeTag = [nodeTags[pid] for pid in pids]
                     eleTag = eleTags[i]
-                    f.write("\t"+eleclass.toString(eleTag, nodeTag) + "\n")
+                    f.write("\t"+eleclass.to_tcl(eleTag, nodeTag) + "\n")
                     f.write("}\n")     
 
                 # writ the dampings 

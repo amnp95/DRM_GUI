@@ -271,7 +271,7 @@ class Element(ABC):
         pass
 
     @abstractmethod
-    def toString(self, tag: int, nodes: List[int]) -> str:
+    def to_tcl(self, tag: int, nodes: List[int]) -> str:
         """
         Convert the element to a string representation.
         
