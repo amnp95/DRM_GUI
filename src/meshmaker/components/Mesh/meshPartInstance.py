@@ -150,7 +150,7 @@ class StructuredRectangular3D(MeshPart):
         Returns:
             List[str]: List of compatible element types
         """
-        return ["stdBrick", "bbarBrick", "SSPbrick"]
+        return ["stdBrick", "bbarBrick", "SSPbrick", "PML3D"]
     
 
 
