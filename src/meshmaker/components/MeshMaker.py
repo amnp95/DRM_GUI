@@ -1,5 +1,5 @@
 from meshmaker.components.Material.materialManager import MaterialManager
-from meshmaker.components.Element.elementBase import Element
+from meshmaker.components.Element.elementBase import Element, ElementRegistry
 from meshmaker.components.Assemble.Assembler import Assembler
 from meshmaker.components.Damping.dampingBase import DampingManager
 from meshmaker.components.Region.regionBase import RegionManager
@@ -44,8 +44,9 @@ class MeshMaker:
         self.model = None
         self.model_name = kwargs.get('model_name')
         self.model_path = kwargs.get('model_path')
-        self.assembler = Assembler.get_instance()
-        self.material = MaterialManager.get_instance()
+        self.assembler = Assembler()
+        self.material = MaterialManager()
+        self.element = ElementRegistry()
         self.damping = DampingManager()
         self.region = RegionManager()
 
@@ -343,7 +344,6 @@ class MeshMaker:
             if kwargs['type'] == "PML":
                 ndof = 9
                 mergeFlag = False
-                raise NotImplementedError("PML absorbing layer is not implemented yet")
             elif kwargs['type'] == "Rayleigh":
                 ndof = 3
                 mergeFlag = True
@@ -511,6 +511,48 @@ class MeshMaker:
         Absorbing.point_data['ndf'] = full(Absorbing.n_points, ndof, dtype=uint16)
 
         Absorbing.cell_data["Core"] = full(Absorbing.n_cells, 0, dtype=int)
+
+        if kwargs['type'] == "PML":
+            EleTags = unique(Absorbing.cell_data['ElementTag'])
+            PMLTags = {}
+
+            # create PML Element
+            xmin, xmax, ymin, ymax, zmin, zmax = mesh.bounds
+            RD_half_width_x = 0.5 * (xmax - xmin)
+            RD_half_width_y = 0.5 * (ymax - ymin)
+            RD_Depth = 1.0 * (zmax - zmin)
+
+            # check all the elements should of type stdBrick or bbarBrick or SSPbrick
+            for tag in EleTags:
+                ele = self.element.get_element(tag)
+
+                if ele.element_type not in ["stdBrick", "bbarBrick", "SSPbrick"]:
+                    raise ValueError(f"boundary elements should be of type stdBrick or bbarBrick or SSPbrick not {ele.element_type}")
+                
+                mat = ele.get_material()
+
+                # check that the material is elastic
+                if mat.material_name != "ElasticIsotropic" or mat.material_type != "nDMaterial":
+                    raise ValueError(f"boundary elements should have an ElasticIsotropic material not {mat.material_name} {mat.material_type}")
+
+                PMLele = self.element.create_element("PML3D", ndof, mat, 
+                                            gamma = 0.5,
+                                            beta  = 0.25,
+                                            eta   = 1./12.0,
+                                            PML_Thickness = numLayers*dx,
+                                            m = 2,
+                                            R = 1.0e-8,
+                                            RD_half_width_x = RD_half_width_x,
+                                            RD_half_width_y = RD_half_width_y,
+                                            RD_Depth = RD_Depth)
+
+                PMLeleTag = PMLele.tag
+                PMLTags[tag] = PMLeleTag
+
+            # update the element tags
+            for i, tag in enumerate(EleTags):
+                Absorbing.cell_data['ElementTag'][Absorbing.cell_data['ElementTag'] == tag] = PMLTags[tag]
+
 
         if numPartitions > 1:
             partitiones = Absorbing.partition(numPartitions,
