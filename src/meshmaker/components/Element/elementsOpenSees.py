@@ -270,7 +270,7 @@ class PML3DElement(Element):
         eta = self.params.get('eta')
         gamma = self.params.get('gamma')
         beta = self.params.get('beta')
-        thickness = self.params.get('PML Thickness')
+        thickness = self.params.get('PML_Thickness')
         m = self.params.get('m')
         R = self.params.get('R')
         RD_half_width_x = self.params.get('RD_half_width_x')
@@ -310,7 +310,7 @@ class PML3DElement(Element):
         eta = kwargs.get('eta')
         gamma = kwargs.get('gamma')
         beta = kwargs.get('beta')
-        thickness = kwargs.get('PML Thickness')
+        thickness = kwargs.get('PML_Thickness')
         m = kwargs.get('m')
         R = kwargs.get('R')
         RD_half_width_x = kwargs.get('RD_half_width_x')
@@ -333,7 +333,7 @@ class PML3DElement(Element):
         Returns:
             List[str]: Parameters for stdBrick element
         """
-        return ["gamma", "beta", "eta", "PML Thickness", "m", "R", "RD_half_width_x", "RD_half_width_y", "RD_Depth"]
+        return ["gamma", "beta", "eta", "PML_Thickness", "m", "R", "RD_half_width_x", "RD_half_width_y", "RD_Depth"]
 
     @classmethod
     def get_description(cls) -> List[str]:
@@ -428,13 +428,13 @@ class PML3DElement(Element):
         else:
             raise ValueError("eta must be specified")
         
-        if "PML Thickness" in kwargs:
+        if "PML_Thickness" in kwargs:
             try:
-                kwargs['PML Thickness'] = float(kwargs['PML Thickness'])
+                kwargs['PML_Thickness'] = float(kwargs['PML_Thickness'])
             except ValueError:
-                raise ValueError("PML Thickness must be a float number")
+                raise ValueError("PML_Thickness must be a float number")
         else:
-            raise ValueError("PML Thickness must be specified")
+            raise ValueError("PML_Thickness must be specified")
         
         if "m" in kwargs:
             try:
