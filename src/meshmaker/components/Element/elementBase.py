@@ -287,9 +287,15 @@ class Element(ABC):
 
 class ElementRegistry:
     """
-    A registry to manage element types and their creation.
+    A singleton registry to manage element types and their creation.
     """
+    _instance = None
     _element_types = {}
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(ElementRegistry, cls).__new__(cls)
+        return cls._instance
 
     @classmethod
     def register_element_type(cls, name: str, element_class: Type[Element]):
@@ -334,6 +340,26 @@ class ElementRegistry:
             raise KeyError(f"Element type {element_type} not registered")
         
         return cls._element_types[element_type](ndof, material, **kwargs)
+    
+    @staticmethod
+    def get_element(tag: int) -> Optional[Element]:
+        """
+        Get an element by its tag.
+        
+        Args:
+            tag (int): The tag of the element to retrieve
+            
+        Returns:
+            Optional[Element]: The element with the given tag, or None if not found
+        """
+        return Element.get_element_by_tag(tag)
+    
+    
+
+    
+
+        
+        
 
 
 
