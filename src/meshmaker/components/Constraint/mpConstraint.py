@@ -1,199 +1,267 @@
-from typing import Optional, List
+from typing import List, Dict
+from abc import ABC, abstractmethod
 
-class mpConstraint:
-    """
-    Base class representing a multipoint constraint in a finite element model.
+class mpConstraint(ABC):
+    """Base class for OpenSees multi-point constraints"""
+    
+    # Class variable to store all MP constraints
+    _constraints: Dict[int, 'mpConstraint'] = {}
+    
 
-    Attributes:
-        _tag (Optional[int]): A unique identifier for the constraint.
-    """
-
-    def __init__(self):
-        """Initializes the constraint with no assigned tag."""
-        self._tag: Optional[int] = None
-
-    def setTag(self, tag: int):
+    def __init__(self, master_node: int, slave_nodes: List[int]):
         """
-        Assigns a unique identifier to the constraint.
-
+        Initialize the base MP constraint
+        
         Args:
-            tag (int): The unique identifier for this constraint.
+            master_node: Tag of the master/retained node
+            slave_nodes: List of slave/constrained node tags
         """
-        self._tag = tag
+        self.master_node = master_node
+        self.slave_nodes = slave_nodes
+        self.tag = mpConstraint._next_tag()
+        mpConstraint._constraints[self.tag] = self
+        
+    
+    @classmethod
+    def _next_tag(cls) -> int:
+        """Get the next available tag"""
+        return len(cls._constraints) + 1
+    
+    @classmethod
+    def get_constraint(cls, tag: int) -> 'mpConstraint':
+        """Get a constraint by its tag"""
+        return cls._constraints.get(tag)
+    
+    @classmethod
+    def remove_constraint(cls, tag: int) -> None:
+        """Remove a constraint and reorder remaining tags"""
+        if tag in cls._constraints:
+            del cls._constraints[tag]
+            # Reorder remaining constraints
+            constraints = sorted(cls._constraints.items())
+            cls._constraints.clear()
+            for new_tag, (_, constraint) in enumerate(constraints, 1):
+                constraint.tag = new_tag
+                cls._constraints[new_tag] = constraint
+    
+    @abstractmethod
+    def to_tcl(self) -> str:
+        """Convert constraint to TCL command for OpenSees"""
+        pass
 
-    def isMaster(self) -> bool:
-        """
-        Determines whether this constraint is a master node.
 
-        Returns:
-            bool: True if the constraint is a master node, False otherwise.
-        """
-        return False  # Subclasses should override this
+
 
 
 class equalDOF(mpConstraint):
-    """
-    Represents an equal degree-of-freedom (DOF) constraint between two nodes.
-
-    Attributes:
-        masterNode (Optional[mpConstraint]): The master node to which the DOFs are constrained.
-        dofs (List[int]): The list of degrees of freedom to be constrained.
-    """
-
-    def __init__(self, masterNode: Optional[mpConstraint] = None, dofs: Optional[List[int]] = None):
+    """Equal DOF constraint"""
+    
+    def __init__(self, master_node: int, slave_nodes: List[int], dofs: List[int]):
         """
-        Initializes the equalDOF constraint.
-
+        Initialize EqualDOF constraint
+        
         Args:
-            masterNode (Optional[mpConstraint]): The master node. If None, this constraint acts as a master.
-            dofs (Optional[List[int]]): List of DOFs to constrain.
+            master_node: Retained node tag
+            slave_node: Constrained node tag
+            dofs: List of DOFs to be constrained
         """
-        super().__init__()
-        self.masterNode = masterNode
-        self.dofs = dofs or []
-
-    def isMaster(self) -> bool:
-        """
-        Checks if this node is a master.
-
-        Returns:
-            bool: True if this constraint is a master node, False otherwise.
-        """
-        return self.masterNode is None
-
+        super().__init__(master_node, slave_nodes)
+        self.dofs = dofs
+    
     def to_tcl(self) -> str:
-        """
-        Generates the TCL command for the equalDOF constraint.
+        tcl_str = ""
+        for slave in self.slave_nodes:
+            dofs_str = " ".join(str(dof) for dof in self.dofs)
+            tcl_str += f"equalDOF {self.master_node} {slave} {dofs_str}\n"
+        return tcl_str
 
-        Returns:
-            str: The corresponding OpenSees TCL command.
-        """
-        return "" if self.isMaster() else f"equalDOF {self.masterNode._tag} {self._tag} {' '.join(map(str, self.dofs))}\n"
+
+
+
+
 
 
 class rigidLink(mpConstraint):
-    """
-    Represents a rigid link constraint between two nodes.
-
-    Attributes:
-        masterNode (Optional[mpConstraint]): The master node to which the rigid link is applied.
-        type (str): The type of rigid link ('bar' or 'beam').
-    """
-
-    def __init__(self, masterNode: Optional[mpConstraint] = None, type: str = "bar"):
+    """Rigid link constraint"""
+    
+    def __init__(self, type_str: str, master_node: int, slave_nodes: List[int]):
         """
-        Initializes the rigidLink constraint.
-
+        Initialize RigidLink constraint
+        
         Args:
-            masterNode (Optional[mpConstraint]): The master node to which the rigid link is applied.
-            type (str): The type of rigid link, either 'bar' or 'beam'.
-
-        Raises:
-            ValueError: If type is not 'bar' or 'beam'.
+            type_str: Type of rigid link ('bar' or 'beam')
+            master_node: Retained node tag
+            slave_node: Constrained node tag
         """
-        if type not in {"bar", "beam"}:
-            raise ValueError("type must be 'bar' or 'beam'")
-        super().__init__()
-        self.masterNode = masterNode
-        self.type = type  # Just store the string directly
-
-    def isMaster(self) -> bool:
-        """
-        Checks if this node is a master.
-
-        Returns:
-            bool: True if this constraint is a master node, False otherwise.
-        """
-        return self.masterNode is None
-
+        super().__init__(master_node, slave_nodes)
+        if type_str not in ['bar', 'beam']:
+            raise ValueError("RigidLink type must be 'bar' or 'beam'")
+        self.type = type_str
+    
     def to_tcl(self) -> str:
-        """
-        Generates the TCL command for the rigidLink constraint.
+        tcl_str = ""
+        for slave in self.slave_nodes:
+            tcl_str += f"rigidLink {self.type} {self.master_node} {slave}\n"
+        # return f"rigidLink {self.type} {self.master_node} {self.slave_nodes[0]}"
 
-        Returns:
-            str: The corresponding OpenSees TCL command.
-        """
-        return "" if self.isMaster() else f"rigidLink {self.type} {self.masterNode._tag} {self._tag}\n"
+
+
 
 
 
 class rigidDiaphragm(mpConstraint):
-    """
-    Represents a rigid diaphragm constraint, enforcing plane motion.
-
-    Attributes:
-        masterNode (Optional[mpConstraint]): The master node for the diaphragm constraint.
-        direction (int): The axis of constraint (1 for X, 2 for Y, 3 for Z).
-    """
-
-    def __init__(self, masterNode: Optional[mpConstraint] = None, direction: int = 1):
+    """Rigid diaphragm constraint"""
+    
+    def __init__(self, direction: int, master_node: int, slave_nodes: List[int]):
         """
-        Initializes the rigidDiaphragm constraint.
-
+        Initialize RigidDiaphragm constraint
+        
         Args:
-            masterNode (Optional[mpConstraint]): The master node for the diaphragm constraint.
-            direction (int): The axis of constraint (1 for perpendicular to y-z plane, 2 for perpendicular to x-z plane, 3 for perpendicular to x-y plane).
-
-        Raises:
-            ValueError: If direction is not 1, 2, or 3.
+            direction: Direction perpendicular to rigid plane (3D) or direction of motion (2D)
+            master_node: Retained node tag
+            slave_nodes: List of constrained node tags
         """
-        if direction not in {1, 2, 3}:
-            raise ValueError("direction must be 1, 2, or 3")
-        super().__init__()
-        self.masterNode = masterNode
-        self.direction = direction  # Just store the integer directly
+        super().__init__(master_node, slave_nodes)
+        self.direction = direction
+    
+    def to_tcl(self) -> str:
+        slaves_str = " ".join(str(node) for node in self.slave_nodes)
+        return f"rigidDiaphragm {self.direction} {self.master_node} {slaves_str}"
+    
 
-    def isMaster(self) -> bool:
+
+
+
+
+
+class mpConstraintManager:
+    """
+    Singleton class to manage MP constraints.
+    This class provides methods to create and manage different types of constraints
+    such as EqualDOF, RigidLink, and RigidDiaphragm. It ensures that only one instance
+    of the class exists and provides a global point of access to it.
+    """   
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(mpConstraintManager, cls).__new__(cls)
+        return cls._instance
+
+    def create_equal_dof(self, master_node: int, slave_nodes: List[int], dofs: List[int]) -> equalDOF:
         """
-        Checks if this node is a master.
+        Create an EqualDOF constraint.
+
+        Parameters:
+        master_node (int): The master node ID.
+        slave_nodes (List[int]): A list of slave node IDs.
+        dofs (List[int]): A list of degrees of freedom to be constrained.
 
         Returns:
-            bool: True if this constraint is a master node, False otherwise.
+        equalDOF: An instance of the equalDOF constraint.
         """
-        return self.masterNode is None
+        """Create an EqualDOF constraint"""
+        return equalDOF(master_node, slave_nodes, dofs)
+
+
+    def create_rigid_link(self, type_str: str, master_node: int, slave_nodes: List[int]) -> rigidLink:
+        """
+        Create a RigidLink constraint.
+
+        Args:
+            type_str (str): The type of the rigid link.
+            master_node (int): The master node ID.
+            slave_nodes (List[int]): A list of slave node IDs.
+
+        Returns:
+            rigidLink: An instance of the rigidLink class representing the constraint.
+        """
+        return rigidLink(type_str, master_node, slave_nodes)
+
+
+    def create_rigid_diaphragm(self, direction: int, master_node: int, slave_nodes: List[int]) -> rigidDiaphragm:
+        """
+        Create a RigidDiaphragm constraint.
+
+        Parameters:
+        direction (int): The direction of the rigid diaphragm constraint.
+        master_node (int): The master node ID for the rigid diaphragm.
+        slave_nodes (List[int]): A list of slave node IDs that will be constrained by the rigid diaphragm.
+
+        Returns:
+        rigidDiaphragm: An instance of the rigidDiaphragm class representing the created constraint.
+        """
+        return rigidDiaphragm(direction, master_node, slave_nodes)
+    
+
+
+    def create_constraint(self, constraint_type: str, *args) -> mpConstraint:
+        """
+        Create a constraint based on the specified type.
+
+        Parameters:
+        constraint_type (str): The type of constraint to create. 
+                       Supported types are "equalDOF", "rigidLink", and "rigidDiaphragm".
+        *args: Additional arguments required for creating the specific type of constraint.
+
+        Returns:
+        mpConstraint: An instance of the created constraint.
+
+        Raises:
+        ValueError: If an unknown constraint type is provided.
+        """
+        if constraint_type == "equalDOF":
+            return self.create_equal_dof(*args)
+        elif constraint_type == "rigidLink":
+            return self.create_rigid_link(*args)
+        elif constraint_type == "rigidDiaphragm":
+            return self.create_rigid_diaphragm(*args)
+        else:
+            raise ValueError(f"Unknown constraint type: {constraint_type}")
+
+
+    def get_constraint(self, tag: int) -> mpConstraint:
+        """
+        Retrieve a constraint by its tag.
+
+        Args:
+            tag (int): The tag identifier of the constraint.
+
+        Returns:
+            mpConstraint: The constraint object associated with the given tag.
+        """
+        """Get a constraint by its tag"""
+        return mpConstraint.get_constraint(tag)
+
+
+    def remove_constraint(self, tag: int) -> None:
+        """
+        Remove a constraint by its tag.
+
+        Parameters:
+        tag (int): The tag of the constraint to be removed.
+
+        Returns:
+        None
+        """
+        """Remove a constraint by its tag"""
+        mpConstraint.remove_constraint(tag)
+
 
     def to_tcl(self) -> str:
         """
-        Generates the TCL command for the rigidDiaphragm constraint.
+        Convert all constraints to TCL commands.
+
+        This method iterates over all constraints stored in the class variable
+        `_constraints` of `mpConstraint` and converts each constraint to its
+        corresponding TCL command string. The resulting TCL command strings are
+        concatenated into a single string.
 
         Returns:
-            str: The corresponding OpenSees TCL command.
+            str: A string containing all the TCL commands for the constraints.
         """
-        return "" if self.isMaster() else f"rigidDiaphragm {self.direction} {self.masterNode._tag} {self._tag}\n"
-
-
-
-
-# Test Cases
-if __name__ == "__main__":
-    # Create master and slave nodes
-    master = mpConstraint()
-    master.setTag(1)
-
-    slave = mpConstraint()
-    slave.setTag(2)
-
-    # Test equalDOF
-    eq_dof = equalDOF(masterNode=master, dofs=[1, 2, 3])
-    eq_dof.setTag(2)
-    print("equalDOF Test:", eq_dof.to_tcl())  # Expected: "equalDOF 1 2 1 2 3\n"
-
-    # Test rigidLink
-    try:
-        invalid_link = rigidLink(masterNode=master, type="invalid")
-    except ValueError as e:
-        print("Caught expected error:", e)
-
-    rl = rigidLink(masterNode=master, type="beam")
-    rl.setTag(2)
-    print("rigidLink Test:", rl.to_tcl())  # Expected: "rigidLink beam 1 2\n"
-
-    # Test rigidDiaphragm
-    try:
-        invalid_rd = rigidDiaphragm(masterNode=master, direction=4)
-    except ValueError as e:
-        print("Caught expected error:", e)
-
-    rd = rigidDiaphragm(masterNode=master, direction=2)
-    rd.setTag(2)
-    print("rigidDiaphragm Test:", rd.to_tcl())  # Expected: "rigidDiaphragm 2 1 2\n"
+        """Convert all constraints to TCL commands"""
+        tcl_str = ""
+        for constraint in mpConstraint._constraints.values():
+            tcl_str += constraint.to_tcl()
+        return tcl_str
