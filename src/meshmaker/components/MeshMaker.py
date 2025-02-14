@@ -3,11 +3,12 @@ from meshmaker.components.Element.elementBase import Element, ElementRegistry
 from meshmaker.components.Assemble.Assembler import Assembler
 from meshmaker.components.Damping.dampingBase import DampingManager
 from meshmaker.components.Region.regionBase import RegionManager
+from meshmaker.components.Constraint.constraint import Constraint
 import os
-from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat
+from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat, where
 from pyvista import Cube, MultiBlock, StructuredGrid
 import tqdm
-
+from pykdtree.kdtree import KDTree as pykdtree
 
 class MeshMaker:
     """
@@ -49,6 +50,7 @@ class MeshMaker:
         self.element = ElementRegistry()
         self.damping = DampingManager()
         self.region = RegionManager()
+        self.constraint = Constraint()
 
     @classmethod
     def get_instance(cls, **kwargs):
@@ -427,7 +429,7 @@ class MeshMaker:
         # cellCentersCopy = cellCenters.copy()
 
         total_cells = clipped.n_cells
-        TQDM_progress = tqdm.tqdm(range(total_cells ))
+        TQDM_progress = tqdm.tqdm(range(total_cells))
         TQDM_progress.reset()
         material_tags = []
         absorbing_regions = []
@@ -585,3 +587,41 @@ class MeshMaker:
                                                   inplace=False, 
                                                   progress_bar=True)
         self.assembler.AssembeledMesh.set_active_scalars("AbsorbingRegion")
+
+
+        if kwargs['type'] == "PML":
+            # creating the mapping for the equal dof 
+            interfacepoints = mesh.points
+            xmin, xmax, ymin, ymax, zmin, zmax = mesh.bounds
+            xmin = xmin + eps
+            xmax = xmax - eps
+            ymin = ymin + eps
+            ymax = ymax - eps
+            zmin = zmin + eps
+            zmax = zmax + 10
+
+            mask = (
+                (interfacepoints[:, 0] > xmin) & 
+                (interfacepoints[:, 0] < xmax) & 
+                (interfacepoints[:, 1] > ymin) & 
+                (interfacepoints[:, 1] < ymax) & 
+                (interfacepoints[:, 2] > zmin) & 
+                (interfacepoints[:, 2] < zmax)
+            )
+            mask = where(~mask)
+            interfacepoints = interfacepoints[mask]
+
+            # create the kd-tree
+            tree = pykdtree(self.assembler.AssembeledMesh.points)
+            distances, indices = tree.query(interfacepoints, k=2)
+
+
+            # check the distances 
+            distances  = abs(distances)
+            # check that maximum distance is less than 1e-6
+            if distances.max() > 1e-6:
+                raise ValueError("The PML layer mesh points are not matching with the original mesh points")
+            
+            # create the equal dof
+            for i, index in enumerate(indices):
+                
