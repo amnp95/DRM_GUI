@@ -247,6 +247,21 @@ class mpConstraintManager:
         """Remove a constraint by its tag"""
         mpConstraint.remove_constraint(tag)
 
+    
+    def __iter__(self):
+        """
+        Iterate over all constraints.
+
+        This method allows the mpConstraintManager to be iterable, yielding each
+        constraint stored in the class variable `_constraints` of `mpConstraint`.
+
+        Yields:
+            mpConstraint: Each constraint object in the order of their tags.
+        """
+        return iter(mpConstraint._constraints.values())
+
+
+
 
     def to_tcl(self) -> str:
         """
