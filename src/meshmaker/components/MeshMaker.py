@@ -67,7 +67,7 @@ class MeshMaker:
             cls._instance = cls(**kwargs)
         return cls._instance
 
-    def export_to_tcl(self, filename=None):
+    def export_to_tcl(self, filename=None, progress_callback=None):
         """
         Export the model to a TCL file
         
@@ -124,21 +124,28 @@ class MeshMaker:
                 # for i in range(num_regions):
                 #     f.write(f"set region_{i} {}\n")
 
+                if progress_callback:
+                    progress_callback(0, "writing materials")
+                    
+
                 # Write the materials
                 f.write("\n# Materials ======================================\n")
                 for tag,mat in self.material.get_all_materials().items():
                     f.write(f"{mat}\n")
 
+                if progress_callback:
+                    progress_callback(5,"writing nodes and elements")
+
                 # Write the nodes
                 f.write("\n# Nodes & Elements ======================================\n")
                 cores = self.assembler.AssembeledMesh.cell_data["Core"]
-                num_cores = unique(cores).shape[0]
+                num_cores = unique(cores)
                 # elements  = self.assembler.AssembeledMesh.cells
                 # offset    = self.assembler.AssembeledMesh.offset
                 nodes     = self.assembler.AssembeledMesh.points
                 ndfs      = self.assembler.AssembeledMesh.point_data["ndf"]
                 num_nodes = self.assembler.AssembeledMesh.n_points
-                wroted    = zeros((num_nodes, num_cores), dtype=bool) # to keep track of the nodes that have been written
+                wroted    = zeros((num_nodes, len(num_cores)), dtype=bool) # to keep track of the nodes that have been written
                 nodeTags  = arange(1, num_nodes+1, dtype=int)
                 eleTags   = arange(1, self.assembler.AssembeledMesh.n_cells+1, dtype=int)
 
@@ -162,7 +169,11 @@ class MeshMaker:
                     eleTag = eleTags[i]
                     f.write("\t"+eleclass.to_tcl(eleTag, nodeTag) + "\n")
                     f.write("}\n")     
+                    if progress_callback:
+                        progress_callback((i / self.assembler.AssembeledMesh.n_cells) * 45 + 5, "writing nodes and elements")
 
+                if progress_callback:
+                    progress_callback(50, "writing dampings")
                 # writ the dampings 
                 f.write("\n# Dampings ======================================\n")
                 if self.damping.get_all_dampings() is not None:
@@ -171,10 +182,13 @@ class MeshMaker:
                 else:
                     f.write("# No dampings found\n")
 
+                if progress_callback:
+                    progress_callback(55, "writing regions")
+
                 # write regions
                 f.write("\n# Regions ======================================\n")
                 Regions = unique(self.assembler.AssembeledMesh.cell_data["Region"])
-                for regionTag in Regions:
+                for i,regionTag in enumerate(Regions):
                     region = self.region.get_region(regionTag)
                     if region.get_type().lower() == "noderegion":
                         raise ValueError(f"""Region {regionTag} is of type NodeTRegion which is not supported in yet""")
@@ -182,9 +196,66 @@ class MeshMaker:
                     region.setComponent("element", eleTags[self.assembler.AssembeledMesh.cell_data["Region"] == regionTag])
                     f.write(f"{region.to_tcl()} \n")
                     del region
+                    if progress_callback:
+                        progress_callback((i / Regions.shape[0]) * 10 + 55, "writing regions")
+
+                if progress_callback:
+                    progress_callback(65, "writing constraints")
+
+                # write mp constraints
+                f.write("\n# mpConstraints ======================================\n")
+
+                offsets = self.assembler.AssembeledMesh.offset
+                masterNodes = zeros((num_nodes), dtype=bool)
+                
+                
+                nodeid_to_equal = {}
+                for constraint in self.constraint.mp:
+                    masterNodes[constraint.master_node - 1] = True
+                    nodeid_to_equal[constraint.master_node-1] = constraint.tag
+
+
+
+                for core in num_cores:
+                    eleids = where(cores == core)[0]
+                    nodes = []
+                    nodeCoreStatus = zeros((num_nodes), dtype=bool)
+
+                    for eleid in eleids:
+                        nodes.append(self.assembler.AssembeledMesh.cells[offsets[eleid]:offsets[eleid+1]])
+
+                    nodeCoreStatus[nodes] = True
+
+                    # filter nodeids if they are bth master and in the core
+                    nodeids = where(nodeCoreStatus & masterNodes)[0]
+                    
+                    if nodeids.shape[0] == 0:
+                        continue
+
+                    f.write(f"if {{$pid == {core}}} {{\n")
+                    for nodeid in nodeids:
+                        equalDOF = self.constraint.mp.get_constraint(nodeid_to_equal[nodeid])
+                        for slave in equalDOF.slave_nodes:
+                            if nodeCoreStatus[slave-1]:
+                                f.write(f"\t node {slave} {nodes[slave-1][0]} {nodes[slave-1][1]} {nodes[slave-1][2]} -ndf {ndfs[slave-1]}\n")
+                        
+                        f.write(f"\t {equalDOF.to_tcl()}\n")
+                    f.write("}\n")
+
+                if progress_callback:
+                    progress_callback(80, "writing constraints")
+
+
+                if progress_callback:
+                    progress_callback(100,"finished writing")
+
+
 
                     
+                    
 
+
+                    
 
                     
 
@@ -624,4 +695,20 @@ class MeshMaker:
             
             # create the equal dof
             for i, index in enumerate(indices):
+                # check that the index 1 is always has 9 dof and index 0 has 3 dof
+                i
+                ndf1 = self.assembler.AssembeledMesh.point_data["ndf"][index[0]]
+                ndf2 = self.assembler.AssembeledMesh.point_data["ndf"][index[1]]
+
+                if ndf1 == 3 and ndf2 == 9:
+                    masterNode = index[1] + 1
+                    slaveNode  = index[0] + 1
+                elif ndf1 == 9 and ndf2 == 3:
+                    masterNode = index[0] + 1
+                    slaveNode  = index[1] + 1   
+                else:
+                    raise ValueError("The PML layer node should have 9 dof and the original mesh should have at least 3 dof")
+                
+                self.constraint.mp.create_equal_dof(masterNode, [slaveNode],[1,2,3])
+
                 

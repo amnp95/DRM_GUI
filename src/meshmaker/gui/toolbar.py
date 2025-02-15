@@ -1,5 +1,7 @@
 from qtpy.QtGui import QAction
-from qtpy.QtWidgets import QMenuBar, QFileDialog, QMessageBox
+from qtpy.QtWidgets import QMenuBar, QFileDialog, QMessageBox, QProgressDialog,QApplication
+from qtpy.QtCore import Qt
+
 
 class ToolbarManager:
     def __init__(self, main_window):
@@ -46,28 +48,45 @@ class ToolbarManager:
             )
             
             if filename:
-                # Export the file
-                success = self.main_window.meshMaker.export_to_tcl(filename)
-                
-                if success:
-                    QMessageBox.information(
-                        self.main_window,
-                        "Success",
-                        "File exported successfully!"
-                    )
-                else:
-                    QMessageBox.warning(
-                        self.main_window,
-                        "Export Failed",
-                        "Failed to export the file. Please check the console for details."
-                    )
+                # Create and show progress dialog
+                progress = QProgressDialog("Exporting...", "Cancel", 0, 100, self.main_window)
+                progress.setWindowModality(Qt.WindowModal)
+                progress.setAutoClose(True)
+                progress.setAutoReset(True)
+                progress.show()  # Explicitly show the dialog
+                def progress_callback(value, message):
+                    progress.setValue(value)
+                    progress.setLabelText(message)  # Update the message in the progress dialog
+                    # Process events to ensure UI updates
+                    QApplication.processEvents()
+                    if progress.wasCanceled():
+                        raise Exception("Export canceled by user")
+
+                try:
+                    success = self.main_window.meshMaker.export_to_tcl(filename, progress_callback)
+                    
+                    if success:
+                        QMessageBox.information(
+                            self.main_window,
+                            "Success",
+                            "File exported successfully!"
+                        )
+                    else:
+                        QMessageBox.warning(
+                            self.main_window,
+                            "Export Failed",
+                            "Failed to export the file. Please check the console for details."
+                        )
+                finally:
+                    # Ensure progress dialog is closed even if export fails
+                    progress.close()
+                    
         except Exception as e:
             QMessageBox.critical(
                 self.main_window,
                 "Error",
                 f"An error occurred while exporting: {str(e)}"
             )
-    
     def export_to_vtk(self):
         """Handle the export to VTK action"""
         try:
