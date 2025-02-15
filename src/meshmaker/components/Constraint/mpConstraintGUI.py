@@ -8,7 +8,7 @@ from meshmaker.components.Constraint.mpConstraint import (
     mpConstraint, equalDOF, rigidLink, rigidDiaphragm, mpConstraintManager
 )
 
-class MPConstraintManagerTab(QWidget):
+class MPConstraintManagerTab(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         
