@@ -5,7 +5,7 @@ from meshmaker.components.Damping.dampingBase import DampingManager
 from meshmaker.components.Region.regionBase import RegionManager
 from meshmaker.components.Constraint.constraint import Constraint
 import os
-from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat, where
+from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat, where, isin
 from pyvista import Cube, MultiBlock, StructuredGrid
 import tqdm
 from pykdtree.kdtree import KDTree as pykdtree
@@ -202,49 +202,69 @@ class MeshMaker:
                 if progress_callback:
                     progress_callback(65, "writing constraints")
 
-                # write mp constraints
+
+                # Write mp constraints
                 f.write("\n# mpConstraints ======================================\n")
 
-                offsets = self.assembler.AssembeledMesh.offset
-                masterNodes = zeros((num_nodes), dtype=bool)
-                
-                
-                nodeid_to_equal = {}
+                # Precompute mappings
+                core_to_idx = {core: idx for idx, core in enumerate(num_cores)}
+                master_nodes = zeros(num_nodes, dtype=bool)
+                constraint_map = {}
                 for constraint in self.constraint.mp:
-                    masterNodes[constraint.master_node - 1] = True
-                    nodeid_to_equal[constraint.master_node-1] = constraint.tag
+                    master_id = constraint.master_node - 1
+                    master_nodes[master_id] = True
+                    constraint_map[master_id] = constraint
 
+                # Get mesh data
+                cells = self.assembler.AssembeledMesh.cell_connectivity
+                offsets = self.assembler.AssembeledMesh.offset
 
-
-                for core in num_cores:
+                for core_idx, core in enumerate(num_cores):
+                    # Get elements in current core
                     eleids = where(cores == core)[0]
-                    nodes = []
-                    nodeCoreStatus = zeros((num_nodes), dtype=bool)
-
-                    for eleid in eleids:
-                        nodes.append(self.assembler.AssembeledMesh.cells[offsets[eleid]:offsets[eleid+1]])
-
-                    nodeCoreStatus[nodes] = True
-
-                    # filter nodeids if they are bth master and in the core
-                    nodeids = where(nodeCoreStatus & masterNodes)[0]
+                    if eleids.size == 0:
+                        continue
                     
-                    if nodeids.shape[0] == 0:
+                    # Get all nodes in this core's elements
+                    starts = offsets[eleids]
+                    ends = offsets[eleids + 1]
+                    core_node_indices = concatenate([cells[s:e] for s, e in zip(starts, ends)])
+                    in_core = isin(arange(num_nodes), core_node_indices)
+                    
+                    # Find active masters in this core
+                    active_masters = where(master_nodes & in_core)[0]
+                    if not active_masters.size:
                         continue
 
                     f.write(f"if {{$pid == {core}}} {{\n")
-                    for nodeid in nodeids:
-                        equalDOF = self.constraint.mp.get_constraint(nodeid_to_equal[nodeid])
-                        for slave in equalDOF.slave_nodes:
-                            if nodeCoreStatus[slave-1]:
-                                f.write(f"\t node {slave} {nodes[slave-1][0]} {nodes[slave-1][1]} {nodes[slave-1][2]} -ndf {ndfs[slave-1]}\n")
-                        
-                        f.write(f"\t {equalDOF.to_tcl()}\n")
+                    
+                    # Process all slaves first to maintain node ordering
+                    # Get all slave nodes from active master nodes in a vectorized way
+                    all_slaves = concatenate([constraint_map[master_id].slave_nodes for master_id in active_masters])
+                    # Convert to 0-based indexing as slave nodes are stored with 1-based indexing
+                    all_slaves = array(all_slaves) - 1
+                    # Filter out slave nodes that are in the not in the curent core 
+                    valid_mask = (all_slaves < num_nodes) & (all_slaves >= 0) & ~in_core[all_slaves]
+                    valid_slaves = all_slaves[valid_mask]
+
+
+                    # Write unique slave nodes
+                    if valid_slaves.size > 0:
+                        for slave_id in unique(valid_slaves):
+                            node = nodes[slave_id]
+                            f.write(f"\tnode {slave_id+1} {node[0]} {node[1]} {node[2]} -ndf {ndfs[slave_id]}\n")
+
+
+
+                    # Write constraints after nodes
+                    for master_id in active_masters:
+                        f.write(f"\t{constraint_map[master_id].to_tcl()}\n")
+                    
                     f.write("}\n")
 
-                if progress_callback:
-                    progress_callback(80, "writing constraints")
-
+                    if progress_callback:
+                        progress = 65 + (core_idx + 1) / len(num_cores) * 15
+                        progress_callback(min(progress, 80), "writing constraints")
 
                 if progress_callback:
                     progress_callback(100,"finished writing")
