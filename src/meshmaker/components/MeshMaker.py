@@ -649,10 +649,15 @@ class MeshMaker:
         elif numPartitions == 1:
             Absorbing.cell_data["Core"] = full(Absorbing.n_cells, num_partitions + 1, dtype=int)
 
-        damping = self.damping.create_damping("frequency rayleigh", dampingFactor=rayleighDamping)
-        region  = self.region.create_region("elementRegion", damping=damping)
+        if kwargs['type'] == "Rayleigh":
+            damping = self.damping.create_damping("frequency rayleigh", dampingFactor=rayleighDamping)
+            region  = self.region.create_region("elementRegion", damping=damping)
+        if kwargs['type'] == "PML":
+            region = self.region.get_region(0) # get the default region
+        if kwargs['type'] == "ASDA":
+            raise NotImplementedError("ASDA absorbing layer is not implemented yet")
+    
         Absorbing.cell_data["Region"] = full(Absorbing.n_cells, region.tag, dtype=uint16)
-        
         mesh.cell_data["AbsorbingRegion"] = zeros(mesh.n_cells, dtype=uint16)
         # self.assembler.AbsorbingMesh = mesh.merge(Absorbing, 
         #                                           merge_points=mergeFlag, 
