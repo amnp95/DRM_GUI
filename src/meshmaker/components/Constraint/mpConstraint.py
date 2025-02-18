@@ -72,7 +72,7 @@ class equalDOF(mpConstraint):
         tcl_str = ""
         for slave in self.slave_nodes:
             dofs_str = " ".join(str(dof) for dof in self.dofs)
-            tcl_str += f"equalDOF {self.master_node} {slave} {dofs_str}\n"
+            tcl_str += f"equalDOF {self.master_node} {slave} {dofs_str}"
         return tcl_str
 
 
@@ -101,7 +101,7 @@ class rigidLink(mpConstraint):
     def to_tcl(self) -> str:
         tcl_str = ""
         for slave in self.slave_nodes:
-            tcl_str += f"rigidLink {self.type} {self.master_node} {slave}\n"
+            tcl_str += f"rigidLink {self.type} {self.master_node} {slave}"
         # return f"rigidLink {self.type} {self.master_node} {self.slave_nodes[0]}"
 
 
