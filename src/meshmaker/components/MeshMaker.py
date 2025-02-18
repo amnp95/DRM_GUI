@@ -268,18 +268,6 @@ class MeshMaker:
 
                 if progress_callback:
                     progress_callback(100,"finished writing")
-
-
-
-                    
-                    
-
-
-                    
-
-                    
-
-
                  
         return True
 
