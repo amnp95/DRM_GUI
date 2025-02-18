@@ -165,5 +165,167 @@ class StructuredRectangular3D(MeshPart):
         self.params = validated_params
 
 
+    @staticmethod
+    def get_Notes() -> Dict[str, Union[str, list]]:
+        """
+        Get notes for the mesh part type
+        
+        Returns:
+            Dict[str, Union[str, list]]: Dictionary containing notes about the mesh part
+        """
+        return {
+            "description": "Generates a structured 3D rectangular grid mesh with uniform spacing",
+            "usage": [
+                "Used for creating regular 3D meshes with equal spacing in each direction",
+                "Suitable for simple geometries where uniform mesh density is desired",
+                "Efficient for problems requiring regular grid structures"
+            ],
+            "limitations": [
+                "Only creates rectangular/cuboid domains",
+                "Cannot handle irregular geometries",
+                "Uniform spacing in each direction"
+            ],
+            "tips": [
+                "Ensure the number of cells (Nx, Ny, Nz) is appropriate for your analysis",
+                "Consider mesh density requirements for accuracy",
+                "Check that the domain bounds (Min/Max) cover your area of interest"
+            ]
+        }
+
 # Register the 3D Structured Rectangular mesh part type
-MeshPartRegistry.register_mesh_part_type('Volume mesh', 'Rectangular Grid', StructuredRectangular3D)
+MeshPartRegistry.register_mesh_part_type('Volume mesh', 'Uniform Rectangular Grid', StructuredRectangular3D)
+
+
+class CustomRectangularGrid3D(MeshPart):
+    """
+    Custom Rectangular Grid 3D Mesh Part
+    """
+    def __init__(self, user_name: str, element: Element, region: RegionBase=None,**kwargs):
+        """
+        Initialize a 3D Custom Rectangular Grid Mesh Part
+        
+        Args:
+            user_name (str): Unique user name for the mesh part
+            element (Optional[Element]): Associated element
+            region (Optional[RegionBase]): Associated region
+            **kwargs: Additional keyword arguments
+                x_coords (List[float]): List of X coordinates
+                y_coords (List[float]): List of Y coordinates
+                z_coords (List[float]): List of Z coordinates
+        """
+        super().__init__(
+            category='volume mesh',
+            mesh_type='Custom Rectangular Grid',
+            user_name=user_name,
+            element=element,
+            region=region
+        )
+        self.params = kwargs
+        self.generate_mesh()
+
+    def generate_mesh(self) -> pv.UnstructuredGrid:
+        """
+        Generate a custom rectangular grid mesh
+        
+        Returns:
+            pv.UnstructuredGrid: Generated mesh
+        """
+        x_coords = self.params.get('x_coords', None).split(',')
+        y_coords = self.params.get('y_coords', None).split(',')
+        z_coords = self.params.get('z_coords', None).split(',')
+        x = np.array(x_coords)
+        y = np.array(y_coords)
+        z = np.array(z_coords)
+        X, Y, Z = np.meshgrid(x, y, z, indexing='ij')
+        self.mesh = pv.StructuredGrid(X, Y, Z).cast_to_unstructured_grid()
+        del x, y, z, X, Y, Z
+        return self.mesh
+    
+    @classmethod
+    def get_parameters(cls) -> List[Tuple[str, str]]:
+        """
+        Get the list of parameters for this mesh part type.
+        
+        Returns:
+            List[str]: List of parameter names
+        """
+        return [
+            ("x_coords", "List of X coordinates (List[float] , comma separated, required)"),
+            ("y_coords", "List of Y coordinates (List[float] , comma separated, required)"),
+            ("z_coords", "List of Z coordinates (List[float] , comma separated, required)")
+        ]
+    
+    @classmethod
+    def validate_parameters(cls, **kwargs) -> Dict[str, Union[int, float, str, List[float]]]:
+        """
+        Check if the mesh part input parameters are valid.
+        
+        Returns:
+            Dict[str, Union[int, float, str, List[float]]: Dictionary of parmaeters with valid values
+        """
+        valid_params = {}
+        for param_name in ['x_coords', 'y_coords', 'z_coords']:
+            if param_name in kwargs:
+                try:
+                    valid_params[param_name] = [float(x) for x in kwargs[param_name].split(',')]
+                    # check if the values are in ascending order
+                    if not all(valid_params[param_name][i] < valid_params[param_name][i+1] for i in range(len(valid_params[param_name])-1)):
+                        raise ValueError(f"{param_name} must be in ascending order")
+                    valid_params[param_name] = kwargs[param_name]
+                except ValueError:
+                    raise ValueError(f"{param_name} must be a list of float numbers")
+            else:
+                raise ValueError(f"{param_name} parameter is required")
+        return valid_params
+
+    @classmethod
+    def get_compatible_elements(cls) -> List[str]:
+        """
+        Get the list of compatible element types
+        Returns:
+            List[str]: List of compatible element types
+        """
+        return ["stdBrick", "bbarBrick", "SSPbrick", "PML3D"]
+
+
+    def update_parameters(self, **kwargs) -> None:
+        """
+        Update mesh part parameters
+        
+        Args:
+            **kwargs: Keyword arguments to update
+        """
+        validated_params = self.validate_parameters(**kwargs)
+        self.params = validated_params
+
+
+    @staticmethod
+    def get_Notes() -> Dict[str, Union[str, list]]:
+        """
+        Get notes for the mesh part type
+        
+        Returns:
+            Dict[str, Union[str, list]]: Dictionary containing notes about the mesh part
+        """
+        return {
+            "description": "Generates a 3D rectangular grid mesh with custom spacing",
+            "usage": [
+                "Used for creating 3D meshes with variable spacing in each direction",
+                "Suitable for problems requiring non-uniform mesh density",
+                "Useful when specific grid point locations are needed"
+            ],
+            "limitations": [
+                "Only creates rectangular/cuboid domains",
+                "Cannot handle irregular geometries",
+                "Requires manual specification of all grid points"
+            ],
+            "tips": [
+                "Provide coordinates as comma-separated lists of float values",
+                "Ensure coordinates are in ascending order",
+                "Consider gradual transitions in spacing for better numerical results"
+            ]
+        }
+
+
+# Register the 3D Structured Rectangular mesh part type
+MeshPartRegistry.register_mesh_part_type('Volume mesh', 'Custom Rectangular Grid', CustomRectangularGrid3D)
