@@ -27,7 +27,7 @@ from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
     QDialog, QGroupBox, QMessageBox, QHeaderView, QGridLayout, 
-    QCheckBox, QDialogButtonBox, QColorDialog, QSlider
+    QCheckBox, QDialogButtonBox, QColorDialog, QSlider, QTabWidget, QTextEdit
 )
 from qtpy.QtCore import Qt
 
@@ -279,10 +279,13 @@ class MeshPartCreationDialog(QDialog):
         self.created_mesh_part = None
         self.created_element = None
         
-
-        # Main Layout
-        main_layout = QVBoxLayout(self)
-
+        # Main Layout as horizontal to put notes on right
+        main_layout = QHBoxLayout(self)
+        
+        # Left side content
+        left_panel = QWidget()
+        left_layout = QVBoxLayout(left_panel)
+        
         # Group Box for Username and Element
         user_element_group = QGroupBox("User and Element Selection")
         user_element_layout = QGridLayout(user_element_group)
@@ -310,7 +313,7 @@ class MeshPartCreationDialog(QDialog):
         user_element_layout.addWidget(self.region_combo, 2, 1)
         user_element_layout.addWidget(self.edit_region_btn, 2, 2)
 
-        main_layout.addWidget(user_element_group)
+        left_layout.addWidget(user_element_group)
 
         # Group Box for Dynamic Parameters
         parameters_group = QGroupBox("Mesh Part Parameters")
@@ -325,7 +328,7 @@ class MeshPartCreationDialog(QDialog):
             parameters_layout.addWidget(QLabel(f"({param_description})"), row, 2)
             self.parameter_inputs[param_name] = param_input
 
-        main_layout.addWidget(parameters_group)
+        left_layout.addWidget(parameters_group)
 
         # Buttons Layout
         buttons_layout = QHBoxLayout()
@@ -336,7 +339,62 @@ class MeshPartCreationDialog(QDialog):
         buttons_layout.addWidget(create_btn)
         buttons_layout.addWidget(cancel_btn)
 
-        main_layout.addLayout(buttons_layout)
+        left_layout.addLayout(buttons_layout)
+        
+        main_layout.addWidget(left_panel)
+        
+        # Right side notes panel
+        notes_panel = QWidget()
+        notes_layout = QVBoxLayout(notes_panel)
+        notes_layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Get notes from mesh part class
+        notes = self.mesh_part_class.get_Notes()
+        
+        # Create notebook for tabbed notes
+        notes_tabs = QTabWidget()
+        
+        # Description tab
+        desc_tab = QWidget()
+        desc_layout = QVBoxLayout(desc_tab)
+        desc_text = QTextEdit()
+        desc_text.setPlainText(notes["description"])
+        desc_text.setReadOnly(True)
+        desc_layout.addWidget(desc_text)
+        notes_tabs.addTab(desc_tab, "Description")
+        
+        # Usage tab
+        usage_tab = QWidget()
+        usage_layout = QVBoxLayout(usage_tab)
+        usage_text = QTextEdit()
+        usage_text.setPlainText("\n".join(f"• {item}" for item in notes["usage"]))
+        usage_text.setReadOnly(True)
+        usage_layout.addWidget(usage_text)
+        notes_tabs.addTab(usage_tab, "Usage")
+        
+        # Limitations tab
+        limits_tab = QWidget()
+        limits_layout = QVBoxLayout(limits_tab)
+        limits_text = QTextEdit()
+        limits_text.setPlainText("\n".join(f"• {item}" for item in notes["limitations"]))
+        limits_text.setReadOnly(True)
+        limits_layout.addWidget(limits_text)
+        notes_tabs.addTab(limits_tab, "Limitations")
+        
+        # Tips tab
+        tips_tab = QWidget()
+        tips_layout = QVBoxLayout(tips_tab)
+        tips_text = QTextEdit()
+        tips_text.setPlainText("\n".join(f"• {item}" for item in notes["tips"]))
+        tips_text.setReadOnly(True)
+        tips_layout.addWidget(tips_text)
+        notes_tabs.addTab(tips_tab, "Tips")
+        
+        notes_layout.addWidget(notes_tabs)
+        main_layout.addWidget(notes_panel)
+        
+        # Set a reasonable size for the dialog
+        self.resize(1000, 600)
 
     def refresh_regions(self):
         """
@@ -438,10 +496,14 @@ class MeshPartEditDialog(QDialog):
         super().__init__(parent)
         self.mesh_part = mesh_part
         self.setWindowTitle(f"Edit Mesh Part: {mesh_part.user_name}")
-    
-        # Main Layout
-        main_layout = QVBoxLayout(self)
-
+        
+        # Main Layout as horizontal to put notes on right
+        main_layout = QHBoxLayout(self)
+        
+        # Left side content
+        left_panel = QWidget()
+        left_layout = QVBoxLayout(left_panel)
+        
         # Group Box for Read-Only Information
         info_group = QGroupBox("Mesh Part Information")
         info_layout = QGridLayout(info_group)
@@ -482,7 +544,7 @@ class MeshPartEditDialog(QDialog):
         edit_region_btn.clicked.connect(self.open_region_dialog)
         info_layout.addWidget(edit_region_btn, 4, 2)
 
-        main_layout.addWidget(info_group)
+        left_layout.addWidget(info_group)
 
         # Group Box for Dynamic Parameters
         parameters_group = QGroupBox("Mesh Part Parameters")
@@ -498,7 +560,7 @@ class MeshPartEditDialog(QDialog):
             parameters_layout.addWidget(QLabel(f"({param_description})"), row, 2)
             self.parameter_inputs[param_name] = param_input
 
-        main_layout.addWidget(parameters_group)
+        left_layout.addWidget(parameters_group)
 
         # Buttons Layout
         buttons_layout = QHBoxLayout()
@@ -510,7 +572,62 @@ class MeshPartEditDialog(QDialog):
         buttons_layout.addWidget(save_btn)
         buttons_layout.addWidget(cancel_btn)
 
-        main_layout.addLayout(buttons_layout)
+        left_layout.addLayout(buttons_layout)
+        
+        main_layout.addWidget(left_panel)
+        
+        # Right side notes panel
+        notes_panel = QWidget()
+        notes_layout = QVBoxLayout(notes_panel)
+        notes_layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Get notes from mesh part class
+        notes = type(mesh_part).get_Notes()
+        
+        # Create notebook for tabbed notes
+        notes_tabs = QTabWidget()
+        
+        # Description tab
+        desc_tab = QWidget()
+        desc_layout = QVBoxLayout(desc_tab)
+        desc_text = QTextEdit()
+        desc_text.setPlainText(notes["description"])
+        desc_text.setReadOnly(True)
+        desc_layout.addWidget(desc_text)
+        notes_tabs.addTab(desc_tab, "Description")
+        
+        # Usage tab
+        usage_tab = QWidget()
+        usage_layout = QVBoxLayout(usage_tab)
+        usage_text = QTextEdit()
+        usage_text.setPlainText("\n".join(f"• {item}" for item in notes["usage"]))
+        usage_text.setReadOnly(True)
+        usage_layout.addWidget(usage_text)
+        notes_tabs.addTab(usage_tab, "Usage")
+        
+        # Limitations tab
+        limits_tab = QWidget()
+        limits_layout = QVBoxLayout(limits_tab)
+        limits_text = QTextEdit()
+        limits_text.setPlainText("\n".join(f"• {item}" for item in notes["limitations"]))
+        limits_text.setReadOnly(True)
+        limits_layout.addWidget(limits_text)
+        notes_tabs.addTab(limits_tab, "Limitations")
+        
+        # Tips tab
+        tips_tab = QWidget()
+        tips_layout = QVBoxLayout(tips_tab)
+        tips_text = QTextEdit()
+        tips_text.setPlainText("\n".join(f"• {item}" for item in notes["tips"]))
+        tips_text.setReadOnly(True)
+        tips_layout.addWidget(tips_text)
+        notes_tabs.addTab(tips_tab, "Tips")
+        
+        notes_layout.addWidget(notes_tabs)
+        main_layout.addWidget(notes_panel)
+        
+        # Set a reasonable size for the dialog
+        self.resize(1000, 600)
 
     def refresh_regions(self):
         """
@@ -566,6 +683,76 @@ class MeshPartEditDialog(QDialog):
                                                     style="surface",
                                                     opacity=1.0,
                                                     show_edges=True)
+
+class MeshPartNotesDialog(QDialog):
+    """Dialog to display mesh part type notes"""
+    def __init__(self, parent, mesh_part_class):
+        super().__init__(parent)
+        self.setWindowTitle(f"Notes - {mesh_part_class.__name__}")
+        self.setGeometry(600, 400)
+        
+        # Make dialog modal
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+        
+        # Create main frame with padding
+        main_frame = QVBoxLayout(self)
+        
+        # Get notes from mesh part class
+        notes = mesh_part_class.get_Notes()
+        
+        # Create notebook for tabbed view
+        notebook = QTabWidget()
+        main_frame.addWidget(notebook)
+        
+        # Description tab
+        desc_frame = QWidget()
+        notebook.addTab(desc_frame, "Description")
+        desc_layout = QVBoxLayout(desc_frame)
+        desc_text = QTextEdit()
+        desc_text.setPlainText(notes["description"])
+        desc_text.setReadOnly(True)
+        desc_layout.addWidget(desc_text)
+        
+        # Usage tab
+        usage_frame = QWidget()
+        notebook.addTab(usage_frame, "Usage")
+        usage_layout = QVBoxLayout(usage_frame)
+        usage_text = QTextEdit()
+        for item in notes["usage"]:
+            usage_text.append(f"• {item}\n")
+        usage_text.setReadOnly(True)
+        usage_layout.addWidget(usage_text)
+        
+        # Limitations tab
+        limits_frame = QWidget()
+        notebook.addTab(limits_frame, "Limitations")
+        limits_layout = QVBoxLayout(limits_frame)
+        limits_text = QTextEdit()
+        for item in notes["limitations"]:
+            limits_text.append(f"• {item}\n")
+        limits_text.setReadOnly(True)
+        limits_layout.addWidget(limits_text)
+        
+        # Tips tab
+        tips_frame = QWidget()
+        notebook.addTab(tips_frame, "Tips")
+        tips_layout = QVBoxLayout(tips_frame)
+        tips_text = QTextEdit()
+        for item in notes["tips"]:
+            tips_text.append(f"• {item}\n")
+        tips_text.setReadOnly(True)
+        tips_layout.addWidget(tips_text)
+        
+        # Close button
+        close_btn = QPushButton("Close")
+        close_btn.clicked.connect(self.accept)
+        close_layout = QHBoxLayout()
+        close_layout.addStretch()
+        close_layout.addWidget(close_btn)
+        close_layout.addStretch()
+        tips_layout.addLayout(close_layout)
+
 if __name__ == "__main__":
     '''
     Test the MeshPartManagerTab GUI
