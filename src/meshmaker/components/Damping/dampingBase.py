@@ -384,8 +384,8 @@ class FrequencyRayleighDamping(RayleighDamping):
         # calculating the damping factors
         omega1 = 2 * 3.141592653589 * f1
         omega2 = 2 * 3.141592653589 * f2
-        alphaM = 2 * omega1 * omega2 / (omega1 + omega2)
-        betaK = 2 / (omega1 + omega2)
+        alphaM = 2 * dampingFactor * omega1 * omega2 / (omega1 + omega2)
+        betaK  = (2 * dampingFactor) / (omega1 + omega2)
 
         return {
             "f1": f1,
