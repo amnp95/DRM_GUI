@@ -709,14 +709,13 @@ class MeshMaker:
             # create the equal dof
             for i, index in enumerate(indices):
                 # check that the index 1 is always has 9 dof and index 0 has 3 dof
-                i
                 ndf1 = self.assembler.AssembeledMesh.point_data["ndf"][index[0]]
                 ndf2 = self.assembler.AssembeledMesh.point_data["ndf"][index[1]]
 
-                if ndf1 == 3 and ndf2 == 9:
+                if ndf1 == 9 and ndf2 == 3:
                     masterNode = index[1] + 1
                     slaveNode  = index[0] + 1
-                elif ndf1 == 9 and ndf2 == 3:
+                elif ndf1 == 3 and ndf2 == 9:
                     masterNode = index[0] + 1
                     slaveNode  = index[1] + 1   
                 else:
