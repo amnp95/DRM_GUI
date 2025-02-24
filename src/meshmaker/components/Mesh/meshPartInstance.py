@@ -79,7 +79,7 @@ class StructuredRectangular3D(MeshPart):
         Y = np.linspace(y_min, y_max, ny + 1)
         Z = np.linspace(z_min, z_max, nz + 1)
         X, Y, Z = np.meshgrid(X, Y, Z, indexing='ij')
-        self.mesh = pv.StructuredGrid(X, Y, Z)
+        self.mesh = pv.StructuredGrid(X, Y, Z).cast_to_unstructured_grid()
         return self.mesh
 
 

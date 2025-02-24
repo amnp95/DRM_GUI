@@ -252,7 +252,7 @@ class ElementRegion(RegionBase):
 
 
     def to_tcl(self):
-        cmd = f"region {self.tag}"
+        cmd = f"eval \"region {self.tag}"
         if len(self.element_range) > 0:
             cmd += " -eleRange {} {}".format(*self.element_range)
             if self.element_only:
@@ -260,7 +260,7 @@ class ElementRegion(RegionBase):
         elif len(self.elements) > 0:
             cmd += " -ele" + ("Only" if self.element_only else "")
             # cmd += " " + " \\\n".join(" ".join(str(e) for e in self.elements[i:i+10]) for i in range(0, len(self.elements), 10))
-            cmd += " \\ \n{\n" + "\n".join("\t" + " ".join(str(e) for e in self.elements[i:i+10]) for i in range(0, len(self.elements), 10)) + "\n}"
+            cmd += " {\n" + "\n".join("\t" + " ".join(str(e) for e in self.elements[i:i+10]) for i in range(0, len(self.elements), 10)) + "\n}"
 
 
         if self.damping:
@@ -268,6 +268,7 @@ class ElementRegion(RegionBase):
                 cmd += F" -rayleigh {self.damping.alphaM} {self.damping.betaK} {self.damping.betaKInit} {self.damping.betaKComm}"
             else:
                 cmd += f" -damping {self.damping.tag}"
+        cmd += "\""
         return cmd
     
 
