@@ -209,11 +209,17 @@ class MeshMaker:
                 # Precompute mappings
                 core_to_idx = {core: idx for idx, core in enumerate(num_cores)}
                 master_nodes = zeros(num_nodes, dtype=bool)
-                constraint_map = {}
+                slave_nodes = zeros(num_nodes, dtype=bool)
+                constraint_map = {}; # map master node to constraint
+                constraint_map_rev = {}; # map slave node to master node
                 for constraint in self.constraint.mp:
                     master_id = constraint.master_node - 1
                     master_nodes[master_id] = True
                     constraint_map[master_id] = constraint
+                    for slave_id in constraint.slave_nodes:
+                        slave_id = slave_id - 1
+                        slave_nodes[slave_id] = True
+                        constraint_map_rev[slave_id] = master_id
 
                 # Get mesh data
                 cells = self.assembler.AssembeledMesh.cell_connectivity
@@ -231,8 +237,15 @@ class MeshMaker:
                     core_node_indices = concatenate([cells[s:e] for s, e in zip(starts, ends)])
                     in_core = isin(arange(num_nodes), core_node_indices)
                     
-                    # Find active masters in this core
+                    # Find active masters and slaves in this core
                     active_masters = where(master_nodes & in_core)[0]
+                    active_slaves = where(slave_nodes & in_core)[0]
+
+                    # add the master nodes that are not in the core
+                    for slave_id in active_slaves:
+                        active_masters = concatenate([active_masters, constraint_map_rev[slave_id]])
+                    active_masters = unique(active_masters)
+
                     if not active_masters.size:
                         continue
 
@@ -243,13 +256,26 @@ class MeshMaker:
                     all_slaves = concatenate([constraint_map[master_id].slave_nodes for master_id in active_masters])
                     # Convert to 0-based indexing as slave nodes are stored with 1-based indexing
                     all_slaves = array(all_slaves) - 1
-                    # Filter out slave nodes that are in the not in the curent core 
+
+                    # Filter out slave nodes that are not in the curent core 
                     valid_mask = (all_slaves < num_nodes) & (all_slaves >= 0) & ~in_core[all_slaves]
                     valid_slaves = all_slaves[valid_mask]
+
+                    # Filter out master nodes that are not in the current core
+                    valid_mask = ~in_core[active_masters]
+                    valid_masters = active_masters[valid_mask]
+
+                    # Write unique master nodes
+                    if valid_masters.size > 0:
+                        f.write("\t# Master nodes\n")
+                        for master_id in valid_masters:
+                            node = nodes[master_id]
+                            f.write(f"\tnode {master_id+1} {node[0]} {node[1]} {node[2]} -ndf {ndfs[master_id]}\n")
 
 
                     # Write unique slave nodes
                     if valid_slaves.size > 0:
+                        f.write("\t# Slave nodes\n")
                         for slave_id in unique(valid_slaves):
                             node = nodes[slave_id]
                             f.write(f"\tnode {slave_id+1} {node[0]} {node[1]} {node[2]} -ndf {ndfs[slave_id]}\n")
@@ -505,7 +531,6 @@ class MeshMaker:
                    [ 1,  1, -1]]
 
         Absorbing = MultiBlock()
-        # cellCentersCopy = cellCenters.copy()
 
         total_cells = clipped.n_cells
         TQDM_progress = tqdm.tqdm(range(total_cells))
@@ -659,12 +684,19 @@ class MeshMaker:
     
         Absorbing.cell_data["Region"] = full(Absorbing.n_cells, region.tag, dtype=uint16)
         mesh.cell_data["AbsorbingRegion"] = zeros(mesh.n_cells, dtype=uint16)
-        # self.assembler.AbsorbingMesh = mesh.merge(Absorbing, 
-        #                                           merge_points=mergeFlag, 
-        #                                           tolerance=1e-6, 
-        #                                           inplace=False, 
-        #                                           progress_bar=True)
-        # self.assembler.AbsorbingMesh.set_active_scalars("AbsorbingRegion")
+
+
+        # make the core for the interface elemnts the same as the original mesh
+        if kwargs['type'] == "PML":
+            absorbingCenters = Absorbing.cell_centers(vertex=True).points
+            tree = pykdtree(absorbingCenters)
+            distances, indices = tree.query(cellCentersCoords, k=1)
+            
+
+
+
+
+
         self.assembler.AssembeledMesh = mesh.merge(Absorbing, 
                                                   merge_points=mergeFlag, 
                                                   tolerance=1e-6, 
