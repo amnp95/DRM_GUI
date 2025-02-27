@@ -243,7 +243,7 @@ class MeshMaker:
 
                     # add the master nodes that are not in the core
                     for slave_id in active_slaves:
-                        active_masters = concatenate([active_masters, constraint_map_rev[slave_id]])
+                        active_masters = concatenate([active_masters, [constraint_map_rev[slave_id]]])
                     active_masters = unique(active_masters)
 
                     if not active_masters.size:
