@@ -165,12 +165,18 @@ class MeshPart(ABC):
 
 # Optional: Add to registry if needed
 class MeshPartRegistry:
+    _instance = None
     _mesh_part_types = {
         "Volume mesh" : {},
         "Surface mesh" : {},
         "Line mesh" : {},
         "Point mesh" : {}
     }
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(MeshPartRegistry, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
     
     @classmethod
     def register_mesh_part_type(cls, category: str ,name: str, mesh_part_class: Type[MeshPart]):
@@ -196,4 +202,8 @@ class MeshPartRegistry:
         if mesh_part_type not in cls._mesh_part_types.get(category, {}):
             raise KeyError(f"Mesh part type {mesh_part_type} not registered in {category}")
         
-        return cls._mesh_part_types[mesh_part_type](user_name, element, **kwargs)
+        return cls._mesh_part_types[category][mesh_part_type](user_name, element, **kwargs)
+    
+    @staticmethod
+    def get_mesh_part(user_name: str) -> MeshPart:
+        return MeshPart._mesh_parts.get(user_name, None)
