@@ -261,7 +261,7 @@ class ElementEditDialog(QDialog):
         for i, material in enumerate(self.materials):
             self.material_combo.addItem(f"{material.user_name} (Category: {material.material_type} Type: {material.material_name})")
             if current_material and current_material.user_name == material.user_name:
-                selected_index = i
+                selected_index = i + 1
         
         self.material_combo.setCurrentIndex(selected_index)
         form_layout.addRow("Assign Material:", self.material_combo)
