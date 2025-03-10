@@ -266,63 +266,22 @@ class PML3DElement(Element):
         """
         if len(nodes) != 8:
             raise ValueError("PML3D element requires 8 nodes")
-        keys = self.get_parameters()
-        eta = self.params.get('eta')
-        gamma = self.params.get('gamma')
-        beta = self.params.get('beta')
-        thickness = self.params.get('PML_Thickness')
-        m = self.params.get('m')
-        R = self.params.get('R')
-        RD_half_width_x = self.params.get('RD_half_width_x')
-        RD_half_width_y = self.params.get('RD_half_width_y')
-        RD_Depth = self.params.get('RD_Depth')
-        E = self._material.get_param('E')
-        nu = self._material.get_param('nu')
-        rho = self._material.get_param('rho')
         elestr = f"element PML {tag} "
         elestr += " ".join(str(node) for node in nodes)
-        elestr += f" {eta} {beta} {gamma}"
-        elestr += f" {E} {nu} {rho} 6 {thickness} {m} {R} {RD_half_width_x} {RD_half_width_y} {RD_Depth} 0.0 0.0"
+        elestr += f" {self._material.tag} {self.params.get('PML_Thickness')} {self.params.get('meshType')} "
+        elestr += " ".join(str(val) for val in self.params.get('meshTypeParameters', []))
+        elestr += f" -Newmark {self.params.get('gamma')} {self.params.get('beta')} {self.params.get('eta')} {self.params.get('ksi')}"
+        
+        alpha0 = self.params.get("alpha0", None)
+        beta0 = self.params.get("beta0", None)
+        if alpha0 is not None and beta0 is not None:
+            elestr += f" -alphabeta {alpha0} {beta0}"
+        else:
+            elestr += f" -m {self.params['m']} -R {self.params['R']}"
+            if self.params.get('Cp', None) is not None:
+                elestr += f" -Cp {self.params['Cp']}"
         return elestr
-    
-    @classmethod
-    def create_string(cls, tag :int ,nodes: List[int], material: Material, **kwargs) -> str:
-        """
-        Generate the OpenSees element string representation from class method and parameters.
 
-        This method creates an element string directly without instantiating the class.
-        Primarily used for automated absorbing layer generation in the GUI, where creating 
-        individual instances for each element would be inefficient.
-
-        Args:
-            tag (int): Element tag number
-            nodes (List[int]): List of node numbers defining the element
-            material (Material): Material properties for the element
-            **kwargs: Additional parameters required for PML element
-
-        Returns:
-            str: OpenSees element string representation
-        """
-        if len(nodes) != 8:
-            raise ValueError("PML3D element requires 8 nodes")
-        # validate parameters first
-        kwargs = cls.validate_element_parameters(**kwargs)
-        eta = kwargs.get('eta')
-        gamma = kwargs.get('gamma')
-        beta = kwargs.get('beta')
-        thickness = kwargs.get('PML_Thickness')
-        m = kwargs.get('m')
-        R = kwargs.get('R')
-        RD_half_width_x = kwargs.get('RD_half_width_x')
-        RD_half_width_y = kwargs.get('RD_half_width_y')
-        RD_Depth = kwargs.get('RD_Depth')
-        E = material.get_param('E')
-        nu = material.get_param('nu')
-        rho = material.get_param('rho')
-        elestr = f"element PML {tag} "
-        elestr += " ".join(str(node) for node in nodes)
-        elestr += f" {eta} {beta} {gamma}"
-        elestr += f" {E} {nu} {rho} 6 {thickness} {m} {R} {RD_half_width_x} {RD_half_width_y} {RD_Depth} 0.0 0.0"
 
 
     @classmethod
@@ -333,7 +292,11 @@ class PML3DElement(Element):
         Returns:
             List[str]: Parameters for stdBrick element
         """
-        return ["gamma", "beta", "eta", "PML_Thickness", "m", "R", "RD_half_width_x", "RD_half_width_y", "RD_Depth"]
+        return ["PML_Thickness", 
+                "meshType", "meshTypeParameters",
+                "gamma", "beta", "eta", "ksi", 
+                "m", "R", "Cp", 
+                "alpha0", "beta0"]
 
     @classmethod
     def get_description(cls) -> List[str]:
@@ -343,15 +306,19 @@ class PML3DElement(Element):
         Returns:
             List[str]: List of parameter descriptions
         """
-        return ['Newmark gamma parameter',
-                'Newmark beta parameter',
-                'Newmark eta parameter',
-                'Thickness of the PML around regular domain',
-                'PML parameter (m=2 is recommended)',
-                'PML parameter (R=1e-8 is recommended)',
-                'Distance from the PML-regular domain border to the origin along the x-axis',
-                'Distance from the PML-regular domain border to the origin along the y-axis',
-                'Distance from the PML-regular domain border to the origin along the z-axis']
+        return ['Thickness of the PML layer',
+            'Type of mesh for the PML layer (put 1:"General", 2:"Box")',
+            'Parameters for the mesh type (comma separated)',
+            "<html>&gamma; parameter for Newmark integration (optional, default=1./2.)",
+            "<html>&beta; parameter for Newmark integration (optional, default=1./4.)",
+            "<html>&eta; parameter for Newmark integration (optional, default=1./12.)",
+            "<html>&xi; parameter for Newmark integration (optional, default=1./48.)",
+            'm parameter for Newmark integration (optional, default=2.0)',
+            'R parameter for Newmark integration (optional, default=1e-8)',
+            'Cp parameter for Newmark integration (optional, calculated from material properties)',
+            "&alpha;<sub>0</sub> PML parameter (optional, default=Calculated from m, R, Cp)",
+            "&beta;<sub>0</sub> PML parameter (optional, default=Calculated from m, R, Cp)"]
+    
     
     @classmethod
     def get_possible_dofs(cls) -> List[str]:
@@ -373,7 +340,10 @@ class PML3DElement(Element):
         Returns:
             Dict[str, Union[int, float, str]]: Dictionary of parameter values
         """
-        return {key: self.params.get(key) for key in keys}
+        
+        vals = {key: self.params.get(key) for key in keys}
+        vals['meshTypeParameters'] = ", ".join(str(val) for val in vals['meshTypeParameters'])
+        return vals
     
     def update_values(self, values: Dict[str, Union[int, float, str]]) -> None:
         """
@@ -404,78 +374,90 @@ class PML3DElement(Element):
         Returns:
             Dict[str, Union[int, float, str]]: Dictionary of parmaeters with valid values
         """
-        if "gamma" in kwargs:
-            try:
-                kwargs['gamma'] = float(kwargs['gamma'])
-            except ValueError:
-                raise ValueError("gamma must be a float number")
-        else:
-            raise ValueError("gamma must be specified")
-        
-        if "beta" in kwargs:
-            try:
-                kwargs['beta'] = float(kwargs['beta'])
-            except ValueError:
-                raise ValueError("beta must be a float number")
-        else:
-            raise ValueError("beta must be specified")
-        
-        if "eta" in kwargs:
-            try:
-                kwargs['eta'] = float(kwargs['eta'])
-            except ValueError:
-                raise ValueError("eta must be a float number")
-        else:
-            raise ValueError("eta must be specified")
-        
-        if "PML_Thickness" in kwargs:
-            try:
-                kwargs['PML_Thickness'] = float(kwargs['PML_Thickness'])
-            except ValueError:
-                raise ValueError("PML_Thickness must be a float number")
-        else:
+
+        if 'PML_Thickness' not in kwargs:
             raise ValueError("PML_Thickness must be specified")
+        try:
+            kwargs['PML_Thickness'] = float(kwargs['PML_Thickness'])
+        except (ValueError, TypeError):
+            raise ValueError("PML_Thickness must be a float number")
         
-        if "m" in kwargs:
-            try:
-                kwargs['m'] = float(kwargs['m'])
-            except ValueError:
-                raise ValueError("m must be a float number")
-        else:
-            raise ValueError("m must be specified")
+        kwargs['meshType'] = kwargs.get('meshType', None)   
+        if kwargs['meshType'] is None:
+            raise ValueError("meshType must be specified")
+        if kwargs['meshType'].lower() not in ["box", "general"]:    
+            raise ValueError("meshType must be either 'box' or 'general'")
+                   
+
+        try:
+            kwargs['meshTypeParameters'] = kwargs.get('meshTypeParameters', None)
+            if kwargs['meshTypeParameters'] is None:
+                raise ValueError("meshTypeParameters must be specified")
+            else:
+                values = kwargs['meshTypeParameters'].split(",")
+                # delete the space from the end of beginning and end of the string
+                values = [value.strip() for value in values]
+                
+                if kwargs['meshType'].lower() in ["box", "general"]:
+                    if len(values) < 6:
+                        raise ValueError("meshTypeParameters must be a list of 6 comma separated float numbers")
+                    values = values[:6]
+                    for i in range(6):
+                        values[i] = float(values[i])
+                
+                kwargs['meshTypeParameters'] = values
+        except ValueError:
+            raise ValueError("meshTypeParameters must be a list of  6 comma separated float numbers")
         
-        if "R" in kwargs:
-            try:
-                kwargs['R'] = float(kwargs['R'])
-            except ValueError:
-                raise ValueError("R must be a float number")
-        else:
-            raise ValueError("R must be specified")
+
+        try:
+            kwargs['gamma'] = float(kwargs.get('gamma', 1./2.))
+        except ValueError:
+            raise ValueError("gamma must be a float number")
         
-        if "RD_half_width_x" in kwargs:
-            try:
-                kwargs['RD_half_width_x'] = float(kwargs['RD_half_width_x'])
-            except ValueError:
-                raise ValueError("RD_half_width_x must be a float number")
-        else:
-            raise ValueError("RD_half_width_x must be specified")
+        try:
+            kwargs['beta'] = float(kwargs.get('beta', 1./4.))
+        except ValueError:
+            raise ValueError("beta must be a float number")
         
-        if "RD_half_width_y" in kwargs:
-            try:
-                kwargs['RD_half_width_y'] = float(kwargs['RD_half_width_y'])
-            except ValueError:
-                raise ValueError("RD_half_width_y must be a float number")
-        else:
-            raise ValueError("RD_half_width_y must be specified")
-    
-        if "RD_Depth" in kwargs:
-            try:
-                kwargs['RD_Depth'] = float(kwargs['RD_Depth'])
-            except ValueError:
-                raise ValueError("RD_Depth must be a float number")
-        else:
-            raise ValueError("RD_Depth must be specified")
+        try:
+            kwargs['eta'] = float(kwargs.get('eta', 1./12.))
+        except ValueError:
+            raise ValueError("eta must be a float number")
         
+        try:
+            kwargs['ksi'] = float(kwargs.get('ksi', 1./48.))
+        except ValueError:
+            raise ValueError("ksi must be a float number")
+        
+        try:
+            kwargs['m'] = float(kwargs.get('m', 2.0))
+        except ValueError:
+            raise ValueError("m must be a float number")
+        
+        try:
+            kwargs['R'] = float(kwargs.get('R', 1e-8))
+        except ValueError:
+            raise ValueError("R must be a float number")
+        
+
+        if "Cp" in kwargs:
+            try:
+                kwargs['Cp'] = float(kwargs['Cp'])
+            except ValueError:
+                raise ValueError("Cp must be a float number")
+        
+        
+        
+        
+        if "alpha0" in kwargs or "beta0" in kwargs:
+            if "alpha0" not in kwargs or "beta0" not in kwargs:
+                raise ValueError("Both alpha0 and beta0 must be specified together")
+            try:
+                kwargs["alpha0"] = float(kwargs["alpha0"])
+                kwargs["beta0"] = float(kwargs["beta0"])
+            except ValueError:
+                raise ValueError("alpha0 and beta0 must be float numbers")
         return kwargs
     
 
