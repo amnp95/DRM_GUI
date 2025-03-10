@@ -4,6 +4,8 @@ from meshmaker.components.Assemble.Assembler import Assembler
 from meshmaker.components.Damping.dampingBase import DampingManager
 from meshmaker.components.Region.regionBase import RegionManager
 from meshmaker.components.Constraint.constraint import Constraint
+from meshmaker.components.Mesh.meshPartBase import MeshPartRegistry
+from meshmaker.components.Mesh.meshPartInstance import *
 import os
 from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat, where, isin
 from pyvista import Cube, MultiBlock, StructuredGrid
@@ -51,6 +53,7 @@ class MeshMaker:
         self.damping = DampingManager()
         self.region = RegionManager()
         self.constraint = Constraint()
+        self.meshPart = MeshPartRegistry()
 
     @classmethod
     def get_instance(cls, **kwargs):
@@ -624,9 +627,12 @@ class MeshMaker:
 
             # create PML Element
             xmin, xmax, ymin, ymax, zmin, zmax = mesh.bounds
-            RD_half_width_x = 0.5 * (xmax - xmin)
-            RD_half_width_y = 0.5 * (ymax - ymin)
-            RD_Depth = 1.0 * (zmax - zmin)
+            RD_width_x = (xmax - xmin)
+            RD_width_y = (ymax - ymin)
+            RD_Depth = (zmax - zmin)
+            RD_center_x = (xmax + xmin) / 2
+            RD_center_y = (ymax + ymin) / 2
+            RD_center_z = zmax
 
             # check all the elements should of type stdBrick or bbarBrick or SSPbrick
             for tag in EleTags:
@@ -645,12 +651,16 @@ class MeshMaker:
                                             gamma = 0.5,
                                             beta  = 0.25,
                                             eta   = 1./12.0,
+                                            ksi   = 1.0/48.0,
                                             PML_Thickness = numLayers*dx,
                                             m = 2,
                                             R = 1.0e-8,
-                                            RD_half_width_x = RD_half_width_x,
-                                            RD_half_width_y = RD_half_width_y,
-                                            RD_Depth = RD_Depth)
+                                            meshType = "Box",
+                                            meshTypeParameters = [RD_center_x, RD_center_y, RD_center_z, RD_width_x, RD_width_y, RD_Depth],
+                                            alpha0 = None,
+                                            beta0 = None,
+                                            Cp = None,
+                                            )
 
                 PMLeleTag = PMLele.tag
                 PMLTags[tag] = PMLeleTag
