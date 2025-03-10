@@ -268,9 +268,9 @@ class PML3DElement(Element):
             raise ValueError("PML3D element requires 8 nodes")
         elestr = f"element PML {tag} "
         elestr += " ".join(str(node) for node in nodes)
-        elestr += f" {self._material.tag} {self.params.get('PML_Thickness')} {self.params.get('meshType')} "
+        elestr += f' {self._material.tag} {self.params.get('PML_Thickness')} "{self.params.get('meshType')}" '
         elestr += " ".join(str(val) for val in self.params.get('meshTypeParameters', []))
-        elestr += f" -Newmark {self.params.get('gamma')} {self.params.get('beta')} {self.params.get('eta')} {self.params.get('ksi')}"
+        elestr += f' "-Newmark" {self.params.get('gamma')} {self.params.get('beta')} {self.params.get('eta')} {self.params.get('ksi')}'
         
         alpha0 = self.params.get("alpha0", None)
         beta0 = self.params.get("beta0", None)
