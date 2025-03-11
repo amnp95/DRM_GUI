@@ -1,14 +1,11 @@
 from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QGroupBox, QSpinBox, QLabel, QDialogButtonBox, QColorDialog,
     QComboBox, QPushButton, QGridLayout, QMessageBox, QProgressDialog, QApplication,
-    QCheckBox, QSlider, QDialog
+    QSlider, QDialog, QDoubleSpinBox, QCheckBox
 )
 from qtpy.QtCore import Qt
 from meshmaker.gui.plotter import PlotterManager
 from meshmaker.components.MeshMaker import MeshMaker
-from meshmaker.components.MeshMaker import MeshMaker
-from meshmaker.gui.plotter import PlotterManager
-from qtpy.QtCore import Qt, QTimer
 from qtpy.QtWidgets import QSizePolicy
 
 class DRMGUI(QWidget):
@@ -69,15 +66,27 @@ class DRMGUI(QWidget):
         self.absorbingLayerNumLayersLineEdit.setValue(5)
         AbsorbingLayerlayout.addWidget(self.absorbingLayerNumLayersLineEdit, 4, 1)
 
+        AbsorbingLayerlayout.addWidget(QLabel("Damping Factor"), 5, 0)
+        self.dampingFactorSpinBox = QDoubleSpinBox()
+        self.dampingFactorSpinBox.setMinimum(0.0)
+        self.dampingFactorSpinBox.setMaximum(1.0)
+        self.dampingFactorSpinBox.setSingleStep(0.01)
+        self.dampingFactorSpinBox.setValue(0.95)
+        AbsorbingLayerlayout.addWidget(self.dampingFactorSpinBox, 5, 1)
+
+        # Add match damping checkbox
+        self.matchDampingCheckbox = QCheckBox("Match Damping with Regular Domain")
+        AbsorbingLayerlayout.addWidget(self.matchDampingCheckbox, 6, 0, 1, 2)
+
         # Add a button to add the absorbing layer
         self.addAbsorbingLayerButton = QPushButton("Add Absorbing Layer")
         self.addAbsorbingLayerButton.setStyleSheet("background-color: green")
-        AbsorbingLayerlayout.addWidget(self.addAbsorbingLayerButton, 5, 0, 1, 2)
+        AbsorbingLayerlayout.addWidget(self.addAbsorbingLayerButton, 7, 0, 1, 2)
         self.addAbsorbingLayerButton.clicked.connect(self.add_absorbing_layer)
 
         # Add view options button
         self.viewOptionsButton = QPushButton("View Options")
-        AbsorbingLayerlayout.addWidget(self.viewOptionsButton, 6, 0, 1, 2)
+        AbsorbingLayerlayout.addWidget(self.viewOptionsButton, 8, 0, 1, 2)
         self.viewOptionsButton.clicked.connect(self.show_view_options_dialog)
 
         
@@ -115,6 +124,8 @@ class DRMGUI(QWidget):
         partition_algorithm = self.absorbingLayerPartitionCombox.currentText()
         num_partitions = self.absorbingLayerPartitionLineEdit.value()
         num_layers = self.absorbingLayerNumLayersLineEdit.value()
+        damping_factor = self.dampingFactorSpinBox.value()
+        match_damping = self.matchDampingCheckbox.isChecked()
 
         # Create and configure progress dialog
         self.progress_dialog = QProgressDialog(self)
@@ -136,23 +147,18 @@ class DRMGUI(QWidget):
                 num_partitions,
                 partition_algorithm,
                 geometry,
-                damping=0.95,
+                damping=damping_factor,
+                matchDamping=match_damping,
                 progress_callback=self.update_progress,
                 type=absorbing_layer_type,
             )
 
-
-
             self.plotter.clear()
             self.meshmaker.assembler.AssembeledActor = self.plotter.add_mesh(
                 self.meshmaker.assembler.AssembeledMesh,
-                # color="royalblue",
                 opacity=1.0,
-                show_edges=True,)
-
-
-
-
+                show_edges=True,
+            )
             
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e), QMessageBox.Ok)
@@ -163,12 +169,6 @@ class DRMGUI(QWidget):
         if hasattr(self, 'progress_dialog'):
             self.progress_dialog.setValue(int(value))
             QApplication.processEvents()
-
-
-
-
-
-
 
 class AbsorbingMeshViewOptionsDialog(QDialog):
     """
