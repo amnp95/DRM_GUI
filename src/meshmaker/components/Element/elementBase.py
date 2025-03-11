@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Type, Optional, Union
 from meshmaker.components.Material.materialBase import Material
 
+
 class Element(ABC):
     """
     Base abstract class for all elements with material association
@@ -355,6 +356,8 @@ class ElementRegistry:
         return Element.get_element_by_tag(tag)
     
     
+
+from meshmaker.components.Element.elementsOpenSees import *
 
     
 
