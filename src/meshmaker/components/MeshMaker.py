@@ -1,4 +1,4 @@
-from meshmaker.components.Material.materialManager import MaterialManager
+from meshmaker.components.Material.materialBase import MaterialManager
 from meshmaker.components.Element.elementBase import Element, ElementRegistry
 from meshmaker.components.Assemble.Assembler import Assembler
 from meshmaker.components.Damping.dampingBase import DampingManager
