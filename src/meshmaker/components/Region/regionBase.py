@@ -259,13 +259,11 @@ class ElementRegion(RegionBase):
                 cmd += "Only"
         elif len(self.elements) > 0:
             cmd += " -ele" + ("Only" if self.element_only else "")
-            # cmd += " " + " \\\n".join(" ".join(str(e) for e in self.elements[i:i+10]) for i in range(0, len(self.elements), 10))
-            cmd += " {\n" + "\n".join("\t" + " ".join(str(e) for e in self.elements[i:i+10]) for i in range(0, len(self.elements), 10)) + "\n}"
-
+            cmd += " " + " ".join(str(e) for e in self.elements)
 
         if self.damping:
             if self.damping.get_Type() in ["RayleighDamping", "Frequency Rayleigh"]:
-                cmd += F" -rayleigh {self.damping.alphaM} {self.damping.betaK} {self.damping.betaKInit} {self.damping.betaKComm}"
+                cmd += f" -rayleigh {self.damping.alphaM} {self.damping.betaK} {self.damping.betaKInit} {self.damping.betaKComm}"
             else:
                 cmd += f" -damping {self.damping.tag}"
         cmd += "\""
