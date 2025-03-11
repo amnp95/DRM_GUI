@@ -353,7 +353,9 @@ class MeshMaker:
             self.model_path = model_path
 
 
-    def addAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, geometry:str, rayleighDamping:float=0.95 ,progress_callback=None, **kwargs):
+    def addAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, geometry:str, 
+                          rayleighDamping:float=0.95, matchDamping:bool=False
+                          ,progress_callback=None, **kwargs):
         """
         Add a rectangular absorbing layer to the model
         This function is used to add an absorbing layer to the assembled mesh that has a rectangular shape 
@@ -364,6 +366,8 @@ class MeshMaker:
             numPartitions (int): Number of partitions to divide the absorbing layer
             partitionAlgo (str): The algorithm to partition the absorbing layer could be ["kd-tree", "metis"]
             geometry (str): The geometry of the absorbing layer could be ["Rectangular", "Cylindrical"]
+            rayleighDamping (float): The damping factor for the Rayleigh damping, default is 0.95
+            matchDamping (bool): If True, the damping of the absorbing layer should match the damping of the original mesh, default is False
             kwargs (dict): 
                 type (str): Type of the absorbing layer could be ["PML", "Rayleigh", "ASDA"]
 
@@ -400,12 +404,16 @@ class MeshMaker:
             raise NotImplementedError("Metis partitioning algorithm is not implemented yet")
         
         if geometry == "Rectangular":
-            return self._addRectangularAbsorbingLayer(numLayers, numPartitions, partitionAlgo,  rayleighDamping, progress_callback, **kwargs)
+            return self._addRectangularAbsorbingLayer(numLayers, numPartitions, partitionAlgo,  
+                                                      rayleighDamping, matchDamping,
+                                                      progress_callback, **kwargs)
         elif geometry == "Cylindrical":
             raise NotImplementedError("Cylindrical absorbing layer is not implemented yet")
         
 
-    def _addRectangularAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, rayleighDamping:float = 0.95 ,progress_callback=None, **kwargs):
+    def _addRectangularAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, 
+                                      rayleighDamping:float = 0.95 , matchDamping:bool=False, 
+                                      progress_callback=None, **kwargs):
         """
         Add a rectangular absorbing layer to the model
         This function is used to add an absorbing layer to the assembled mesh that has a rectangular shape 
@@ -415,6 +423,8 @@ class MeshMaker:
             numLayers (int): Number of layers to add
             numPartitions (int): Number of partitions to divide the absorbing layer
             partitionAlgo (str): The algorithm to partition the absorbing layer could be ["kd-tree", "metis"]
+            rayleighDamping (float): The damping factor for the Rayleigh damping, default is 0.95
+            matchDamping (bool): If True, the damping of the absorbing layer should match the damping of the original mesh, default is False
             kwargs (dict): 
                 type (str): Type of the absorbing layer could be ["PML", "Rayleigh", "ASDA"]
 
@@ -447,7 +457,8 @@ class MeshMaker:
             raise NotImplementedError("Metis partitioning algorithm is not implemented yet")
         
         if 'type' not in kwargs:
-            raise ValueError("Type of the absorbing layer should be provided")
+            raise ValueError("Type of the absorbing layer should be provided \n \
+                             The type of the absorbing layer could be one of ['PML', 'Rayleigh', 'ASDA']")
         else:
             if kwargs['type'] not in ["PML", "Rayleigh", "ASDA"]:
                 raise ValueError("Type of the absorbing layer should be one of ['PML', 'Rayleigh', 'ASDA']")
@@ -494,27 +505,27 @@ class MeshMaker:
         bottom = abs(cellCentersCoords[:, 2] - zmin) < eps
 
         # create the mask
-        clipped.cell_data['Region'] = zeros(clipped.n_cells, dtype=int)
-        clipped.cell_data['Region'][left]                   = 1
-        clipped.cell_data['Region'][right]                  = 2
-        clipped.cell_data['Region'][front]                  = 3
-        clipped.cell_data['Region'][back]                   = 4
-        clipped.cell_data['Region'][bottom]                 = 5
-        clipped.cell_data['Region'][left & front]           = 6
-        clipped.cell_data['Region'][left & back ]           = 7
-        clipped.cell_data['Region'][right & front]          = 8
-        clipped.cell_data['Region'][right & back]           = 9
-        clipped.cell_data['Region'][left & bottom]          = 10
-        clipped.cell_data['Region'][right & bottom]         = 11
-        clipped.cell_data['Region'][front & bottom]         = 12
-        clipped.cell_data['Region'][back & bottom]          = 13
-        clipped.cell_data['Region'][left & front & bottom]  = 14
-        clipped.cell_data['Region'][left & back & bottom]   = 15
-        clipped.cell_data['Region'][right & front & bottom] = 16
-        clipped.cell_data['Region'][right & back & bottom]  = 17
+        clipped.cell_data['absRegion'] = zeros(clipped.n_cells, dtype=int)
+        clipped.cell_data['absRegion'][left]                   = 1
+        clipped.cell_data['absRegion'][right]                  = 2
+        clipped.cell_data['absRegion'][front]                  = 3
+        clipped.cell_data['absRegion'][back]                   = 4
+        clipped.cell_data['absRegion'][bottom]                 = 5
+        clipped.cell_data['absRegion'][left & front]           = 6
+        clipped.cell_data['absRegion'][left & back ]           = 7
+        clipped.cell_data['absRegion'][right & front]          = 8
+        clipped.cell_data['absRegion'][right & back]           = 9
+        clipped.cell_data['absRegion'][left & bottom]          = 10
+        clipped.cell_data['absRegion'][right & bottom]         = 11
+        clipped.cell_data['absRegion'][front & bottom]         = 12
+        clipped.cell_data['absRegion'][back & bottom]          = 13
+        clipped.cell_data['absRegion'][left & front & bottom]  = 14
+        clipped.cell_data['absRegion'][left & back & bottom]   = 15
+        clipped.cell_data['absRegion'][right & front & bottom] = 16
+        clipped.cell_data['absRegion'][right & back & bottom]  = 17
 
 
-        cellCenters.cell_data['Region'] = clipped.cell_data['Region']
+        cellCenters.cell_data['absRegion'] = clipped.cell_data['absRegion']
         normals = [[-1,  0,  0],
                    [ 1,  0,  0],
                    [ 0, -1,  0],
@@ -541,6 +552,7 @@ class MeshMaker:
         material_tags = []
         absorbing_regions = []
         element_tags = []
+        region_tags = []
         
         for i in range(total_cells ):
             cell = clipped.get_cell(i)
@@ -549,10 +561,11 @@ class MeshMaker:
             dy = abs((ymax - ymin))
             dz = abs((zmax - zmin))
 
-            region = clipped.cell_data['Region'][i]
+            absregion = clipped.cell_data['absRegion'][i]
             MaterialTag = clipped.cell_data['MaterialTag'][i]
             ElementTag = clipped.cell_data['ElementTag'][i]
-            normal = array(normals[region-1])
+            regionTag  = clipped.cell_data['Region'][i]
+            normal = array(normals[absregion-1])
             coords = cell.points + normal * numLayers * array([dx, dy, dz])
             coords = concatenate([coords, cell.points])
             xmin, ymin, zmin = coords.min(axis=0)
@@ -564,8 +577,9 @@ class MeshMaker:
             tmpmesh = StructuredGrid(X,Y,Z)
 
             material_tags.append(MaterialTag)
-            absorbing_regions.append(region)
+            absorbing_regions.append(absregion)
             element_tags.append(ElementTag)
+            region_tags.append(regionTag)
 
             Absorbing.append(tmpmesh)
             TQDM_progress.update(1)
@@ -581,6 +595,7 @@ class MeshMaker:
         MaterialTag     = zeros(total_cells, dtype=uint16)
         AbsorbingRegion = zeros(total_cells, dtype=uint16)
         ElementTag      = zeros(total_cells, dtype=uint16)
+        RegionTag       = zeros(total_cells, dtype=uint16)
 
         offset = 0
         for i, block in enumerate(Absorbing):
@@ -588,6 +603,7 @@ class MeshMaker:
             MaterialTag[offset:offset+n_cells] = repeat(material_tags[i], n_cells).astype(uint16)
             AbsorbingRegion[offset:offset+n_cells] = repeat(absorbing_regions[i], n_cells).astype(uint16)
             ElementTag[offset:offset+n_cells] = repeat(element_tags[i], n_cells).astype(uint16)
+            RegionTag[offset:offset+n_cells] = repeat(region_tags[i], n_cells).astype(uint16)
             offset += n_cells
             if progress_callback:
                 progress_callback(( i + 1) / Absorbing.n_blocks  * 20 + 80)
@@ -596,6 +612,7 @@ class MeshMaker:
         Absorbing.cell_data['MaterialTag'] = MaterialTag
         Absorbing.cell_data['AbsorbingRegion'] = AbsorbingRegion
         Absorbing.cell_data['ElementTag'] = ElementTag
+        Absorbing.cell_data['Region'] = RegionTag
         del MaterialTag, AbsorbingRegion, ElementTag
 
         Absorbingidx = Absorbing.find_cells_within_bounds(cellCenters.bounds)
@@ -612,11 +629,13 @@ class MeshMaker:
         MatTag = Absorbing.cell_data['MaterialTag']
         EleTag = Absorbing.cell_data['ElementTag']
         RegTag = Absorbing.cell_data['AbsorbingRegion']
+        RegionTag = Absorbing.cell_data['Region']
 
         Absorbing.clear_data()
         Absorbing.cell_data['MaterialTag'] = MatTag
         Absorbing.cell_data['ElementTag'] = EleTag
         Absorbing.cell_data['AbsorbingRegion'] = RegTag
+        Absorbing.cell_data['Region'] = RegionTag
         Absorbing.point_data['ndf'] = full(Absorbing.n_points, ndof, dtype=uint16)
 
         Absorbing.cell_data["Core"] = full(Absorbing.n_cells, 0, dtype=int)
@@ -685,14 +704,19 @@ class MeshMaker:
             Absorbing.cell_data["Core"] = full(Absorbing.n_cells, num_partitions + 1, dtype=int)
 
         if kwargs['type'] == "Rayleigh":
-            damping = self.damping.create_damping("frequency rayleigh", dampingFactor=rayleighDamping)
-            region  = self.region.create_region("elementRegion", damping=damping)
+            if not matchDamping:
+                damping = self.damping.create_damping("frequency rayleigh", dampingFactor=rayleighDamping)
+                region  = self.region.create_region("elementRegion", damping=damping)
+                Absorbing.cell_data["Region"]  = full(Absorbing.n_cells, region.tag, dtype=uint16)
+        
         if kwargs['type'] == "PML":
-            region = self.region.get_region(0) # get the default region
+            if not matchDamping:
+                region = self.region.get_region(0) # get the default region
+                Absorbing.cell_data["Region"]  = full(Absorbing.n_cells, region.tag, dtype=uint16)
+
         if kwargs['type'] == "ASDA":
             raise NotImplementedError("ASDA absorbing layer is not implemented yet")
     
-        Absorbing.cell_data["Region"] = full(Absorbing.n_cells, region.tag, dtype=uint16)
         mesh.cell_data["AbsorbingRegion"] = zeros(mesh.n_cells, dtype=uint16)
 
 
