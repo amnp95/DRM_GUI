@@ -202,7 +202,7 @@ class MeshPartRegistry:
         if mesh_part_type not in cls._mesh_part_types.get(category, {}):
             raise KeyError(f"Mesh part type {mesh_part_type} not registered in {category}")
         
-        return cls._mesh_part_types[category][mesh_part_type](user_name, element, **kwargs)
+        return cls._mesh_part_types[category][mesh_part_type](user_name, element, region,**kwargs)
     
     @staticmethod
     def get_mesh_part(user_name: str) -> MeshPart:
