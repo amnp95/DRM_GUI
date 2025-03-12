@@ -711,7 +711,8 @@ class MeshMaker:
         
         if kwargs['type'] == "PML":
             if not matchDamping:
-                region = self.region.get_region(0) # get the default region
+                damping = self.damping.create_damping("frequency rayleigh", dampingFactor=rayleighDamping)
+                region  = self.region.create_region("elementRegion", damping=damping)
                 Absorbing.cell_data["Region"]  = full(Absorbing.n_cells, region.tag, dtype=uint16)
 
         if kwargs['type'] == "ASDA":
