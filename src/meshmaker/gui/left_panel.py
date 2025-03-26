@@ -7,6 +7,7 @@ from meshmaker.components.Assemble.AssemblerGUI import AssemblyManagerTab
 from meshmaker.components.Damping.dampingGUI import DampingManagerTab
 from meshmaker.components.Region.regionGUI import RegionManagerTab
 from meshmaker.components.Constraint.mpConstraintGUI import MPConstraintManagerTab
+from meshmaker.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
 from .drmGUI import DRMGUI
 
 class LeftPanel(QFrame):
@@ -109,6 +110,11 @@ class LeftPanel(QFrame):
         self.manage_tab.layout.addWidget(ConstraintButton)
         self.manage_tab.setLayout(self.manage_tab.layout)
         ConstraintButton.clicked.connect(lambda: MPConstraintManagerTab(parent=self).exec_())
+
+        TimeSeriesButton = QPushButton("Manage Time Series")
+        self.manage_tab.layout.addWidget(TimeSeriesButton)
+        self.manage_tab.setLayout(self.manage_tab.layout)
+        TimeSeriesButton.clicked.connect(lambda: TimeSeriesManagerTab(parent=self).exec_())
         
 
 
