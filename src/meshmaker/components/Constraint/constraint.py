@@ -1,4 +1,5 @@
 from meshmaker.components.Constraint.mpConstraint import mpConstraintManager
+from meshmaker.components.Constraint.spConstraint import SPConstraintManager
 
 class Constraint:
     """
@@ -31,3 +32,4 @@ class Constraint:
             self.initialized = True
             # Initialize your singleton class here
             self.mp = mpConstraintManager()
+            self.sp = SPConstraintManager()
