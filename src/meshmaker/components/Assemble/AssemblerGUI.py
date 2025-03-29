@@ -132,7 +132,8 @@ class AssemblyManagerTab(QWidget):
                 assembler.AssembeledActor = self.plotter.add_mesh(  assembler.AssembeledMesh, 
                                         opacity=1.0,
                                         scalars = "Core",
-                                        style='surface')
+                                        style='surface',
+                                        show_edges=True,)
         except ValueError as e:
             QMessageBox.warning(self, "Input Error",
                                 f"Invalid input: {str(e)}\nPlease enter appropriate values.")
