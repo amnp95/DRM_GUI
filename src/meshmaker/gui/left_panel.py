@@ -8,6 +8,7 @@ from meshmaker.components.Damping.dampingGUI import DampingManagerTab
 from meshmaker.components.Region.regionGUI import RegionManagerTab
 from meshmaker.components.Constraint.mpConstraintGUI import MPConstraintManagerTab
 from meshmaker.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
+from meshmaker.components.Constraint.spConstraintGUI import SPConstraintManagerTab
 from .drmGUI import DRMGUI
 
 class LeftPanel(QFrame):
@@ -96,25 +97,21 @@ class LeftPanel(QFrame):
         # Manage Tab
         self.manage_tab.layout = QVBoxLayout()
         self.manage_tab.layout.setAlignment(Qt.AlignTop)
-        DampingButton = QPushButton("Manage Dampings")
-        self.manage_tab.layout.addWidget(DampingButton)
-        self.manage_tab.setLayout(self.manage_tab.layout)
-        DampingButton.clicked.connect(lambda: DampingManagerTab(parent=self).exec_())
 
-        RegionButton = QPushButton("Manage Regions")
-        self.manage_tab.layout.addWidget(RegionButton)
-        self.manage_tab.setLayout(self.manage_tab.layout)
-        RegionButton.clicked.connect(lambda: RegionManagerTab(parent=self).exec_())
+        # Helper function to create and add buttons
+        def add_manage_button(label, callback):
+            button = QPushButton(label)
+            button.clicked.connect(callback)
+            self.manage_tab.layout.addWidget(button)
 
-        ConstraintButton = QPushButton("Manage Constraints")
-        self.manage_tab.layout.addWidget(ConstraintButton)
-        self.manage_tab.setLayout(self.manage_tab.layout)
-        ConstraintButton.clicked.connect(lambda: MPConstraintManagerTab(parent=self).exec_())
+        # Add buttons for managing different components
+        add_manage_button("Manage Dampings", lambda: DampingManagerTab(parent=self).exec_())
+        add_manage_button("Manage Regions", lambda: RegionManagerTab(parent=self).exec_())
+        add_manage_button("Manage MP Constraints", lambda: MPConstraintManagerTab(parent=self).exec_())
+        add_manage_button("Manage SP Constraints", lambda: SPConstraintManagerTab(parent=self).exec_())
+        add_manage_button("Manage Time Series", lambda: TimeSeriesManagerTab(parent=self).exec_())
 
-        TimeSeriesButton = QPushButton("Manage Time Series")
-        self.manage_tab.layout.addWidget(TimeSeriesButton)
         self.manage_tab.setLayout(self.manage_tab.layout)
-        TimeSeriesButton.clicked.connect(lambda: TimeSeriesManagerTab(parent=self).exec_())
         
 
 
