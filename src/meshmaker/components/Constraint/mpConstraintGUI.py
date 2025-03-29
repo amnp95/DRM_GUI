@@ -233,7 +233,8 @@ class MPConstraintManagerTab(QDialog):
                 QApplication.processEvents()
                 
                 if progress.wasCanceled():
-                    break
+                    progress.close()
+                    return  # Exit the function early to avoid partial updates
         
         # Update status label with explicit page information
         self.status_label.setText(f"Total Constraints: {count} | Showing {len(page_constraints)} constraints | Currently on Page {self.current_page} of {self.total_pages}")
