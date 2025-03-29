@@ -256,15 +256,14 @@ class DOFSelectionWidget(QWidget):
         
         # Add common patterns like fix translations only or rotations only
         # Only show these if we have at least 6 DOFs (typical 3D model)
-        if num_dofs >= 6:
-            trans_btn = QPushButton("Translations Only")
-            trans_btn.clicked.connect(self.set_translations_only)
-            
-            rot_btn = QPushButton("Rotations Only")
-            rot_btn.clicked.connect(self.set_rotations_only)
-            
-            patterns_layout.addWidget(trans_btn)
-            patterns_layout.addWidget(rot_btn)
+        trans_btn = QPushButton("Translations Only")
+        trans_btn.clicked.connect(self.set_translations_only)
+        
+        rot_btn = QPushButton("Rotations Only")
+        rot_btn.clicked.connect(self.set_rotations_only)
+        
+        patterns_layout.addWidget(trans_btn)
+        patterns_layout.addWidget(rot_btn)
         
         patterns_layout.addWidget(all_btn)
         patterns_layout.addWidget(none_btn)
@@ -336,18 +335,14 @@ class SPConstraintCreationDialog(QDialog):
         # DOF count selection
         dof_count_layout = QHBoxLayout()
         dof_count_layout.addWidget(QLabel("Number of DOFs:"))
-        
-        self.dof_count_combo = QComboBox()
-        self.dof_count_combo.addItems(["3", "6", "9", "Other"])
-        self.dof_count_combo.currentIndexChanged.connect(self.handle_dof_count_change)
-        dof_count_layout.addWidget(self.dof_count_combo)
-        
-        self.custom_dof_count = QLineEdit()
-        self.custom_dof_count.setValidator(self.int_validator)
-        self.custom_dof_count.setVisible(False)
-        self.custom_dof_count.textChanged.connect(self.update_dof_widget)
-        dof_count_layout.addWidget(self.custom_dof_count)
-        
+
+        # Direct text input for DOF count
+        self.dof_count_input = QLineEdit()
+        self.dof_count_input.setValidator(self.int_validator)
+        self.dof_count_input.setText("6")  # Default to 6 DOFs
+        self.dof_count_input.textChanged.connect(self.update_dof_widget)
+        dof_count_layout.addWidget(self.dof_count_input)
+
         layout.addLayout(dof_count_layout)
         
         # Create placeholder for DOF selection widget that will be updated dynamically
@@ -381,21 +376,16 @@ class SPConstraintCreationDialog(QDialog):
         # Clear existing widget if it exists
         if hasattr(self, 'dof_widget'):
             # Remove the old widget from layout
-            for i in reversed(range(self.dof_widget_container.count())):
-                item = self.dof_widget_container.itemAt(i)
-                if item.widget():
-                    item.widget().deleteLater()
+            self.dof_widget.setParent(None)
+            self.dof_widget.deleteLater()
         
         # Get the DOF count
-        if self.dof_count_combo.currentText() == "Other":
-            try:
-                dof_count = int(self.custom_dof_count.text())
-                if dof_count <= 0:
-                    dof_count = 6  # Default
-            except ValueError:
+        try:
+            dof_count = int(self.dof_count_input.text())
+            if dof_count <= 0:
                 dof_count = 6  # Default
-        else:
-            dof_count = int(self.dof_count_combo.currentText())
+        except ValueError:
+            dof_count = 6  # Default
         
         # Create new DOF widget
         self.dof_widget = DOFSelectionWidget(num_dofs=dof_count)
@@ -441,16 +431,8 @@ class SPConstraintCreationDialog(QDialog):
             # Get the DOF from the mesh
             ndf = self.meshmaker.assembler.AssembeledMesh.point_data["ndf"][node_idx]
             
-            # Update DOF selection
-            if ndf == 3:
-                self.dof_count_combo.setCurrentText("3")
-            elif ndf == 6:
-                self.dof_count_combo.setCurrentText("6")
-            elif ndf == 9:
-                self.dof_count_combo.setCurrentText("9")
-            else:
-                self.dof_count_combo.setCurrentText("Other")
-                self.custom_dof_count.setText(str(ndf))
+            # # Update DOF selection
+            # self.dof_count_input.setText(str(ndf))
             
             QMessageBox.information(self, "Node DOF", f"Node {node_tag} has {ndf} degrees of freedom.")
             
