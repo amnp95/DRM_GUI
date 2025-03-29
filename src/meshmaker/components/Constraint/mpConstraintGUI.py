@@ -2,7 +2,8 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
-    QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout
+    QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout, QMenu,
+    QSizePolicy
 )
 from meshmaker.components.Constraint.mpConstraint import (
     mpConstraint, equalDOF, rigidLink, rigidDiaphragm, mpConstraintManager
@@ -12,8 +13,14 @@ class MPConstraintManagerTab(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         
+        # Configure dialog size and properties
+        self.setWindowTitle("MP Constraints Manager")
+        self.resize(800, 600)  # Set initial size to be large enough
+        
         # Main layout
         layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+        layout.setContentsMargins(10, 10, 10, 10)
         
         # Constraint type selection
         type_layout = QGridLayout()
@@ -33,11 +40,30 @@ class MPConstraintManagerTab(QDialog):
         
         # Constraints table
         self.constraints_table = QTableWidget()
-        self.constraints_table.setColumnCount(7)  # Tag, Type, Master, Slaves, Parameters, Edit, Delete
-        self.constraints_table.setHorizontalHeaderLabels(["Tag", "Type", "Master", "Slaves", "Parameters", "Edit", "Delete"])
+        self.constraints_table.setColumnCount(5)  # Tag, Type, Master, Slaves, Parameters
+        self.constraints_table.setHorizontalHeaderLabels(["Tag", "Type", "Master", "Slaves", "Parameters"])
+        
+        # Configure table appearance
+        self.constraints_table.verticalHeader().setVisible(False)  # Hide row numbers/index
+        self.constraints_table.setMinimumWidth(750)  # Set minimum width for the table
+        self.constraints_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+        # Set horizontal header to resize properly
         header = self.constraints_table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setStretchLastSection(True)  # Last section fills remaining space
+        header.setSectionResizeMode(QHeaderView.Interactive)  # Allow manual resizing
+        
+        # Set default column widths
+        self.constraints_table.setColumnWidth(0, 60)   # Tag column
+        self.constraints_table.setColumnWidth(1, 120)  # Type column
+        self.constraints_table.setColumnWidth(2, 100)  # Master column
+        self.constraints_table.setColumnWidth(3, 200)  # Slaves column
+        self.constraints_table.setColumnWidth(4, 250)  # Parameters column
+        
+        # Configure double-click and context menu (right-click)
+        self.constraints_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.constraints_table.customContextMenuRequested.connect(self.show_context_menu)
+        self.constraints_table.cellDoubleClicked.connect(self.handle_double_click)
         
         layout.addWidget(self.constraints_table)
         
@@ -68,6 +94,7 @@ class MPConstraintManagerTab(QDialog):
             # Tag
             tag_item = QTableWidgetItem(str(constraint.tag))
             tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
+            tag_item.setData(Qt.UserRole, constraint.tag)  # Store tag for reference
             self.constraints_table.setItem(row, 0, tag_item)
             
             # Type
@@ -97,16 +124,43 @@ class MPConstraintManagerTab(QDialog):
             params_item = QTableWidgetItem(params)
             params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
             self.constraints_table.setItem(row, 4, params_item)
-            
-            # Edit button
-            edit_btn = QPushButton("Edit")
-            edit_btn.clicked.connect(lambda _, c=constraint: self.open_constraint_edit_dialog(c))
-            self.constraints_table.setCellWidget(row, 5, edit_btn)
 
-            # Delete button
-            delete_btn = QPushButton("Delete")
-            delete_btn.clicked.connect(lambda _, tag=constraint.tag: self.delete_constraint(tag))
-            self.constraints_table.setCellWidget(row, 6, delete_btn)
+    def handle_double_click(self, row, column):
+        """Handle double-click on a table cell to edit constraint"""
+        tag_item = self.constraints_table.item(row, 0)
+        if tag_item:
+            tag = tag_item.data(Qt.UserRole)
+            constraint = mpConstraint._constraints.get(tag)
+            if constraint:
+                self.open_constraint_edit_dialog(constraint)
+
+    def show_context_menu(self, position):
+        """Show context menu for right-clicked table cell"""
+        # Get the row under the mouse
+        row = self.constraints_table.rowAt(position.y())
+        if row < 0:
+            return
+        
+        # Get the constraint tag
+        tag_item = self.constraints_table.item(row, 0)
+        if not tag_item:
+            return
+        
+        tag = tag_item.data(Qt.UserRole)
+        
+        # Create context menu
+        menu = QMenu(self)
+        edit_action = menu.addAction("Edit Constraint")
+        delete_action = menu.addAction("Delete Constraint")
+        
+        # Connect actions
+        action = menu.exec_(self.constraints_table.mapToGlobal(position))
+        if action == edit_action:
+            constraint = mpConstraint._constraints.get(tag)
+            if constraint:
+                self.open_constraint_edit_dialog(constraint)
+        elif action == delete_action:
+            self.delete_constraint(tag)
 
     def open_constraint_edit_dialog(self, constraint):
         """Open dialog to edit existing constraint"""
@@ -263,6 +317,22 @@ if __name__ == '__main__':
     from qtpy.QtWidgets import QApplication
     import sys
     
+    # Create some sample constraints for testing
+    mp_manager = mpConstraintManager()
+    
+    # Create equalDOF constraints
+    mp_manager.create_equal_dof(master_node=1, slave_nodes=[2, 3], dofs=[1, 2, 3])
+    mp_manager.create_equal_dof(master_node=5, slave_nodes=[6], dofs=[4, 5, 6])
+    
+    # Create rigidLink constraints
+    mp_manager.create_rigid_link(type_str="bar", master_node=10, slave_nodes=[11, 12, 13])
+    mp_manager.create_rigid_link(type_str="beam", master_node=20, slave_nodes=[21, 22])
+    
+    # Create rigidDiaphragm constraints
+    mp_manager.create_rigid_diaphragm(direction=3, master_node=30, slave_nodes=[31, 32, 33, 34])
+    mp_manager.create_rigid_diaphragm(direction=2, master_node=40, slave_nodes=[41, 42, 43])
+    
+    # Start the application
     app = QApplication(sys.argv)
     manager_tab = MPConstraintManagerTab()
     manager_tab.show()
