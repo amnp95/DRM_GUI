@@ -3,11 +3,12 @@ from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
     QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout, QMenu,
-    QSizePolicy
+    QSizePolicy, QProgressDialog, QApplication, QSpinBox
 )
 from meshmaker.components.Constraint.mpConstraint import (
     mpConstraint, equalDOF, rigidLink, rigidDiaphragm, mpConstraintManager
 )
+import time
 
 class MPConstraintManagerTab(QDialog):
     def __init__(self, parent=None):
@@ -15,7 +16,7 @@ class MPConstraintManagerTab(QDialog):
         
         # Configure dialog size and properties
         self.setWindowTitle("MP Constraints Manager")
-        self.resize(800, 600)  # Set initial size to be large enough
+        self.resize(800, 600)
         
         # Main layout
         layout = QVBoxLayout(self)
@@ -38,41 +39,90 @@ class MPConstraintManagerTab(QDialog):
         
         layout.addLayout(type_layout)
         
+        # Status information showing total constraints
+        self.status_label = QLabel("Loading constraints...")
+        layout.addWidget(self.status_label)
+        
         # Constraints table
         self.constraints_table = QTableWidget()
         self.constraints_table.setColumnCount(5)  # Tag, Type, Master, Slaves, Parameters
         self.constraints_table.setHorizontalHeaderLabels(["Tag", "Type", "Master", "Slaves", "Parameters"])
         
         # Configure table appearance
-        self.constraints_table.verticalHeader().setVisible(False)  # Hide row numbers/index
-        self.constraints_table.setMinimumWidth(750)  # Set minimum width for the table
+        self.constraints_table.verticalHeader().setVisible(False)  # Hide row numbers
+        self.constraints_table.setMinimumWidth(750)
         self.constraints_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        # Set horizontal header to resize properly
+        # Set horizontal header properties
         header = self.constraints_table.horizontalHeader()
-        header.setStretchLastSection(True)  # Last section fills remaining space
-        header.setSectionResizeMode(QHeaderView.Interactive)  # Allow manual resizing
+        header.setStretchLastSection(True)
+        header.setSectionResizeMode(QHeaderView.Interactive)
         
         # Set default column widths
         self.constraints_table.setColumnWidth(0, 60)   # Tag column
         self.constraints_table.setColumnWidth(1, 120)  # Type column
         self.constraints_table.setColumnWidth(2, 100)  # Master column
         self.constraints_table.setColumnWidth(3, 200)  # Slaves column
-        self.constraints_table.setColumnWidth(4, 250)  # Parameters column
         
-        # Configure double-click and context menu (right-click)
+        # Configure double-click and context menu
         self.constraints_table.setContextMenuPolicy(Qt.CustomContextMenu)
         self.constraints_table.customContextMenuRequested.connect(self.show_context_menu)
         self.constraints_table.cellDoubleClicked.connect(self.handle_double_click)
         
         layout.addWidget(self.constraints_table)
         
-        # Refresh constraints button
+        # Pagination controls
+        pagination_layout = QHBoxLayout()
+        
+        # Page size selection
+        pagination_layout.addWidget(QLabel("Items per page:"))
+        self.page_size_combo = QComboBox()
+        self.page_size_combo.addItems(["100", "500", "1000", "All"])
+        self.page_size_combo.setCurrentText("100")
+        self.page_size_combo.currentTextChanged.connect(self.change_page_size)
+        pagination_layout.addWidget(self.page_size_combo)
+        
+        # Page navigation with spinbox
+        pagination_layout.addStretch()
+        pagination_layout.addWidget(QLabel("Go to page:"))
+        
+        self.page_spinbox = QSpinBox()
+        self.page_spinbox.setMinimum(1)
+        self.page_spinbox.setMaximum(1)  # Will be updated with total pages
+        self.page_spinbox.setValue(1)
+        self.page_spinbox.valueChanged.connect(self.go_to_page)
+        pagination_layout.addWidget(self.page_spinbox)
+        
+        self.page_label = QLabel("of 1")
+        pagination_layout.addWidget(self.page_label)
+        
+        layout.addLayout(pagination_layout)
+        
+        # Refresh button
         refresh_btn = QPushButton("Refresh Constraints List")
         refresh_btn.clicked.connect(self.refresh_constraints_list)
         layout.addWidget(refresh_btn)
         
+        # Pagination state
+        self.current_page = 1
+        self.total_pages = 1
+        self.page_size = 100
+        
         # Initial refresh
+        self.refresh_constraints_list()
+
+    def change_page_size(self, size_text):
+        """Change the number of items loaded per page"""
+        if size_text == "All":
+            self.page_size = len(mpConstraint._constraints)
+        else:
+            try:
+                self.page_size = int(size_text)
+            except ValueError:
+                self.page_size = 100
+        
+        # Reset to first page and refresh
+        self.current_page = 1
         self.refresh_constraints_list()
 
     def open_constraint_creation_dialog(self):
@@ -84,46 +134,120 @@ class MPConstraintManagerTab(QDialog):
             self.refresh_constraints_list()
 
     def refresh_constraints_list(self):
-        """Update constraints table with current data"""
+        """Update constraints table with current data for the current page"""
+        # Show progress dialog for large constraint sets
+        count = len(mpConstraint._constraints)
+        
+        if count > 1000:
+            progress = QProgressDialog("Loading constraints...", "Cancel", 0, 100, self)
+            progress.setWindowModality(Qt.WindowModal)
+            progress.setValue(0)
+            progress.show()
+            QApplication.processEvents()
+        
+        # Calculate total pages
+        if self.page_size > 0:
+            self.total_pages = max(1, (count + self.page_size - 1) // self.page_size)
+        else:
+            self.total_pages = 1
+        
+        # Ensure current page is valid
+        if self.current_page > self.total_pages:
+            self.current_page = self.total_pages
+        
+        # Update page label
+        self.page_label.setText(f"of {self.total_pages}")
+        
+        # Update page spinbox without triggering the valueChanged signal
+        self.page_spinbox.blockSignals(True)
+        self.page_spinbox.setMaximum(self.total_pages)
+        self.page_spinbox.setValue(self.current_page)
+        self.page_spinbox.blockSignals(False)
+        
+        # Clear the table
         self.constraints_table.setRowCount(0)
-        constraints = mpConstraint._constraints.values()
         
-        self.constraints_table.setRowCount(len(constraints))
+        # Get all constraints as a list for pagination
+        all_constraints = list(mpConstraint._constraints.values())
         
-        for row, constraint in enumerate(constraints):
-            # Tag
-            tag_item = QTableWidgetItem(str(constraint.tag))
-            tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
-            tag_item.setData(Qt.UserRole, constraint.tag)  # Store tag for reference
-            self.constraints_table.setItem(row, 0, tag_item)
+        # Calculate start and end indices for the current page
+        start_idx = (self.current_page - 1) * self.page_size
+        end_idx = min(start_idx + self.page_size, len(all_constraints))
+        
+        # Get constraints for the current page
+        page_constraints = all_constraints[start_idx:end_idx]
+        
+        # Set row count for the current page
+        self.constraints_table.setRowCount(len(page_constraints))
+        
+        # Update progress to 20%
+        if count > 1000:
+            progress.setValue(20)
+            QApplication.processEvents()
+        
+        # Process constraints in batches of 100 to maintain UI responsiveness
+        batch_size = 100
+        for batch_start in range(0, len(page_constraints), batch_size):
+            batch_end = min(batch_start + batch_size, len(page_constraints))
+            batch = page_constraints[batch_start:batch_end]
             
-            # Type
-            type_item = QTableWidgetItem(constraint.__class__.__name__)
-            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            self.constraints_table.setItem(row, 1, type_item)
+            for row, constraint in enumerate(batch, batch_start):
+                # Tag
+                tag_item = QTableWidgetItem(str(constraint.tag))
+                tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
+                tag_item.setData(Qt.UserRole, constraint.tag)  # Store tag for reference
+                self.constraints_table.setItem(row, 0, tag_item)
+                
+                # Type
+                type_item = QTableWidgetItem(constraint.__class__.__name__)
+                type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
+                self.constraints_table.setItem(row, 1, type_item)
+                
+                # Master Node
+                master_item = QTableWidgetItem(str(constraint.master_node))
+                master_item.setFlags(master_item.flags() & ~Qt.ItemIsEditable)
+                self.constraints_table.setItem(row, 2, master_item)
+                
+                # Slave Nodes
+                slaves_str = ", ".join(map(str, constraint.slave_nodes))
+                slaves_item = QTableWidgetItem(slaves_str)
+                slaves_item.setFlags(slaves_item.flags() & ~Qt.ItemIsEditable)
+                self.constraints_table.setItem(row, 3, slaves_item)
+                
+                # Parameters
+                params = ""
+                if isinstance(constraint, equalDOF):
+                    params = f"DOFs: {', '.join(map(str, constraint.dofs))}"
+                elif isinstance(constraint, rigidLink):
+                    params = f"Type: {constraint.type}"
+                elif isinstance(constraint, rigidDiaphragm):
+                    params = f"Direction: {constraint.direction}"
+                params_item = QTableWidgetItem(params)
+                params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
+                self.constraints_table.setItem(row, 4, params_item)
             
-            # Master Node
-            master_item = QTableWidgetItem(str(constraint.master_node))
-            master_item.setFlags(master_item.flags() & ~Qt.ItemIsEditable)
-            self.constraints_table.setItem(row, 2, master_item)
-            
-            # Slave Nodes
-            slaves_str = ", ".join(map(str, constraint.slave_nodes))
-            slaves_item = QTableWidgetItem(slaves_str)
-            slaves_item.setFlags(slaves_item.flags() & ~Qt.ItemIsEditable)
-            self.constraints_table.setItem(row, 3, slaves_item)
-            
-            # Parameters
-            params = []
-            if isinstance(constraint, equalDOF):
-                params = f"DOFs: {', '.join(map(str, constraint.dofs))}"
-            elif isinstance(constraint, rigidLink):
-                params = f"Type: {constraint.type}"
-            elif isinstance(constraint, rigidDiaphragm):
-                params = f"Direction: {constraint.direction}"
-            params_item = QTableWidgetItem(params)
-            params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
-            self.constraints_table.setItem(row, 4, params_item)
+            # Update progress for each batch
+            if count > 1000:
+                progress_value = 20 + int(80 * (batch_end / len(page_constraints)))
+                progress.setValue(progress_value)
+                QApplication.processEvents()
+                
+                if progress.wasCanceled():
+                    break
+        
+        # Update status label with explicit page information
+        self.status_label.setText(f"Total Constraints: {count} | Showing {len(page_constraints)} constraints | Currently on Page {self.current_page} of {self.total_pages}")
+        
+        # Close progress dialog if it was shown
+        if count > 1000:
+            progress.setValue(100)
+            progress.close()
+
+    def go_to_page(self, page):
+        """Go to the specified page number"""
+        if 1 <= page <= self.total_pages:
+            self.current_page = page
+            self.refresh_constraints_list()
 
     def handle_double_click(self, row, column):
         """Handle double-click on a table cell to edit constraint"""
@@ -179,6 +303,8 @@ class MPConstraintManagerTab(QDialog):
             mpConstraintManager().remove_constraint(tag)
             self.refresh_constraints_list()
 
+
+# Keep the original dialog classes without changes
 class MPConstraintCreationDialog(QDialog):
     def __init__(self, constraint_type, parent=None):
         super().__init__(parent)
@@ -245,6 +371,7 @@ class MPConstraintCreationDialog(QDialog):
             
         except ValueError as e:
             QMessageBox.warning(self, "Input Error", f"Invalid input: {str(e)}")
+
 
 class MPConstraintEditDialog(QDialog):
     def __init__(self, constraint, parent=None):
