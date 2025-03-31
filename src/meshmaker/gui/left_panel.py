@@ -9,6 +9,7 @@ from meshmaker.components.Region.regionGUI import RegionManagerTab
 from meshmaker.components.Constraint.mpConstraintGUI import MPConstraintManagerTab
 from meshmaker.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
 from meshmaker.components.Constraint.spConstraintGUI import SPConstraintManagerTab
+from meshmaker.components.Pattern.patternGUI import PatternManagerTab
 from .drmGUI import DRMGUI
 
 class LeftPanel(QFrame):
@@ -110,6 +111,7 @@ class LeftPanel(QFrame):
         add_manage_button("Manage MP Constraints", lambda: MPConstraintManagerTab(parent=self).exec_())
         add_manage_button("Manage SP Constraints", lambda: SPConstraintManagerTab(parent=self).exec_())
         add_manage_button("Manage Time Series", lambda: TimeSeriesManagerTab(parent=self).exec_())
+        add_manage_button("Manage Patterns", lambda: PatternManagerTab(parent=self).exec_())
 
         self.manage_tab.setLayout(self.manage_tab.layout)
         
