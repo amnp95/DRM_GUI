@@ -169,10 +169,10 @@ class ConstantTimeSeries(TimeSeries):
             Dict[str, Union[str, list, float, int]]: Dictionary of parameter names and values
         """
         factor = kwargs.get("factor", 1.0)
+        factor = float(factor)
         # check if factor is a number
         if not isinstance(factor, (int, float)):
             raise ValueError("factor must be a number")
-        factor = float(factor)
         return {"factor": factor}
     
     def get_values(self) -> Dict[str, Union[str, int, float, list]]:
@@ -239,9 +239,9 @@ class LinearTimeSeries(TimeSeries):
             Dict[str, Union[str, list, float, int]]: Dictionary of parameter names and values
         """
         factor = kwargs.get("factor", 1.0)
+        factor = float(factor)
         if not isinstance(factor, (int, float)):
             raise ValueError("factor must be a number")
-        factor = float(factor)
         return {"factor": factor}
     
     def get_values(self) -> Dict[str, Union[str, int, float, list]]:
