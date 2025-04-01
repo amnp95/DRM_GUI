@@ -3,7 +3,7 @@ from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
     QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout,
-    QCheckBox, QGroupBox, QDoubleSpinBox
+    QCheckBox, QGroupBox, QDoubleSpinBox, QRadioButton
 )
 
 from meshmaker.utils.validator import DoubleValidator
@@ -20,7 +20,7 @@ class ConstraintHandlerManagerTab(QDialog):
         
         # Setup dialog properties
         self.setWindowTitle("Constraint Handler Manager")
-        self.resize(700, 500)
+        self.resize(800, 500)
         
         # Get the constraint handler manager instance
         self.handler_manager = ConstraintHandlerManager()
@@ -46,22 +46,40 @@ class ConstraintHandlerManagerTab(QDialog):
         
         # Handlers table
         self.handlers_table = QTableWidget()
-        self.handlers_table.setColumnCount(4)  # Tag, Type, Parameters, Delete
-        self.handlers_table.setHorizontalHeaderLabels(["Tag", "Type", "Parameters", "Delete"])
+        self.handlers_table.setColumnCount(4)  # Select, Tag, Type, Parameters
+        self.handlers_table.setHorizontalHeaderLabels(["Select", "Tag", "Type", "Parameters"])
+        self.handlers_table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.handlers_table.setSelectionMode(QTableWidget.SingleSelection)
         header = self.handlers_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
         
         layout.addWidget(self.handlers_table)
         
-        # Refresh button
+        # Action buttons
+        buttons_layout = QHBoxLayout()
+        
+        self.edit_btn = QPushButton("Edit Selected")
+        self.edit_btn.clicked.connect(self.edit_selected_handler)
+        
+        self.delete_selected_btn = QPushButton("Delete Selected")
+        self.delete_selected_btn.clicked.connect(self.delete_selected_handler)
+        
         refresh_btn = QPushButton("Refresh Handlers List")
         refresh_btn.clicked.connect(self.refresh_handlers_list)
-        layout.addWidget(refresh_btn)
+        
+        buttons_layout.addWidget(self.edit_btn)
+        buttons_layout.addWidget(self.delete_selected_btn)
+        buttons_layout.addWidget(refresh_btn)
+        
+        layout.addLayout(buttons_layout)
         
         # Initial refresh
         self.refresh_handlers_list()
+        
+        # Disable edit/delete buttons initially
+        self.update_button_state()
 
     def refresh_handlers_list(self):
         """Update the handlers table with current constraint handlers"""
@@ -69,28 +87,65 @@ class ConstraintHandlerManagerTab(QDialog):
         handlers = self.handler_manager.get_all_handlers()
         
         self.handlers_table.setRowCount(len(handlers))
+        self.radio_buttons = []
+        
+        # Hide vertical header (row indices)
+        self.handlers_table.verticalHeader().setVisible(False)
+        
         for row, (tag, handler) in enumerate(handlers.items()):
+            # Select radio button
+            radio_btn = QRadioButton()
+            # Connect radio buttons to a common slot to ensure mutual exclusivity
+            radio_btn.toggled.connect(lambda checked, btn=radio_btn: self.on_radio_toggled(checked, btn))
+            self.radio_buttons.append(radio_btn)
+            radio_cell = QWidget()
+            radio_layout = QHBoxLayout(radio_cell)
+            radio_layout.addWidget(radio_btn)
+            radio_layout.setAlignment(Qt.AlignCenter)
+            radio_layout.setContentsMargins(0, 0, 0, 0)
+            self.handlers_table.setCellWidget(row, 0, radio_cell)
+            
             # Tag
             tag_item = QTableWidgetItem(str(tag))
             tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
-            self.handlers_table.setItem(row, 0, tag_item)
+            self.handlers_table.setItem(row, 1, tag_item)
             
             # Handler Type
             type_item = QTableWidgetItem(handler.handler_type)
             type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            self.handlers_table.setItem(row, 1, type_item)
+            self.handlers_table.setItem(row, 2, type_item)
             
             # Parameters
             params = handler.get_values()
             params_str = ", ".join([f"{k}: {v}" for k, v in params.items()]) if params else "None"
             params_item = QTableWidgetItem(params_str)
             params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
-            self.handlers_table.setItem(row, 2, params_item)
-            
-            # Delete button
-            delete_btn = QPushButton("Delete")
-            delete_btn.clicked.connect(lambda checked, t=tag: self.delete_handler(t))
-            self.handlers_table.setCellWidget(row, 3, delete_btn)
+            self.handlers_table.setItem(row, 3, params_item)
+        
+        self.update_button_state()
+        
+    def on_radio_toggled(self, checked, btn):
+        """Handle radio button toggling to ensure mutual exclusivity"""
+        if checked:
+            # Uncheck all other radio buttons
+            for radio_btn in self.radio_buttons:
+                if radio_btn != btn and radio_btn.isChecked():
+                    radio_btn.setChecked(False)
+        self.update_button_state()
+
+    def update_button_state(self):
+        """Enable/disable edit and delete buttons based on selection"""
+        enable_buttons = any(rb.isChecked() for rb in self.radio_buttons)
+        self.edit_btn.setEnabled(enable_buttons)
+        self.delete_selected_btn.setEnabled(enable_buttons)
+
+    def get_selected_handler_tag(self):
+        """Get the tag of the selected handler"""
+        for row, radio_btn in enumerate(self.radio_buttons):
+            if radio_btn.isChecked():
+                tag_item = self.handlers_table.item(row, 1)
+                return int(tag_item.text())
+        return None
 
     def open_handler_creation_dialog(self):
         """Open dialog to create a new constraint handler of selected type"""
@@ -112,6 +167,47 @@ class ConstraintHandlerManagerTab(QDialog):
         
         if dialog.exec() == QDialog.Accepted:
             self.refresh_handlers_list()
+
+    def edit_selected_handler(self):
+        """Edit the selected handler"""
+        tag = self.get_selected_handler_tag()
+        if tag is None:
+            QMessageBox.warning(self, "Warning", "Please select a handler to edit")
+            return
+        
+        try:
+            handler = self.handler_manager.get_handler(tag)
+            
+            if handler.handler_type.lower() == "plain":
+                QMessageBox.information(self, "Info", "Plain constraint handler has no parameters to edit")
+                return
+            elif handler.handler_type.lower() == "transformation":
+                QMessageBox.information(self, "Info", "Transformation constraint handler has no parameters to edit")
+                return
+            elif handler.handler_type.lower() == "penalty":
+                dialog = PenaltyConstraintHandlerEditDialog(handler, self)
+            elif handler.handler_type.lower() == "lagrange":
+                dialog = LagrangeConstraintHandlerEditDialog(handler, self)
+            elif handler.handler_type.lower() == "auto":
+                dialog = AutoConstraintHandlerEditDialog(handler, self)
+            else:
+                QMessageBox.warning(self, "Error", f"No edit dialog available for handler type: {handler.handler_type}")
+                return
+            
+            if dialog.exec() == QDialog.Accepted:
+                self.refresh_handlers_list()
+                
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
+    def delete_selected_handler(self):
+        """Delete the selected handler"""
+        tag = self.get_selected_handler_tag()
+        if tag is None:
+            QMessageBox.warning(self, "Warning", "Please select a handler to delete")
+            return
+        
+        self.delete_handler(tag)
 
     def delete_handler(self, tag):
         """Delete a constraint handler from the system"""
@@ -255,6 +351,65 @@ class PenaltyConstraintHandlerDialog(QDialog):
             QMessageBox.critical(self, "Error", str(e))
 
 
+class PenaltyConstraintHandlerEditDialog(QDialog):
+    def __init__(self, handler, parent=None):
+        super().__init__(parent)
+        self.handler = handler
+        self.setWindowTitle(f"Edit Penalty Constraint Handler (Tag: {handler.tag})")
+        self.handler_manager = ConstraintHandlerManager()
+        self.double_validator = DoubleValidator()
+        
+        # Main layout
+        layout = QVBoxLayout(self)
+        
+        # Parameters group
+        params_group = QGroupBox("Parameters")
+        params_layout = QFormLayout(params_group)
+        
+        # Alpha S
+        self.alpha_s_spin = QDoubleSpinBox()
+        self.alpha_s_spin.setDecimals(6)
+        self.alpha_s_spin.setRange(1e-12, 1e12)
+        self.alpha_s_spin.setValue(handler.alpha_s)
+        params_layout.addRow("Alpha S:", self.alpha_s_spin)
+        
+        # Alpha M
+        self.alpha_m_spin = QDoubleSpinBox()
+        self.alpha_m_spin.setDecimals(6)
+        self.alpha_m_spin.setRange(1e-12, 1e12)
+        self.alpha_m_spin.setValue(handler.alpha_m)
+        params_layout.addRow("Alpha M:", self.alpha_m_spin)
+        
+        layout.addWidget(params_group)
+        
+        # Buttons
+        btn_layout = QHBoxLayout()
+        save_btn = QPushButton("Save")
+        save_btn.clicked.connect(self.save_handler)
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.clicked.connect(self.reject)
+        
+        btn_layout.addWidget(save_btn)
+        btn_layout.addWidget(cancel_btn)
+        layout.addLayout(btn_layout)
+
+    def save_handler(self):
+        try:
+            # Collect parameters
+            alpha_s = self.alpha_s_spin.value()
+            alpha_m = self.alpha_m_spin.value()
+            
+            # Remove the old handler and create a new one with the same tag
+            tag = self.handler.tag
+            self.handler_manager.remove_handler(tag)
+            
+            # Create new handler
+            self.handler = self.handler_manager.create_handler("penalty", alpha_s=alpha_s, alpha_m=alpha_m)
+            self.accept()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
+
 class LagrangeConstraintHandlerDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -310,6 +465,65 @@ class LagrangeConstraintHandlerDialog(QDialog):
             alpha_m = self.alpha_m_spin.value()
             
             # Create handler
+            self.handler = self.handler_manager.create_handler("lagrange", alpha_s=alpha_s, alpha_m=alpha_m)
+            self.accept()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
+
+class LagrangeConstraintHandlerEditDialog(QDialog):
+    def __init__(self, handler, parent=None):
+        super().__init__(parent)
+        self.handler = handler
+        self.setWindowTitle(f"Edit Lagrange Constraint Handler (Tag: {handler.tag})")
+        self.handler_manager = ConstraintHandlerManager()
+        self.double_validator = DoubleValidator()
+        
+        # Main layout
+        layout = QVBoxLayout(self)
+        
+        # Parameters group
+        params_group = QGroupBox("Parameters")
+        params_layout = QFormLayout(params_group)
+        
+        # Alpha S
+        self.alpha_s_spin = QDoubleSpinBox()
+        self.alpha_s_spin.setDecimals(6)
+        self.alpha_s_spin.setRange(1e-12, 1e12)
+        self.alpha_s_spin.setValue(handler.alpha_s)
+        params_layout.addRow("Alpha S:", self.alpha_s_spin)
+        
+        # Alpha M
+        self.alpha_m_spin = QDoubleSpinBox()
+        self.alpha_m_spin.setDecimals(6)
+        self.alpha_m_spin.setRange(1e-12, 1e12)
+        self.alpha_m_spin.setValue(handler.alpha_m)
+        params_layout.addRow("Alpha M:", self.alpha_m_spin)
+        
+        layout.addWidget(params_group)
+        
+        # Buttons
+        btn_layout = QHBoxLayout()
+        save_btn = QPushButton("Save")
+        save_btn.clicked.connect(self.save_handler)
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.clicked.connect(self.reject)
+        
+        btn_layout.addWidget(save_btn)
+        btn_layout.addWidget(cancel_btn)
+        layout.addLayout(btn_layout)
+
+    def save_handler(self):
+        try:
+            # Collect parameters
+            alpha_s = self.alpha_s_spin.value()
+            alpha_m = self.alpha_m_spin.value()
+            
+            # Remove the old handler and create a new one with the same tag
+            tag = self.handler.tag
+            self.handler_manager.remove_handler(tag)
+            
+            # Create new handler
             self.handler = self.handler_manager.create_handler("lagrange", alpha_s=alpha_s, alpha_m=alpha_m)
             self.accept()
         except Exception as e:
@@ -379,6 +593,82 @@ class AutoConstraintHandlerDialog(QDialog):
             user_penalty = self.user_penalty_spin.value() if self.user_penalty_spin.value() != 1e-12 else None
             
             # Create handler
+            self.handler = self.handler_manager.create_handler("auto", 
+                                                             verbose=verbose, 
+                                                             auto_penalty=auto_penalty, 
+                                                             user_penalty=user_penalty)
+            self.accept()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
+
+class AutoConstraintHandlerEditDialog(QDialog):
+    def __init__(self, handler, parent=None):
+        super().__init__(parent)
+        self.handler = handler
+        self.setWindowTitle(f"Edit Auto Constraint Handler (Tag: {handler.tag})")
+        self.handler_manager = ConstraintHandlerManager()
+        self.double_validator = DoubleValidator()
+        
+        # Main layout
+        layout = QVBoxLayout(self)
+        
+        # Parameters group
+        params_group = QGroupBox("Parameters")
+        params_layout = QFormLayout(params_group)
+        
+        # Verbose
+        self.verbose_checkbox = QCheckBox()
+        self.verbose_checkbox.setChecked(handler.verbose)
+        params_layout.addRow("Verbose Output:", self.verbose_checkbox)
+        
+        # Auto Penalty
+        self.auto_penalty_spin = QDoubleSpinBox()
+        self.auto_penalty_spin.setDecimals(6)
+        self.auto_penalty_spin.setRange(1e-12, 1e12)
+        if handler.auto_penalty is not None:
+            self.auto_penalty_spin.setValue(handler.auto_penalty)
+        else:
+            self.auto_penalty_spin.setValue(1e-12)  # Use minimum value to represent None
+        self.auto_penalty_spin.setSpecialValueText("None")
+        params_layout.addRow("Auto Penalty:", self.auto_penalty_spin)
+        
+        # User Penalty
+        self.user_penalty_spin = QDoubleSpinBox()
+        self.user_penalty_spin.setDecimals(6)
+        self.user_penalty_spin.setRange(1e-12, 1e12)
+        if handler.user_penalty is not None:
+            self.user_penalty_spin.setValue(handler.user_penalty)
+        else:
+            self.user_penalty_spin.setValue(1e-12)  # Use minimum value to represent None
+        self.user_penalty_spin.setSpecialValueText("None")
+        params_layout.addRow("User Penalty:", self.user_penalty_spin)
+        
+        layout.addWidget(params_group)
+        
+        # Buttons
+        btn_layout = QHBoxLayout()
+        save_btn = QPushButton("Save")
+        save_btn.clicked.connect(self.save_handler)
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.clicked.connect(self.reject)
+        
+        btn_layout.addWidget(save_btn)
+        btn_layout.addWidget(cancel_btn)
+        layout.addLayout(btn_layout)
+
+    def save_handler(self):
+        try:
+            # Collect parameters
+            verbose = self.verbose_checkbox.isChecked()
+            auto_penalty = self.auto_penalty_spin.value() if self.auto_penalty_spin.value() != 1e-12 else None
+            user_penalty = self.user_penalty_spin.value() if self.user_penalty_spin.value() != 1e-12 else None
+            
+            # Remove the old handler and create a new one with the same tag
+            tag = self.handler.tag
+            self.handler_manager.remove_handler(tag)
+            
+            # Create new handler
             self.handler = self.handler_manager.create_handler("auto", 
                                                              verbose=verbose, 
                                                              auto_penalty=auto_penalty, 
