@@ -46,21 +46,58 @@ class RecorderManagerTab(QDialog):
         
         # Recorders table
         self.recorders_table = QTableWidget()
-        self.recorders_table.setColumnCount(5)  # Tag, Type, Parameters, Edit, Delete
-        self.recorders_table.setHorizontalHeaderLabels(["Tag", "Type", "Parameters", "Edit", "Delete"])
+        self.recorders_table.setColumnCount(3)  # Tag, Type, Parameters
+        self.recorders_table.setHorizontalHeaderLabels(["Tag", "Type", "Parameters"])
+        self.recorders_table.setSelectionBehavior(QTableWidget.SelectRows)  # Select entire rows
+        self.recorders_table.setSelectionMode(QTableWidget.SingleSelection)  # Single row selection
         header = self.recorders_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Stretch all columns
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Except for the first one
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Except for the first one
         
         layout.addWidget(self.recorders_table)
         
-        # Refresh recorders button
-        refresh_btn = QPushButton("Refresh Recorders List")
+        # Action buttons
+        actions_layout = QHBoxLayout()
+        
+        self.edit_btn = QPushButton("Edit Selected")
+        self.edit_btn.clicked.connect(self.edit_selected_recorder)
+        
+        self.delete_btn = QPushButton("Delete Selected")
+        self.delete_btn.clicked.connect(self.delete_selected_recorder)
+        
+        refresh_btn = QPushButton("Refresh List")
         refresh_btn.clicked.connect(self.refresh_recorders_list)
-        layout.addWidget(refresh_btn)
+        
+        actions_layout.addWidget(self.edit_btn)
+        actions_layout.addWidget(self.delete_btn)
+        actions_layout.addWidget(refresh_btn)
+        
+        layout.addLayout(actions_layout)
         
         # Initial refresh
         self.refresh_recorders_list()
+        
+        # Enable/disable Edit and Delete buttons based on selection
+        self.recorders_table.itemSelectionChanged.connect(self.update_button_state)
+        self.update_button_state()  # Initial state
+
+    def update_button_state(self):
+        """Enable/disable buttons based on whether a row is selected"""
+        has_selection = len(self.recorders_table.selectedItems()) > 0
+        self.edit_btn.setEnabled(has_selection)
+        self.delete_btn.setEnabled(has_selection)
+
+    def get_selected_recorder_tag(self):
+        """Get the tag of the selected recorder"""
+        selected_rows = self.recorders_table.selectedItems()
+        if not selected_rows:
+            return None
+        
+        # Get the tag from the first column of the selected row
+        tag_item = self.recorders_table.item(selected_rows[0].row(), 0)
+        if tag_item:
+            return int(tag_item.text())
+        return None
 
     def open_recorder_creation_dialog(self):
         """Open dialog to create a new recorder of selected type"""
@@ -76,6 +113,50 @@ class RecorderManagerTab(QDialog):
         
         if dialog.exec() == QDialog.Accepted:
             self.refresh_recorders_list()
+
+    def edit_selected_recorder(self):
+        """Edit the selected recorder"""
+        tag = self.get_selected_recorder_tag()
+        if tag is None:
+            QMessageBox.warning(self, "Warning", "Please select a recorder to edit")
+            return
+        
+        try:
+            recorder = self.recorder_manager.get_recorder(tag)
+            
+            if recorder.recorder_type == "Node":
+                dialog = NodeRecorderEditDialog(recorder, self)
+            elif recorder.recorder_type == "VTKHDF":
+                dialog = VTKHDFRecorderEditDialog(recorder, self)
+            else:
+                QMessageBox.warning(self, "Error", f"No edit dialog available for recorder type: {recorder.recorder_type}")
+                return
+            
+            if dialog.exec() == QDialog.Accepted:
+                self.refresh_recorders_list()
+                
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
+    def delete_selected_recorder(self):
+        """Delete the selected recorder"""
+        tag = self.get_selected_recorder_tag()
+        if tag is None:
+            QMessageBox.warning(self, "Warning", "Please select a recorder to delete")
+            return
+        
+        reply = QMessageBox.question(
+            self, 'Delete Recorder',
+            f"Are you sure you want to delete recorder with tag {tag}?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            try:
+                self.recorder_manager.remove_recorder(tag)
+                self.refresh_recorders_list()
+            except Exception as e:
+                QMessageBox.critical(self, "Error", str(e))
 
     def refresh_recorders_list(self):
         """Update the recorders table with current recorders"""
@@ -107,16 +188,9 @@ class RecorderManagerTab(QDialog):
             params_item = QTableWidgetItem(params_str)
             params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
             self.recorders_table.setItem(row, 2, params_item)
-            
-            # Edit button
-            edit_btn = QPushButton("Edit")
-            edit_btn.clicked.connect(lambda checked, r=recorder: self.open_recorder_edit_dialog(r))
-            self.recorders_table.setCellWidget(row, 3, edit_btn)
-            
-            # Delete button
-            delete_btn = QPushButton("Delete")
-            delete_btn.clicked.connect(lambda checked, t=tag: self.delete_recorder(t))
-            self.recorders_table.setCellWidget(row, 4, delete_btn)
+        
+        # Update button state after refresh
+        self.update_button_state()
 
     def _format_node_recorder_params(self, params_dict):
         """Format Node recorder parameters for display"""
@@ -163,31 +237,6 @@ class RecorderManagerTab(QDialog):
             parts.append(f"rTolDt: {params_dict['r_tol_dt']}")
         
         return ", ".join(parts)
-
-    def open_recorder_edit_dialog(self, recorder):
-        """Open dialog to edit an existing recorder"""
-        if recorder.recorder_type == "Node":
-            dialog = NodeRecorderEditDialog(recorder, self)
-        elif recorder.recorder_type == "VTKHDF":
-            dialog = VTKHDFRecorderEditDialog(recorder, self)
-        else:
-            QMessageBox.warning(self, "Error", f"No edit dialog available for recorder type: {recorder.recorder_type}")
-            return
-        
-        if dialog.exec() == QDialog.Accepted:
-            self.refresh_recorders_list()
-
-    def delete_recorder(self, tag):
-        """Delete a recorder from the system"""
-        reply = QMessageBox.question(
-            self, 'Delete Recorder',
-            f"Are you sure you want to delete recorder with tag {tag}?",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-        )
-        
-        if reply == QMessageBox.Yes:
-            self.recorder_manager.remove_recorder(tag)
-            self.refresh_recorders_list()
 
 
 class NodeRecorderCreationDialog(QDialog):
