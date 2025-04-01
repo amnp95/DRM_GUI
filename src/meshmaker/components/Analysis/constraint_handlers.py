@@ -62,21 +62,6 @@ class ConstraintHandler(AnalysisComponent):
             raise KeyError(f"No constraint handler found with tag {tag}")
         return cls._created_handlers[tag]
 
-    @classmethod
-    def remove_handler(cls, tag: int) -> None:
-        """
-        Delete a handler by its tag.
-        
-        Args:
-            tag (int): The tag of the handler to delete
-        """
-        if tag in cls._created_handlers:
-            del cls._created_handlers[tag]
-            # Recalculate _next_tag if needed
-            if cls._created_handlers:
-                cls._next_tag = max(cls._created_handlers.keys()) + 1
-            else:
-                cls._next_tag = 1
 
     @classmethod
     def get_all_handlers(cls) -> Dict[int, 'ConstraintHandler']:
@@ -105,6 +90,30 @@ class ConstraintHandler(AnalysisComponent):
             Dict[str, Union[str, int, float, bool]]: Dictionary of parameter values
         """
         pass
+
+    @classmethod
+    def _reassign_tags(cls) -> None:
+        """
+        Reassign tags to all handlers sequentially starting from 1.
+        """
+        new_handlers = {}
+        for idx, handler in enumerate(sorted(cls._created_handlers.values(), key=lambda h: h.tag), start=1):
+            handler.tag = idx
+            new_handlers[idx] = handler
+        cls._created_handlers = new_handlers
+        cls._next_tag = len(cls._created_handlers) + 1
+
+    @classmethod
+    def remove_handler(cls, tag: int) -> None:
+        """
+        Delete a handler by its tag and re-tag all remaining handlers sequentially.
+        
+        Args:
+            tag (int): The tag of the handler to delete
+        """
+        if tag in cls._created_handlers:
+            del cls._created_handlers[tag]
+            cls._reassign_tags()
 
 
 class PlainConstraintHandler(ConstraintHandler):
