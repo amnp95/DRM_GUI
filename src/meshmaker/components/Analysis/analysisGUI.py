@@ -1,10 +1,10 @@
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
-    QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout,
-    QGroupBox, QWizard, QWizardPage, QStackedWidget, QSpinBox,
-    QDoubleSpinBox, QRadioButton, QButtonGroup
+    QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout, QTabWidget,
+    QGroupBox, QWizard, QWizardPage, QSpinBox, QDoubleSpinBox, 
+    QRadioButton, QCheckBox
 )
 
 from meshmaker.components.Analysis.analysis import Analysis, AnalysisManager
@@ -29,8 +29,6 @@ class AnalysisManagerDialog(QDialog):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        
-        # Setup dialog properties
         self.setWindowTitle("Analysis Manager")
         self.resize(900, 600)
         
@@ -40,47 +38,39 @@ class AnalysisManagerDialog(QDialog):
         # Main layout
         layout = QVBoxLayout(self)
         
-        # Header section
+        # Header with title and create button
         header_layout = QHBoxLayout()
         header_layout.addWidget(QLabel("Manage Analysis Definitions"))
-        
         create_btn = QPushButton("Create New Analysis")
         create_btn.clicked.connect(self.create_new_analysis)
         header_layout.addWidget(create_btn)
-        
         layout.addLayout(header_layout)
         
         # Analyses table
         self.analyses_table = QTableWidget()
-        self.analyses_table.setColumnCount(8)  # Select, Tag, Name, Type, Components, Steps, dt, Parameters
+        self.analyses_table.setColumnCount(6)  # Select, Tag, Name, Type, Steps/Time, Components
         self.analyses_table.setHorizontalHeaderLabels([
-            "Select", "Tag", "Name", "Type", "Components", "Steps/Time", "Time Step", "Parameters"
+            "Select", "Tag", "Name", "Type", "Steps/Time", "Components"
         ])
         self.analyses_table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.analyses_table.setSelectionMode(QTableWidget.SingleSelection)
         header = self.analyses_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        
         layout.addWidget(self.analyses_table)
         
         # Action buttons
         buttons_layout = QHBoxLayout()
-        
         self.edit_btn = QPushButton("Edit Selected")
         self.edit_btn.clicked.connect(self.edit_selected_analysis)
-        
-        self.delete_selected_btn = QPushButton("Delete Selected")
-        self.delete_selected_btn.clicked.connect(self.delete_selected_analysis)
-        
+        self.delete_btn = QPushButton("Delete Selected")
+        self.delete_btn.clicked.connect(self.delete_selected_analysis)
         refresh_btn = QPushButton("Refresh List")
         refresh_btn.clicked.connect(self.refresh_analyses_list)
         
         buttons_layout.addWidget(self.edit_btn)
-        buttons_layout.addWidget(self.delete_selected_btn)
+        buttons_layout.addWidget(self.delete_btn)
         buttons_layout.addWidget(refresh_btn)
-        
         layout.addLayout(buttons_layout)
         
         # Initial refresh
@@ -97,15 +87,15 @@ class AnalysisManagerDialog(QDialog):
         self.analyses_table.setRowCount(len(analyses))
         self.radio_buttons = []
         
-        # Hide vertical header (row indices)
+        # Hide vertical header
         self.analyses_table.verticalHeader().setVisible(False)
         
         for row, (tag, analysis) in enumerate(analyses.items()):
             # Select radio button
             radio_btn = QRadioButton()
-            # Connect radio buttons to a common slot to ensure mutual exclusivity
             radio_btn.toggled.connect(lambda checked, btn=radio_btn: self.on_radio_toggled(checked, btn))
             self.radio_buttons.append(radio_btn)
+            
             radio_cell = QWidget()
             radio_layout = QHBoxLayout(radio_cell)
             radio_layout.addWidget(radio_btn)
@@ -128,20 +118,6 @@ class AnalysisManagerDialog(QDialog):
             type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
             self.analyses_table.setItem(row, 3, type_item)
             
-            # Components summary
-            components = []
-            if analysis.constraint_handler:
-                components.append(f"CH: {analysis.constraint_handler.handler_type}")
-            if analysis.algorithm:
-                components.append(f"Alg: {analysis.algorithm.algorithm_type}")
-            if analysis.integrator:
-                components.append(f"Int: {analysis.integrator.integrator_type}")
-            
-            components_str = ", ".join(components)
-            components_item = QTableWidgetItem(components_str)
-            components_item.setFlags(components_item.flags() & ~Qt.ItemIsEditable)
-            self.analyses_table.setItem(row, 4, components_item)
-            
             # Steps/Time
             if analysis.num_steps is not None:
                 steps_time = f"{analysis.num_steps} steps"
@@ -151,29 +127,19 @@ class AnalysisManagerDialog(QDialog):
                 steps_time = "N/A"
             steps_item = QTableWidgetItem(steps_time)
             steps_item.setFlags(steps_item.flags() & ~Qt.ItemIsEditable)
-            self.analyses_table.setItem(row, 5, steps_item)
+            self.analyses_table.setItem(row, 4, steps_item)
             
-            # Time Step
-            dt_str = str(analysis.dt) if analysis.dt is not None else "N/A"
-            dt_item = QTableWidgetItem(dt_str)
-            dt_item.setFlags(dt_item.flags() & ~Qt.ItemIsEditable)
-            self.analyses_table.setItem(row, 6, dt_item)
+            # Components summary
+            components = []
+            if analysis.constraint_handler:
+                components.append(f"CH: {analysis.constraint_handler.handler_type}")
+            if analysis.integrator:
+                components.append(f"Int: {analysis.integrator.integrator_type}")
             
-            # Additional parameters
-            params = []
-            if analysis.analysis_type == "VariableTransient":
-                params.append(f"dt_min={analysis.dt_min}")
-                params.append(f"dt_max={analysis.dt_max}")
-                params.append(f"jd={analysis.jd}")
-            
-            if analysis.num_sublevels is not None:
-                params.append(f"sublevels={analysis.num_sublevels}")
-                params.append(f"substeps={analysis.num_substeps}")
-            
-            params_str = ", ".join(params) if params else "None"
-            params_item = QTableWidgetItem(params_str)
-            params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
-            self.analyses_table.setItem(row, 7, params_item)
+            components_str = ", ".join(components)
+            components_item = QTableWidgetItem(components_str)
+            components_item.setFlags(components_item.flags() & ~Qt.ItemIsEditable)
+            self.analyses_table.setItem(row, 5, components_item)
         
         self.update_button_state()
         
@@ -190,7 +156,7 @@ class AnalysisManagerDialog(QDialog):
         """Enable/disable edit and delete buttons based on selection"""
         enable_buttons = any(rb.isChecked() for rb in self.radio_buttons) if hasattr(self, 'radio_buttons') else False
         self.edit_btn.setEnabled(enable_buttons)
-        self.delete_selected_btn.setEnabled(enable_buttons)
+        self.delete_btn.setEnabled(enable_buttons)
 
     def get_selected_analysis_tag(self):
         """Get the tag of the selected analysis"""
@@ -202,8 +168,8 @@ class AnalysisManagerDialog(QDialog):
 
     def create_new_analysis(self):
         """Open wizard to create a new analysis"""
-        wizard = AnalysisCreationWizard(self)
-        if wizard.exec() == QWizard.Accepted:
+        wizard = AnalysisWizard(self)
+        if wizard.exec() == QWizard.Accepted and wizard.created_analysis:
             self.refresh_analyses_list()
 
     def edit_selected_analysis(self):
@@ -215,7 +181,7 @@ class AnalysisManagerDialog(QDialog):
         
         try:
             analysis = self.analysis_manager.get_analysis(tag)
-            wizard = AnalysisEditWizard(analysis, self)
+            wizard = AnalysisWizard(self, analysis)
             if wizard.exec() == QWizard.Accepted:
                 self.refresh_analyses_list()
                 
@@ -243,14 +209,21 @@ class AnalysisManagerDialog(QDialog):
                 QMessageBox.critical(self, "Error", str(e))
 
 
-class AnalysisCreationWizard(QWizard):
+class AnalysisWizard(QWizard):
     """
-    Wizard for creating a new analysis with multiple steps/pages
+    Simplified wizard for creating/editing an analysis
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, analysis=None):
         super().__init__(parent)
         
-        self.setWindowTitle("Create New Analysis")
+        self.analysis = analysis
+        self.created_analysis = None
+        
+        if analysis:
+            self.setWindowTitle(f"Edit Analysis: {analysis.name}")
+        else:
+            self.setWindowTitle("Create New Analysis")
+            
         self.resize(800, 600)
         
         # Initialize manager instances
@@ -266,15 +239,10 @@ class AnalysisCreationWizard(QWizard):
         self.setWizardStyle(QWizard.ModernStyle)
         
         # Add pages
-        self.addPage(AnalysisBasicInfoPage(self))
-        self.addPage(ConstraintHandlerPage(self))
-        self.addPage(NumbererPage(self))
-        self.addPage(SystemPage(self))
-        self.addPage(AlgorithmPage(self))
-        self.addPage(TestPage(self))
-        self.addPage(IntegratorPage(self))
-        self.addPage(AnalysisParametersPage(self))
-        self.addPage(AnalysisSummaryPage(self))
+        self.addPage(BasicInfoPage(self))
+        self.addPage(ComponentsPage(self))
+        self.addPage(ParametersPage(self))
+        self.addPage(SummaryPage(self))
         
         # Set options
         self.setOption(QWizard.NoBackButtonOnStartPage, True)
@@ -289,11 +257,11 @@ class AnalysisCreationWizard(QWizard):
         """Handle wizard completion"""
         if result == QWizard.Accepted:
             try:
-                # Collect all parameters from field objects
+                # Collect parameters
                 name = self.field("name")
                 analysis_type = self.field("analysis_type")
                 
-                # Get components
+                # Get components 
                 constraint_handler_tag = self.field("constraint_handler_tag")
                 constraint_handler = self.constraint_handler_manager.get_handler(constraint_handler_tag)
                 
@@ -343,216 +311,96 @@ class AnalysisCreationWizard(QWizard):
                     num_sublevels = self.field("num_sublevels")
                     num_substeps = self.field("num_substeps")
                 
-                # Create the analysis
-                self.analysis = self.analysis_manager.create_analysis(
-                    name=name,
-                    analysis_type=analysis_type,
-                    constraint_handler=constraint_handler,
-                    numberer=numberer,
-                    system=system,
-                    algorithm=algorithm,
-                    test=test,
-                    integrator=integrator,
-                    num_steps=num_steps,
-                    final_time=final_time,
-                    dt=dt,
-                    dt_min=dt_min,
-                    dt_max=dt_max,
-                    jd=jd,
-                    num_sublevels=num_sublevels,
-                    num_substeps=num_substeps
-                )
-                
-                QMessageBox.information(self, "Success", f"Analysis '{name}' created successfully!")
-                
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Failed to create analysis: {str(e)}")
-
-
-class AnalysisEditWizard(QWizard):
-    """
-    Wizard for editing an existing analysis
-    """
-    def __init__(self, analysis, parent=None):
-        super().__init__(parent)
-        
-        if analysis is None:
-            raise ValueError("Analysis cannot be None for AnalysisEditWizard")
-            
-        self.analysis = analysis
-        self.setWindowTitle(f"Edit Analysis: {analysis.name}")
-        self.resize(800, 600)
-        
-        # Initialize manager instances
-        self.analysis_manager = AnalysisManager()
-        self.constraint_handler_manager = ConstraintHandlerManager()
-        self.numberer_manager = NumbererManager()
-        self.system_manager = SystemManager()
-        self.algorithm_manager = AlgorithmManager()
-        self.test_manager = TestManager()
-        self.integrator_manager = IntegratorManager()
-        
-        # Set wizard style
-        self.setWizardStyle(QWizard.ModernStyle)
-        
-        # Add pages
-        self.addPage(AnalysisBasicInfoPage(self, self.analysis))
-        self.addPage(ConstraintHandlerPage(self, self.analysis))
-        self.addPage(NumbererPage(self, self.analysis))
-        self.addPage(SystemPage(self, self.analysis))
-        self.addPage(AlgorithmPage(self, self.analysis))
-        self.addPage(TestPage(self, self.analysis))
-        self.addPage(IntegratorPage(self, self.analysis))
-        self.addPage(AnalysisParametersPage(self, self.analysis))
-        self.addPage(AnalysisSummaryPage(self, self.analysis))
-        
-        # Set options
-        self.setOption(QWizard.NoBackButtonOnStartPage, True)
-        self.setOption(QWizard.HaveFinishButtonOnEarlyPages, False)
-        self.setOption(QWizard.HaveNextButtonOnLastPage, False)
-        self.setOption(QWizard.HaveHelpButton, False)
-        
-        # Connect signals
-        self.finished.connect(self.on_wizard_finished)
-        
-    def on_wizard_finished(self, result):
-        """Handle wizard completion"""
-        if result == QWizard.Accepted:
-            try:
-                # Collect all parameters from field objects
-                name = self.field("name")
-                
-                # Check if name changed and is not a duplicate
-                if name != self.analysis.name and name in Analysis._names:
-                    raise ValueError(f"Analysis name '{name}' is already in use. Names must be unique.")
-                
-                # Get components
-                constraint_handler_tag = self.field("constraint_handler_tag")
-                constraint_handler = self.constraint_handler_manager.get_handler(constraint_handler_tag)
-                
-                numberer_type = self.field("numberer_type")
-                numberer = self.numberer_manager.get_numberer(numberer_type)
-                
-                system_tag = self.field("system_tag")
-                system = self.system_manager.get_system(system_tag)
-                
-                algorithm_tag = self.field("algorithm_tag")
-                algorithm = self.algorithm_manager.get_algorithm(algorithm_tag)
-                
-                test_tag = self.field("test_tag")
-                test = self.test_manager.get_test(test_tag)
-                
-                integrator_tag = self.field("integrator_tag")
-                integrator = self.integrator_manager.get_integrator(integrator_tag)
-                
-                # Get analysis parameters
-                use_num_steps = self.field("use_num_steps")
-                
-                num_steps = None
-                final_time = None
-                
-                if use_num_steps:
-                    num_steps = self.field("num_steps")
+                if self.analysis:
+                    # Update existing analysis
+                    self.update_analysis(name, constraint_handler, numberer, system, algorithm, 
+                                      test, integrator, num_steps, final_time, dt,
+                                      dt_min, dt_max, jd, num_sublevels, num_substeps)
+                    QMessageBox.information(self, "Success", f"Analysis '{name}' updated successfully!")
                 else:
-                    final_time = self.field("final_time")
-                
-                dt = None
-                if self.analysis.analysis_type != "Static":
-                    dt = self.field("dt")
-                
-                dt_min = None
-                dt_max = None
-                jd = None
-                if self.analysis.analysis_type == "VariableTransient":
-                    dt_min = self.field("dt_min")
-                    dt_max = self.field("dt_max")
-                    jd = self.field("jd")
-                
-                use_substepping = self.field("use_substepping")
-                num_sublevels = None
-                num_substeps = None
-                if use_substepping and self.analysis.analysis_type != "Static":
-                    num_sublevels = self.field("num_sublevels")
-                    num_substeps = self.field("num_substeps")
-                
-                # Update analysis components
-                self.analysis_manager.update_constraint_handler(self.analysis, constraint_handler)
-                self.analysis.numberer = numberer
-                self.analysis_manager.update_system(self.analysis, system)
-                self.analysis_manager.update_algorithm(self.analysis, algorithm)
-                self.analysis_manager.update_test(self.analysis, test)
-                self.analysis_manager.update_integrator(self.analysis, integrator)
-                
-                # Update analysis parameters
-                if name != self.analysis.name:
-                    Analysis._names.remove(self.analysis.name)
-                    self.analysis.name = name
-                    Analysis._names.add(name)
-                
-                self.analysis.num_steps = num_steps
-                self.analysis.final_time = final_time
-                self.analysis.dt = dt
-                self.analysis.dt_min = dt_min
-                self.analysis.dt_max = dt_max
-                self.analysis.jd = jd
-                self.analysis.num_sublevels = num_sublevels
-                self.analysis.num_substeps = num_substeps
-                
-                QMessageBox.information(self, "Success", f"Analysis '{name}' updated successfully!")
+                    # Create new analysis
+                    self.created_analysis = self.analysis_manager.create_analysis(
+                        name=name,
+                        analysis_type=analysis_type,
+                        constraint_handler=constraint_handler,
+                        numberer=numberer,
+                        system=system,
+                        algorithm=algorithm,
+                        test=test,
+                        integrator=integrator,
+                        num_steps=num_steps,
+                        final_time=final_time,
+                        dt=dt,
+                        dt_min=dt_min,
+                        dt_max=dt_max,
+                        jd=jd,
+                        num_sublevels=num_sublevels,
+                        num_substeps=num_substeps
+                    )
+                    QMessageBox.information(self, "Success", f"Analysis '{name}' created successfully!")
                 
             except Exception as e:
-                QMessageBox.critical(self, "Error", f"Failed to update analysis: {str(e)}")
+                QMessageBox.critical(self, "Error", f"Failed to create/update analysis: {str(e)}")
+                
+    def update_analysis(self, name, constraint_handler, numberer, system, algorithm, 
+                    test, integrator, num_steps, final_time, dt,
+                    dt_min, dt_max, jd, num_sublevels, num_substeps):
+        """Update an existing analysis"""
+        # Check if name changed and is not a duplicate
+        if name != self.analysis.name and name in Analysis._names:
+            raise ValueError(f"Analysis name '{name}' is already in use. Names must be unique.")
+        
+        # Update analysis components
+        self.analysis_manager.update_constraint_handler(self.analysis, constraint_handler)
+        self.analysis.numberer = numberer
+        self.analysis_manager.update_system(self.analysis, system)
+        self.analysis_manager.update_algorithm(self.analysis, algorithm)
+        self.analysis_manager.update_test(self.analysis, test)
+        self.analysis_manager.update_integrator(self.analysis, integrator)
+        
+        # Update analysis parameters
+        if name != self.analysis.name:
+            Analysis._names.remove(self.analysis.name)
+            self.analysis.name = name
+            Analysis._names.add(name)
+        
+        self.analysis.num_steps = num_steps
+        self.analysis.final_time = final_time
+        self.analysis.dt = dt
+        self.analysis.dt_min = dt_min
+        self.analysis.dt_max = dt_max
+        self.analysis.jd = jd
+        self.analysis.num_sublevels = num_sublevels
+        self.analysis.num_substeps = num_substeps
 
 
-class WizardPage(QWizardPage):
-    """Base class for wizard pages with common functionality"""
-    def __init__(self, title, subtitle="", parent=None, analysis=None):
+class BasicInfoPage(QWizardPage):
+    """First page for basic analysis information"""
+    def __init__(self, parent):
         super().__init__(parent)
-        self.setTitle(title)
-        self.setSubTitle(subtitle)
-        self.analysis = analysis
+        self.setTitle("Analysis Basic Information")
+        self.setSubTitle("Enter the basic information for the analysis.")
         
-    def initializePage(self):
-        """Initialize the page when it is shown"""
-        super().initializePage()
-        self.updateUi()
-        
-    def updateUi(self):
-        """Update the UI based on current data - to be overridden"""
-        pass
-
-
-class AnalysisBasicInfoPage(WizardPage):
-    """First page of the wizard for basic information"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "Analysis Basic Information", 
-            "Enter the basic information for the analysis.",
-            parent, 
-            analysis
-        )
-        
-        # Create layout
         layout = QFormLayout(self)
         
         # Name field
         self.name_edit = QLineEdit()
-        if analysis:
-            self.name_edit.setText(analysis.name)
+        if parent.analysis:
+            self.name_edit.setText(parent.analysis.name)
         layout.addRow("Analysis Name:", self.name_edit)
         
         # Analysis type
         self.analysis_type_combo = QComboBox()
         self.analysis_type_combo.addItems(["Static", "Transient", "VariableTransient"])
-        if analysis:
-            index = self.analysis_type_combo.findText(analysis.analysis_type)
+        if parent.analysis:
+            index = self.analysis_type_combo.findText(parent.analysis.analysis_type)
             if index >= 0:
                 self.analysis_type_combo.setCurrentIndex(index)
             # Disable changing analysis type in edit mode
             self.analysis_type_combo.setEnabled(False)
         layout.addRow("Analysis Type:", self.analysis_type_combo)
         
-        # Description field
+        # Description box
         self.description_group = QGroupBox("Description")
         desc_layout = QVBoxLayout(self.description_group)
         
@@ -591,814 +439,212 @@ class AnalysisBasicInfoPage(WizardPage):
             return False
         
         # Check for duplicate name, but allow keeping the same name in edit mode
-        if name in Analysis._names and (not self.analysis or self.analysis.name != name):
+        wizard = self.wizard()
+        if name in Analysis._names and (not wizard.analysis or wizard.analysis.name != name):
             QMessageBox.warning(self, "Validation Error", f"Analysis name '{name}' is already in use. Names must be unique.")
             return False
         
         return True
 
 
-class ConstraintHandlerPage(WizardPage):
-    """Page for selecting a constraint handler"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "Constraint Handler Selection", 
-            "Select a constraint handler for the analysis.",
-            parent,
-            analysis
-        )
+class ComponentsPage(QWizardPage):
+    """Page for selecting all the components of the analysis"""
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setTitle("Analysis Components")
+        self.setSubTitle("Select the components for the analysis.")
         
-        # Create layout
         layout = QVBoxLayout(self)
         
-        # Explanation
-        info = QLabel("Constraint handlers determine how the constraint equations are enforced in the system of equations.")
-        info.setWordWrap(True)
-        layout.addWidget(info)
+        # Create tabbed interface for the components
+        self.tabs = QTabWidget()
         
-        # Selection table
-        self.table = QTableWidget()
-        self.table.setColumnCount(4)  # Select, Tag, Type, Parameters
-        self.table.setHorizontalHeaderLabels(["Select", "Tag", "Type", "Parameters"])
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        header = self.table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        layout.addWidget(self.table)
+        # Add tabs for each component
+        self.tabs.addTab(self.create_constraint_handler_tab(), "Constraint Handler")
+        self.tabs.addTab(self.create_numberer_tab(), "Numberer")
+        self.tabs.addTab(self.create_system_tab(), "System")
+        self.tabs.addTab(self.create_algorithm_tab(), "Algorithm")
+        self.tabs.addTab(self.create_test_tab(), "Test")
+        self.tabs.addTab(self.create_integrator_tab(), "Integrator")
         
-        # Buttons
-        btn_layout = QHBoxLayout()
+        layout.addWidget(self.tabs)
         
-        create_new_btn = QPushButton("Create New Constraint Handler")
-        create_new_btn.clicked.connect(self.open_handler_dialog)
-        btn_layout.addWidget(create_new_btn)
+    def create_constraint_handler_tab(self):
+        """Create the constraint handler selection tab"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
         
-        refresh_btn = QPushButton("Refresh List")
-        refresh_btn.clicked.connect(self.populate_table)
-        btn_layout.addWidget(refresh_btn)
-        
-        layout.addLayout(btn_layout)
+        # Use an embedded ConstraintHandlerManagerTab for selection
+        self.constraint_handler_manager_tab = ConstraintHandlerManagerTab()
+        layout.addWidget(self.constraint_handler_manager_tab)
         
         # Register fields
         self.registerField("constraint_handler_tag", self, "selectedHandlerTag")
         
-        # Selected handler tag property
-        self._selected_handler_tag = None
-        
-    selectedHandlerTagChanged = Signal(int)
+        return tab
     
-    def selectedHandlerTag(self):
-        """Getter for selected handler tag property"""
-        return self._selected_handler_tag
+    def create_numberer_tab(self):
+        """Create the numberer selection tab"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
         
-    def setSelectedHandlerTag(self, tag):
-        """Setter for selected handler tag property"""
-        self._selected_handler_tag = tag
-        
-    def initializePage(self):
-        """Initialize the page when it becomes active"""
-        super().initializePage()
-        self.populate_table()
-        
-    def populate_table(self):
-        """Populate the table with available constraint handlers"""
-        self.table.setRowCount(0)
-        
-        manager = ConstraintHandlerManager()
-        handlers = manager.get_all_handlers()
-        
-        self.table.setRowCount(len(handlers))
-        self.radio_buttons = []
-        
-        for row, (tag, handler) in enumerate(handlers.items()):
-            # Select radio button
-            radio_btn = QRadioButton()
-            radio_btn.toggled.connect(lambda checked, t=tag: self.on_handler_selected(checked, t))
-            self.radio_buttons.append(radio_btn)
-            
-            # Select current handler if editing
-            if self.analysis and self.analysis.constraint_handler and self.analysis.constraint_handler.tag == tag:
-                radio_btn.setChecked(True)
-                
-            radio_cell = QWidget()
-            radio_layout = QHBoxLayout(radio_cell)
-            radio_layout.addWidget(radio_btn)
-            radio_layout.setAlignment(Qt.AlignCenter)
-            radio_layout.setContentsMargins(0, 0, 0, 0)
-            self.table.setCellWidget(row, 0, radio_cell)
-            
-            # Tag
-            tag_item = QTableWidgetItem(str(tag))
-            tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 1, tag_item)
-            
-            # Type
-            type_item = QTableWidgetItem(handler.handler_type)
-            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 2, type_item)
-            
-            # Parameters
-            params = handler.get_values()
-            params_str = ", ".join([f"{k}: {v}" for k, v in params.items()]) if params else "None"
-            params_item = QTableWidgetItem(params_str)
-            params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 3, params_item)
-            
-    def on_handler_selected(self, checked, tag):
-        """Handle radio button selection"""
-        if checked:
-            self._selected_handler_tag = tag
-            self.selectedHandlerTagChanged.emit(tag)
-            # Ensure only one radio button is checked
-            for btn in self.radio_buttons:
-                if btn.isChecked() and btn != self.sender():
-                    btn.setChecked(False)
-                    
-    def open_handler_dialog(self):
-        """Open constraint handler manager dialog"""
-        dialog = ConstraintHandlerManagerTab(self)
-        if dialog.exec() == QDialog.Accepted:
-            self.populate_table()
-    
-    def validatePage(self):
-        """Validate the page before proceeding"""
-        if not self._selected_handler_tag:
-            QMessageBox.warning(self, "Validation Error", "Please select a constraint handler.")
-            return False
-        
-        return True
-
-
-class NumbererPage(WizardPage):
-    """Page for selecting a numberer"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "Numberer Selection", 
-            "Select a numberer for the analysis.",
-            parent,
-            analysis
-        )
-        
-        # Create layout
-        layout = QVBoxLayout(self)
-        
-        # Explanation
-        info = QLabel("Numberers determine the mapping between equation numbers and degrees of freedom.")
-        info.setWordWrap(True)
-        layout.addWidget(info)
-        
-        # Numberer options
-        self.numberer_group = QGroupBox("Available Numberers")
-        numberer_layout = QVBoxLayout(self.numberer_group)
-        
-        # Create radio buttons for each numberer type
-        self.numberer_buttons = QButtonGroup(self)
-        
-        # Get available numberer types
-        self.numberer_manager = NumbererManager()
-        self.numberers = self.numberer_manager.get_all_numberers()
-        
-        for numberer_type, numberer in self.numberers.items():
-            radio_btn = QRadioButton(f"{numberer_type.capitalize()}")
-            self.numberer_buttons.addButton(radio_btn)
-            numberer_layout.addWidget(radio_btn)
-            
-            # Set button checked if editing and this is the current numberer
-            if self.analysis and self.analysis.numberer and numberer_type == self.analysis.numberer.to_tcl().split()[1]:
-                radio_btn.setChecked(True)
-        
-        layout.addWidget(self.numberer_group)
-        
-        # Description box
-        self.description_group = QGroupBox("Description")
-        self.description_layout = QVBoxLayout(self.description_group)
-        self.description_label = QLabel()
-        self.description_label.setWordWrap(True)
-        self.description_layout.addWidget(self.description_label)
-        layout.addWidget(self.description_group)
-        
-        # Connect signals
-        self.numberer_buttons.buttonClicked.connect(self.update_description)
+        # Use an embedded NumbererManagerTab for selection
+        self.numberer_manager_tab = NumbererManagerTab()
+        layout.addWidget(self.numberer_manager_tab)
         
         # Register fields
         self.registerField("numberer_type", self, "selectedNumbererType")
         
-        # Selected numberer type property
-        self._selected_numberer_type = None
-        
-    selectedNumbererTypeChanged = Signal(str)
+        return tab
     
-    def selectedNumbererType(self):
-        """Getter for selected numberer type property"""
-        return self._selected_numberer_type
+    def create_system_tab(self):
+        """Create the system selection tab"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
         
-    def setSelectedNumbererType(self, type_name):
-        """Setter for selected numberer type property"""
-        self._selected_numberer_type = type_name
-    
-    def update_description(self, button):
-        """Update the description based on selected numberer"""
-        numberer_type = button.text().lower()
-        
-        descriptions = {
-            "plain": "Plain numberer assigns equation numbers to DOFs based on the order in which nodes are created.",
-            "rcm": "Reverse Cuthill-McKee numberer reduces the bandwidth of the system matrix.",
-            "amd": "Alternate Minimum Degree numberer minimizes fill-in during matrix factorization."
-        }
-        
-        self.description_label.setText(descriptions.get(numberer_type, "No description available."))
-        self._selected_numberer_type = numberer_type
-        self.selectedNumbererTypeChanged.emit(numberer_type)
-        
-    def validatePage(self):
-        """Validate the page before proceeding"""
-        if not self.numberer_buttons.checkedButton():
-            QMessageBox.warning(self, "Validation Error", "Please select a numberer.")
-            return False
-        
-        self._selected_numberer_type = self.numberer_buttons.checkedButton().text().lower()
-        return True
-
-
-class SystemPage(WizardPage):
-    """Page for selecting a system"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "System Selection", 
-            "Select a system for the analysis.",
-            parent,
-            analysis
-        )
-        
-        # Create layout
-        layout = QVBoxLayout(self)
-        
-        # Explanation
-        info = QLabel("Systems handle the system of linear equations.")
-        info.setWordWrap(True)
-        layout.addWidget(info)
-        
-        # Selection table
-        self.table = QTableWidget()
-        self.table.setColumnCount(4)  # Select, Tag, Type, Parameters
-        self.table.setHorizontalHeaderLabels(["Select", "Tag", "Type", "Parameters"])
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        header = self.table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        layout.addWidget(self.table)
-        
-        # Buttons
-        btn_layout = QHBoxLayout()
-        
-        create_new_btn = QPushButton("Create New System")
-        create_new_btn.clicked.connect(self.open_system_dialog)
-        btn_layout.addWidget(create_new_btn)
-        
-        refresh_btn = QPushButton("Refresh List")
-        refresh_btn.clicked.connect(self.populate_table)
-        btn_layout.addWidget(refresh_btn)
-        
-        layout.addLayout(btn_layout)
+        # Use an embedded SystemManagerTab for selection
+        self.system_manager_tab = SystemManagerTab()
+        layout.addWidget(self.system_manager_tab)
         
         # Register fields
         self.registerField("system_tag", self, "selectedSystemTag")
         
-        # Selected system tag property
-        self._selected_system_tag = None
-        
-    selectedSystemTagChanged = Signal(int)
+        return tab
     
-    def selectedSystemTag(self):
-        """Getter for selected system tag property"""
-        return self._selected_system_tag
+    def create_algorithm_tab(self):
+        """Create the algorithm selection tab"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
         
-    def setSelectedSystemTag(self, tag):
-        """Setter for selected system tag property"""
-        self._selected_system_tag = tag
-    
-    def initializePage(self):
-        """Initialize the page when it becomes active"""
-        super().initializePage()
-        self.populate_table()
-        
-    def populate_table(self):
-        """Populate the table with available systems"""
-        self.table.setRowCount(0)
-        
-        manager = SystemManager()
-        systems = manager.get_all_systems()
-        
-        self.table.setRowCount(len(systems))
-        self.radio_buttons = []
-        
-        for row, (tag, system) in enumerate(systems.items()):
-            # Select radio button
-            radio_btn = QRadioButton()
-            radio_btn.toggled.connect(lambda checked, t=tag: self.on_system_selected(checked, t))
-            self.radio_buttons.append(radio_btn)
-            
-            # Select current system if editing
-            if self.analysis and self.analysis.system and self.analysis.system.tag == tag:
-                radio_btn.setChecked(True)
-                
-            radio_cell = QWidget()
-            radio_layout = QHBoxLayout(radio_cell)
-            radio_layout.addWidget(radio_btn)
-            radio_layout.setAlignment(Qt.AlignCenter)
-            radio_layout.setContentsMargins(0, 0, 0, 0)
-            self.table.setCellWidget(row, 0, radio_cell)
-            
-            # Tag
-            tag_item = QTableWidgetItem(str(tag))
-            tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 1, tag_item)
-            
-            # Type
-            type_item = QTableWidgetItem(system.system_type)
-            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 2, type_item)
-            
-            # Parameters
-            params = system.get_values()
-            params_str = ", ".join([f"{k}: {v}" for k, v in params.items()]) if params else "None"
-            params_item = QTableWidgetItem(params_str)
-            params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 3, params_item)
-            
-    def on_system_selected(self, checked, tag):
-        """Handle radio button selection"""
-        if checked:
-            self._selected_system_tag = tag
-            self.selectedSystemTagChanged.emit(tag)
-            # Ensure only one radio button is checked
-            for btn in self.radio_buttons:
-                if btn.isChecked() and btn != self.sender():
-                    btn.setChecked(False)
-                    
-    def open_system_dialog(self):
-        """Open system manager dialog"""
-        dialog = SystemManagerTab(self)
-        if dialog.exec() == QDialog.Accepted:
-            self.populate_table()
-    
-    def validatePage(self):
-        """Validate the page before proceeding"""
-        if not self._selected_system_tag:
-            QMessageBox.warning(self, "Validation Error", "Please select a system.")
-            return False
-        
-        return True
-
-
-class AlgorithmPage(WizardPage):
-    """Page for selecting an algorithm"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "Algorithm Selection", 
-            "Select an algorithm for the analysis.",
-            parent,
-            analysis
-        )
-        
-        # Create layout
-        layout = QVBoxLayout(self)
-        
-        # Explanation
-        info = QLabel("Algorithms determine the solution procedure (e.g., Newton-Raphson, Linear).")
-        info.setWordWrap(True)
-        layout.addWidget(info)
-        
-        # Selection table
-        self.table = QTableWidget()
-        self.table.setColumnCount(4)  # Select, Tag, Type, Parameters
-        self.table.setHorizontalHeaderLabels(["Select", "Tag", "Type", "Parameters"])
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        header = self.table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        layout.addWidget(self.table)
-        
-        # Buttons
-        btn_layout = QHBoxLayout()
-        
-        create_new_btn = QPushButton("Create New Algorithm")
-        create_new_btn.clicked.connect(self.open_algorithm_dialog)
-        btn_layout.addWidget(create_new_btn)
-        
-        refresh_btn = QPushButton("Refresh List")
-        refresh_btn.clicked.connect(self.populate_table)
-        btn_layout.addWidget(refresh_btn)
-        
-        layout.addLayout(btn_layout)
+        # Use an embedded AlgorithmManagerTab for selection
+        self.algorithm_manager_tab = AlgorithmManagerTab()
+        layout.addWidget(self.algorithm_manager_tab)
         
         # Register fields
         self.registerField("algorithm_tag", self, "selectedAlgorithmTag")
         
-        # Selected algorithm tag property
-        self._selected_algorithm_tag = None
-        
-    selectedAlgorithmTagChanged = Signal(int)
+        return tab
     
-    def selectedAlgorithmTag(self):
-        """Getter for selected algorithm tag property"""
-        return self._selected_algorithm_tag
+    def create_test_tab(self):
+        """Create the test selection tab"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
         
-    def setSelectedAlgorithmTag(self, tag):
-        """Setter for selected algorithm tag property"""
-        self._selected_algorithm_tag = tag
-    
-    def initializePage(self):
-        """Initialize the page when it becomes active"""
-        super().initializePage()
-        self.populate_table()
-        
-    def populate_table(self):
-        """Populate the table with available algorithms"""
-        self.table.setRowCount(0)
-        
-        manager = AlgorithmManager()
-        algorithms = manager.get_all_algorithms()
-        
-        self.table.setRowCount(len(algorithms))
-        self.radio_buttons = []
-        
-        for row, (tag, algorithm) in enumerate(algorithms.items()):
-            # Select radio button
-            radio_btn = QRadioButton()
-            radio_btn.toggled.connect(lambda checked, t=tag: self.on_algorithm_selected(checked, t))
-            self.radio_buttons.append(radio_btn)
-            
-            # Select current algorithm if editing
-            if self.analysis and self.analysis.algorithm and self.analysis.algorithm.tag == tag:
-                radio_btn.setChecked(True)
-                
-            radio_cell = QWidget()
-            radio_layout = QHBoxLayout(radio_cell)
-            radio_layout.addWidget(radio_btn)
-            radio_layout.setAlignment(Qt.AlignCenter)
-            radio_layout.setContentsMargins(0, 0, 0, 0)
-            self.table.setCellWidget(row, 0, radio_cell)
-            
-            # Tag
-            tag_item = QTableWidgetItem(str(tag))
-            tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 1, tag_item)
-            
-            # Type
-            type_item = QTableWidgetItem(algorithm.algorithm_type)
-            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 2, type_item)
-            
-            # Parameters
-            params = algorithm.get_values()
-            params_str = ", ".join([f"{k}: {v}" for k, v in params.items()]) if params else "None"
-            params_item = QTableWidgetItem(params_str)
-            params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 3, params_item)
-            
-    def on_algorithm_selected(self, checked, tag):
-        """Handle radio button selection"""
-        if checked:
-            self._selected_algorithm_tag = tag
-            self.selectedAlgorithmTagChanged.emit(tag)
-            # Ensure only one radio button is checked
-            for btn in self.radio_buttons:
-                if btn.isChecked() and btn != self.sender():
-                    btn.setChecked(False)
-                    
-    def open_algorithm_dialog(self):
-        """Open algorithm manager dialog"""
-        dialog = AlgorithmManagerTab(self)
-        if dialog.exec() == QDialog.Accepted:
-            self.populate_table()
-    
-    def validatePage(self):
-        """Validate the page before proceeding"""
-        if not self._selected_algorithm_tag:
-            QMessageBox.warning(self, "Validation Error", "Please select an algorithm.")
-            return False
-        
-        return True
-
-
-class TestPage(WizardPage):
-    """Page for selecting a convergence test"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "Convergence Test Selection", 
-            "Select a convergence test for the analysis.",
-            parent,
-            analysis
-        )
-        
-        # Create layout
-        layout = QVBoxLayout(self)
-        
-        # Explanation
-        info = QLabel("Convergence tests determine if the solution has converged.")
-        info.setWordWrap(True)
-        layout.addWidget(info)
-        
-        # Selection table
-        self.table = QTableWidget()
-        self.table.setColumnCount(4)  # Select, Tag, Type, Parameters
-        self.table.setHorizontalHeaderLabels(["Select", "Tag", "Type", "Parameters"])
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        header = self.table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        layout.addWidget(self.table)
-        
-        # Buttons
-        btn_layout = QHBoxLayout()
-        
-        create_new_btn = QPushButton("Create New Test")
-        create_new_btn.clicked.connect(self.open_test_dialog)
-        btn_layout.addWidget(create_new_btn)
-        
-        refresh_btn = QPushButton("Refresh List")
-        refresh_btn.clicked.connect(self.populate_table)
-        btn_layout.addWidget(refresh_btn)
-        
-        layout.addLayout(btn_layout)
+        # Use an embedded TestManagerTab for selection
+        self.test_manager_tab = TestManagerTab()
+        layout.addWidget(self.test_manager_tab)
         
         # Register fields
         self.registerField("test_tag", self, "selectedTestTag")
         
-        # Selected test tag property
-        self._selected_test_tag = None
-        
-    selectedTestTagChanged = Signal(int)
+        return tab
     
-    def selectedTestTag(self):
-        """Getter for selected test tag property"""
-        return self._selected_test_tag
+    def create_integrator_tab(self):
+        """Create the integrator selection tab"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
         
-    def setSelectedTestTag(self, tag):
-        """Setter for selected test tag property"""
-        self._selected_test_tag = tag
-    
-    def initializePage(self):
-        """Initialize the page when it becomes active"""
-        super().initializePage()
-        self.populate_table()
-        
-    def populate_table(self):
-        """Populate the table with available convergence tests"""
-        self.table.setRowCount(0)
-        
-        manager = TestManager()
-        tests = manager.get_all_tests()
-        
-        self.table.setRowCount(len(tests))
-        self.radio_buttons = []
-        
-        for row, (tag, test) in enumerate(tests.items()):
-            # Select radio button
-            radio_btn = QRadioButton()
-            radio_btn.toggled.connect(lambda checked, t=tag: self.on_test_selected(checked, t))
-            self.radio_buttons.append(radio_btn)
-            
-            # Select current test if editing
-            if self.analysis and self.analysis.test and self.analysis.test.tag == tag:
-                radio_btn.setChecked(True)
-                
-            radio_cell = QWidget()
-            radio_layout = QHBoxLayout(radio_cell)
-            radio_layout.addWidget(radio_btn)
-            radio_layout.setAlignment(Qt.AlignCenter)
-            radio_layout.setContentsMargins(0, 0, 0, 0)
-            self.table.setCellWidget(row, 0, radio_cell)
-            
-            # Tag
-            tag_item = QTableWidgetItem(str(tag))
-            tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 1, tag_item)
-            
-            # Type
-            type_item = QTableWidgetItem(test.test_type)
-            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 2, type_item)
-            
-            # Parameters
-            params = test.get_values()
-            params_str = ", ".join([f"{k}: {v}" for k, v in params.items()]) if params else "None"
-            params_item = QTableWidgetItem(params_str)
-            params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 3, params_item)
-            
-    def on_test_selected(self, checked, tag):
-        """Handle radio button selection"""
-        if checked:
-            self._selected_test_tag = tag
-            self.selectedTestTagChanged.emit(tag)
-            # Ensure only one radio button is checked
-            for btn in self.radio_buttons:
-                if btn.isChecked() and btn != self.sender():
-                    btn.setChecked(False)
-                    
-    def open_test_dialog(self):
-        """Open test manager dialog"""
-        dialog = TestManagerTab(self)
-        if dialog.exec() == QDialog.Accepted:
-            self.populate_table()
-    
-    def validatePage(self):
-        """Validate the page before proceeding"""
-        if not self._selected_test_tag:
-            QMessageBox.warning(self, "Validation Error", "Please select a convergence test.")
-            return False
-        
-        return True
-
-
-class IntegratorPage(WizardPage):
-    """Page for selecting an integrator"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "Integrator Selection", 
-            "Select an integrator for the analysis.",
-            parent,
-            analysis
-        )
-        
-        # Create layout
-        layout = QVBoxLayout(self)
-        
-        # Explanation
-        info = QLabel("Integrators determine how the displacement and resistance are updated during the analysis.")
-        info.setWordWrap(True)
-        layout.addWidget(info)
-        
-        # Selection table
-        self.table = QTableWidget()
-        self.table.setColumnCount(4)  # Select, Tag, Type, Parameters
-        self.table.setHorizontalHeaderLabels(["Select", "Tag", "Type", "Parameters"])
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        header = self.table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        layout.addWidget(self.table)
-        
-        # Compatibility warning
-        self.warning_label = QLabel()
-        self.warning_label.setStyleSheet("color: red;")
-        self.warning_label.setWordWrap(True)
-        self.warning_label.setVisible(False)
-        layout.addWidget(self.warning_label)
-        
-        # Buttons
-        btn_layout = QHBoxLayout()
-        
-        create_new_btn = QPushButton("Create New Integrator")
-        create_new_btn.clicked.connect(self.open_integrator_dialog)
-        btn_layout.addWidget(create_new_btn)
-        
-        refresh_btn = QPushButton("Refresh List")
-        refresh_btn.clicked.connect(self.populate_table)
-        btn_layout.addWidget(refresh_btn)
-        
-        layout.addLayout(btn_layout)
+        # Use an embedded IntegratorManagerTab for selection
+        self.integrator_manager_tab = IntegratorManagerTab()
+        layout.addWidget(self.integrator_manager_tab)
         
         # Register fields
         self.registerField("integrator_tag", self, "selectedIntegratorTag")
         
-        # Selected integrator tag property
-        self._selected_integrator_tag = None
-        
-    selectedIntegratorTagChanged = Signal(int)
+        return tab
+    
+    def selectedHandlerTag(self):
+        """Get selected constraint handler tag"""
+        # Get the tag from constraint handler tab
+        return self.constraint_handler_manager_tab.get_selected_handler_tag()
+    
+    def selectedNumbererType(self):
+        """Get selected numberer type"""
+        # Extract selection from numberer tab
+        selected_btn = self.numberer_manager_tab.numberer_buttons.checkedButton()
+        if selected_btn:
+            return selected_btn.text().lower()
+        return None
+    
+    def selectedSystemTag(self):
+        """Get selected system tag"""
+        return self.system_manager_tab.get_selected_system_tag()
+    
+    def selectedAlgorithmTag(self):
+        """Get selected algorithm tag"""
+        return self.algorithm_manager_tab.get_selected_algorithm_tag()
+    
+    def selectedTestTag(self):
+        """Get selected test tag"""
+        return self.test_manager_tab.get_selected_test_tag()
     
     def selectedIntegratorTag(self):
-        """Getter for selected integrator tag property"""
-        return self._selected_integrator_tag
-        
-    def setSelectedIntegratorTag(self, tag):
-        """Setter for selected integrator tag property"""
-        self._selected_integrator_tag = tag
-    
-    def initializePage(self):
-        """Initialize the page when it becomes active"""
-        super().initializePage()
-        self.analysis_type = self.wizard().field("analysis_type")
-        self.populate_table()
-        
-    def populate_table(self):
-        """Populate the table with compatible integrators"""
-        self.table.setRowCount(0)
-        
-        manager = IntegratorManager()
-        integrators = manager.get_all_integrators()
-        
-        # Filter compatible integrators
-        compatible_integrators = {}
-        
-        for tag, integrator in integrators.items():
-            is_static = isinstance(integrator, StaticIntegrator)
-            is_transient = isinstance(integrator, TransientIntegrator)
-            
-            if self.analysis_type == "Static" and is_static:
-                compatible_integrators[tag] = integrator
-            elif self.analysis_type in ["Transient", "VariableTransient"] and is_transient:
-                compatible_integrators[tag] = integrator
-        
-        # Populate the table
-        self.table.setRowCount(len(compatible_integrators))
-        self.radio_buttons = []
-        
-        for row, (tag, integrator) in enumerate(compatible_integrators.items()):
-            # Select radio button
-            radio_btn = QRadioButton()
-            radio_btn.toggled.connect(lambda checked, t=tag: self.on_integrator_selected(checked, t))
-            self.radio_buttons.append(radio_btn)
-            
-            # Select current integrator if editing
-            if self.analysis and self.analysis.integrator and self.analysis.integrator.tag == tag:
-                radio_btn.setChecked(True)
-                
-            radio_cell = QWidget()
-            radio_layout = QHBoxLayout(radio_cell)
-            radio_layout.addWidget(radio_btn)
-            radio_layout.setAlignment(Qt.AlignCenter)
-            radio_layout.setContentsMargins(0, 0, 0, 0)
-            self.table.setCellWidget(row, 0, radio_cell)
-            
-            # Tag
-            tag_item = QTableWidgetItem(str(tag))
-            tag_item.setFlags(tag_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 1, tag_item)
-            
-            # Type
-            type_item = QTableWidgetItem(integrator.integrator_type)
-            type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 2, type_item)
-            
-            # Parameters
-            params = integrator.get_values()
-            params_str = ", ".join([f"{k}: {v}" for k, v in params.items()]) if params else "None"
-            params_item = QTableWidgetItem(params_str)
-            params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
-            self.table.setItem(row, 3, params_item)
-            
-        # Display warning if no compatible integrators
-        if len(compatible_integrators) == 0:
-            self.warning_label.setText(
-                f"No compatible integrators found for {self.analysis_type} analysis. "
-                f"Please create a {'static' if self.analysis_type == 'Static' else 'transient'} integrator."
-            )
-            self.warning_label.setVisible(True)
-        else:
-            self.warning_label.setVisible(False)
-            
-    def on_integrator_selected(self, checked, tag):
-        """Handle radio button selection"""
-        if checked:
-            self._selected_integrator_tag = tag
-            self.selectedIntegratorTagChanged.emit(tag)
-            # Ensure only one radio button is checked
-            for btn in self.radio_buttons:
-                if btn.isChecked() and btn != self.sender():
-                    btn.setChecked(False)
-                    
-    def open_integrator_dialog(self):
-        """Open integrator manager dialog"""
-        dialog = IntegratorManagerTab(self)
-        if dialog.exec() == QDialog.Accepted:
-            self.populate_table()
+        """Get selected integrator tag"""
+        return self.integrator_manager_tab.get_selected_integrator_tag()
     
     def validatePage(self):
-        """Validate the page before proceeding"""
-        if not self._selected_integrator_tag:
-            QMessageBox.warning(self, "Validation Error", "Please select an integrator.")
-            return False
+        """Validate that all components are selected"""
+        wizard = self.wizard()
+        errors = []
         
+        # Check constraint handler
+        if not self.selectedHandlerTag():
+            errors.append("Constraint Handler")
+            
+        # Check numberer
+        if not self.selectedNumbererType():
+            errors.append("Numberer")
+            
+        # Check system
+        if not self.selectedSystemTag():
+            errors.append("System")
+            
+        # Check algorithm
+        if not self.selectedAlgorithmTag():
+            errors.append("Algorithm")
+            
+        # Check test
+        if not self.selectedTestTag():
+            errors.append("Convergence Test")
+            
+        # Check integrator
+        if not self.selectedIntegratorTag():
+            errors.append("Integrator")
+        else:
+            # Check integrator compatibility with analysis type
+            analysis_type = wizard.field("analysis_type")
+            integrator = wizard.integrator_manager.get_integrator(self.selectedIntegratorTag())
+            
+            if analysis_type == "Static" and not isinstance(integrator, StaticIntegrator):
+                QMessageBox.warning(self, "Validation Error", 
+                                   f"Static analysis requires a static integrator. {integrator.integrator_type} is not compatible.")
+                return False
+                
+            elif analysis_type in ["Transient", "VariableTransient"] and not isinstance(integrator, TransientIntegrator):
+                QMessageBox.warning(self, "Validation Error", 
+                                   f"Transient analysis requires a transient integrator. {integrator.integrator_type} is not compatible.")
+                return False
+        
+        if errors:
+            QMessageBox.warning(self, "Validation Error", 
+                               f"Please select the following components: {', '.join(errors)}")
+            return False
+            
         return True
 
 
-class AnalysisParametersPage(WizardPage):
-    """Page for configuring analysis parameters"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "Analysis Parameters", 
-            "Configure parameters for the analysis.",
-            parent,
-            analysis
-        )
+class ParametersPage(QWizardPage):
+    """Page for analysis parameters"""
+    def __init__(self, parent):
+        super().__init__(parent)
         
-        # Create layout
+        self.setTitle("Analysis Parameters")
+        self.setSubTitle("Configure the parameters for the analysis.")
+        
         self.layout = QVBoxLayout(self)
         
-        # Will be populated in initializePage
-        
     def initializePage(self):
-        """Initialize the page when it becomes active"""
-        super().initializePage()
-        
+        """Initialize page when it becomes active"""
         # Clear existing widgets
         while self.layout.count():
             item = self.layout.takeAt(0)
@@ -1406,12 +652,7 @@ class AnalysisParametersPage(WizardPage):
             if widget:
                 widget.deleteLater()
         
-        # Create new widgets based on analysis type
         analysis_type = self.wizard().field("analysis_type")
-        
-        # Create form layout for parameters
-        params_group = QGroupBox("Analysis Parameters")
-        form_layout = QFormLayout(params_group)
         
         # Time Step Control
         time_step_group = QGroupBox("Analysis Time/Steps")
@@ -1444,13 +685,14 @@ class AnalysisParametersPage(WizardPage):
         self.time_radio.toggled.connect(lambda checked: self.final_time_spin.setEnabled(checked))
         
         # Default checked state
-        if self.analysis and self.analysis.num_steps is not None:
+        analysis = self.wizard().analysis
+        if analysis and analysis.num_steps is not None:
             self.steps_radio.setChecked(True)
-            self.num_steps_spin.setValue(self.analysis.num_steps)
+            self.num_steps_spin.setValue(analysis.num_steps)
             self.final_time_spin.setEnabled(False)
-        elif self.analysis and self.analysis.final_time is not None:
+        elif analysis and analysis.final_time is not None:
             self.time_radio.setChecked(True)
-            self.final_time_spin.setValue(self.analysis.final_time)
+            self.final_time_spin.setValue(analysis.final_time)
             self.num_steps_spin.setEnabled(False)
         else:
             self.steps_radio.setChecked(True)
@@ -1458,17 +700,21 @@ class AnalysisParametersPage(WizardPage):
         
         self.layout.addWidget(time_step_group)
         
-        # For Transient and VariableTransient, add time step parameters
+        # For Transient analyses, add time step parameters
         if analysis_type in ["Transient", "VariableTransient"]:
+            transient_group = QGroupBox("Time Step Parameters")
+            transient_layout = QFormLayout(transient_group)
+            
+            # Time step
             self.dt_spin = QDoubleSpinBox()
             self.dt_spin.setDecimals(6)
             self.dt_spin.setRange(0.000001, 10000)
             self.dt_spin.setValue(0.01)
-            form_layout.addRow("Time Step (dt):", self.dt_spin)
+            transient_layout.addRow("Time Step (dt):", self.dt_spin)
             
             # Set value from editing analysis
-            if self.analysis and self.analysis.dt is not None:
-                self.dt_spin.setValue(self.analysis.dt)
+            if analysis and analysis.dt is not None:
+                self.dt_spin.setValue(analysis.dt)
             
             # For VariableTransient, add specific parameters
             if analysis_type == "VariableTransient":
@@ -1476,32 +722,32 @@ class AnalysisParametersPage(WizardPage):
                 self.dt_min_spin.setDecimals(6)
                 self.dt_min_spin.setRange(0.000001, 10000)
                 self.dt_min_spin.setValue(0.001)
-                form_layout.addRow("Minimum Time Step:", self.dt_min_spin)
+                transient_layout.addRow("Minimum Time Step:", self.dt_min_spin)
                 
                 self.dt_max_spin = QDoubleSpinBox()
                 self.dt_max_spin.setDecimals(6)
                 self.dt_max_spin.setRange(0.000001, 10000)
                 self.dt_max_spin.setValue(0.1)
-                form_layout.addRow("Maximum Time Step:", self.dt_max_spin)
+                transient_layout.addRow("Maximum Time Step:", self.dt_max_spin)
                 
                 self.jd_spin = QSpinBox()
                 self.jd_spin.setRange(1, 100)
                 self.jd_spin.setValue(2)
-                form_layout.addRow("J-Steps (jd):", self.jd_spin)
+                transient_layout.addRow("J-Steps (jd):", self.jd_spin)
                 
                 # Set values from editing analysis
-                if self.analysis and self.analysis.dt_min is not None:
-                    self.dt_min_spin.setValue(self.analysis.dt_min)
-                if self.analysis and self.analysis.dt_max is not None:
-                    self.dt_max_spin.setValue(self.analysis.dt_max)
-                if self.analysis and self.analysis.jd is not None:
-                    self.jd_spin.setValue(self.analysis.jd)
+                if analysis and analysis.dt_min is not None:
+                    self.dt_min_spin.setValue(analysis.dt_min)
+                if analysis and analysis.dt_max is not None:
+                    self.dt_max_spin.setValue(analysis.dt_max)
+                if analysis and analysis.jd is not None:
+                    self.jd_spin.setValue(analysis.jd)
             
             # Sub-stepping parameters for Transient/VariableTransient
-            substep_group = QGroupBox("Sub-stepping Options")
-            substep_group.setCheckable(True)
-            substep_group.setChecked(False)
-            substep_layout = QFormLayout(substep_group)
+            self.substep_group = QGroupBox("Sub-stepping Options")
+            self.substep_group.setCheckable(True)
+            self.substep_group.setChecked(False)
+            substep_layout = QFormLayout(self.substep_group)
             
             self.num_sublevels_spin = QSpinBox()
             self.num_sublevels_spin.setRange(1, 10)
@@ -1514,15 +760,15 @@ class AnalysisParametersPage(WizardPage):
             substep_layout.addRow("Number of Sub-steps per level:", self.num_substeps_spin)
             
             # Set values from editing analysis
-            if self.analysis and self.analysis.num_sublevels is not None:
-                substep_group.setChecked(True)
-                self.num_sublevels_spin.setValue(self.analysis.num_sublevels)
-            if self.analysis and self.analysis.num_substeps is not None:
-                self.num_substeps_spin.setValue(self.analysis.num_substeps)
+            if analysis and analysis.num_sublevels is not None:
+                self.substep_group.setChecked(True)
+                self.num_sublevels_spin.setValue(analysis.num_sublevels)
+            if analysis and analysis.num_substeps is not None:
+                self.num_substeps_spin.setValue(analysis.num_substeps)
                 
-            form_layout.addRow(substep_group)
-        
-        self.layout.addWidget(params_group)
+            transient_layout.addRow(self.substep_group)
+            
+            self.layout.addWidget(transient_group)
         
         # Register fields
         self.registerField("use_num_steps", self.steps_radio)
@@ -1537,10 +783,10 @@ class AnalysisParametersPage(WizardPage):
                 self.registerField("dt_max", self.dt_max_spin)
                 self.registerField("jd", self.jd_spin)
             
-            self.registerField("use_substepping", substep_group, "checked")
+            self.registerField("use_substepping", self.substep_group, "checked")
             self.registerField("num_sublevels", self.num_sublevels_spin)
             self.registerField("num_substeps", self.num_substeps_spin)
-        
+    
     def validatePage(self):
         """Validate input parameters"""
         analysis_type = self.wizard().field("analysis_type")
@@ -1579,22 +825,17 @@ class AnalysisParametersPage(WizardPage):
         return True
 
 
-class AnalysisSummaryPage(WizardPage):
-    """Final summary page before creating/updating the analysis"""
-    def __init__(self, parent=None, analysis=None):
-        super().__init__(
-            "Analysis Summary",
-            "Review the analysis configuration before finishing.",
-            parent,
-            analysis
-        )
+class SummaryPage(QWizardPage):
+    """Final summary page for the analysis"""
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setTitle("Analysis Summary")
+        self.setSubTitle("Review your analysis configuration before creating/updating it.")
         
         self.layout = QVBoxLayout(self)
         
     def initializePage(self):
-        """Initialize the page when it becomes active"""
-        super().initializePage()
-        
+        """Initialize page when it becomes active"""
         # Clear existing widgets
         while self.layout.count():
             item = self.layout.takeAt(0)
@@ -1602,69 +843,71 @@ class AnalysisSummaryPage(WizardPage):
             if widget:
                 widget.deleteLater()
         
-        # Get analysis parameters from the wizard fields
-        name = self.wizard().field("name")
-        analysis_type = self.wizard().field("analysis_type")
+        # Get all parameters from wizard fields
+        wizard = self.wizard()
+        name = wizard.field("name")
+        analysis_type = wizard.field("analysis_type")
         
-        # Create summary text
-        summary_group = QGroupBox("Analysis Configuration Summary")
+        # Create summary group
+        summary_group = QGroupBox("Analysis Configuration")
         summary_layout = QVBoxLayout(summary_group)
         
+        # Format summary
         summary_text = f"<b>Name:</b> {name}<br>"
         summary_text += f"<b>Analysis Type:</b> {analysis_type}<br><br>"
         
-        # Add component information
-        constraint_handler_tag = self.wizard().field("constraint_handler_tag")
-        constraint_handler = self.wizard().constraint_handler_manager.get_handler(constraint_handler_tag)
+        # Add component information 
+        constraint_handler_tag = wizard.field("constraint_handler_tag")
+        constraint_handler = wizard.constraint_handler_manager.get_handler(constraint_handler_tag)
         summary_text += f"<b>Constraint Handler:</b> {constraint_handler.handler_type} (Tag: {constraint_handler_tag})<br>"
         
-        numberer_type = self.wizard().field("numberer_type")
-        summary_text += f"<b>Numberer:</b> {numberer_type}<br>"
+        numberer_type = wizard.field("numberer_type")
+        summary_text += f"<b>Numberer:</b> {numberer_type.capitalize()}<br>"
         
-        system_tag = self.wizard().field("system_tag")
-        system = self.wizard().system_manager.get_system(system_tag)
+        system_tag = wizard.field("system_tag")
+        system = wizard.system_manager.get_system(system_tag)
         summary_text += f"<b>System:</b> {system.system_type} (Tag: {system_tag})<br>"
         
-        algorithm_tag = self.wizard().field("algorithm_tag")
-        algorithm = self.wizard().algorithm_manager.get_algorithm(algorithm_tag)
+        algorithm_tag = wizard.field("algorithm_tag")
+        algorithm = wizard.algorithm_manager.get_algorithm(algorithm_tag)
         summary_text += f"<b>Algorithm:</b> {algorithm.algorithm_type} (Tag: {algorithm_tag})<br>"
         
-        test_tag = self.wizard().field("test_tag")
-        test = self.wizard().test_manager.get_test(test_tag)
+        test_tag = wizard.field("test_tag")
+        test = wizard.test_manager.get_test(test_tag)
         summary_text += f"<b>Convergence Test:</b> {test.test_type} (Tag: {test_tag})<br>"
         
-        integrator_tag = self.wizard().field("integrator_tag")
-        integrator = self.wizard().integrator_manager.get_integrator(integrator_tag)
+        integrator_tag = wizard.field("integrator_tag")
+        integrator = wizard.integrator_manager.get_integrator(integrator_tag)
         summary_text += f"<b>Integrator:</b> {integrator.integrator_type} (Tag: {integrator_tag})<br><br>"
         
         # Add analysis parameters
-        use_num_steps = self.wizard().field("use_num_steps")
+        use_num_steps = wizard.field("use_num_steps")
         if use_num_steps:
-            num_steps = self.wizard().field("num_steps")
+            num_steps = wizard.field("num_steps")
             summary_text += f"<b>Number of Steps:</b> {num_steps}<br>"
         else:
-            final_time = self.wizard().field("final_time")
+            final_time = wizard.field("final_time")
             summary_text += f"<b>Final Time:</b> {final_time}<br>"
         
         # For Transient and VariableTransient
         if analysis_type in ["Transient", "VariableTransient"]:
-            dt = self.wizard().field("dt")
+            dt = wizard.field("dt")
             summary_text += f"<b>Time Step (dt):</b> {dt}<br>"
             
             # For VariableTransient
             if analysis_type == "VariableTransient":
-                dt_min = self.wizard().field("dt_min")
-                dt_max = self.wizard().field("dt_max")
-                jd = self.wizard().field("jd")
+                dt_min = wizard.field("dt_min")
+                dt_max = wizard.field("dt_max")
+                jd = wizard.field("jd")
                 summary_text += f"<b>Minimum Time Step:</b> {dt_min}<br>"
                 summary_text += f"<b>Maximum Time Step:</b> {dt_max}<br>"
                 summary_text += f"<b>J-Steps (jd):</b> {jd}<br>"
             
             # Sub-stepping parameters
-            use_substepping = self.wizard().field("use_substepping")
+            use_substepping = wizard.field("use_substepping")
             if use_substepping:
-                num_sublevels = self.wizard().field("num_sublevels")
-                num_substeps = self.wizard().field("num_substeps")
+                num_sublevels = wizard.field("num_sublevels")
+                num_substeps = wizard.field("num_substeps")
                 summary_text += f"<b>Number of Sub-levels:</b> {num_sublevels}<br>"
                 summary_text += f"<b>Number of Sub-steps per level:</b> {num_substeps}<br>"
         
@@ -1676,14 +919,9 @@ class AnalysisSummaryPage(WizardPage):
         self.layout.addWidget(summary_group)
         
         # Add note about finishing
-        note = QLabel("<b>Note:</b> Click 'Finish' to create/update the analysis.")
+        note = QLabel("<b>Note:</b> Click 'Finish' to create or update the analysis.")
         note.setWordWrap(True)
         self.layout.addWidget(note)
-
-    def validatePage(self):
-        """Final validation before creating/updating the analysis"""
-        # All validation should have been handled in previous pages
-        return True
 
 
 if __name__ == "__main__":
@@ -1691,10 +929,6 @@ if __name__ == "__main__":
     from qtpy.QtWidgets import QApplication
     
     app = QApplication(sys.argv)
-    
-    # Use AnalysisCreationWizard instead of AnalysisEditWizard for testing
-    # since it doesn't require an existing analysis object
-    wizard = AnalysisManagerDialog()
-    wizard.show()
-    
+    dialog = AnalysisManagerDialog()
+    dialog.show()
     sys.exit(app.exec_())
