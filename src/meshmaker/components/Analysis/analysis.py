@@ -1,7 +1,7 @@
 from typing import Optional, Dict, List, Any
 from .base import AnalysisComponent
 from .numberers import Numberer, NumbererManager
-from .integrators import Integrator, IntegratorManager,StaticIntegrator, TransientIntegrator
+from .integrators import Integrator, IntegratorManager, StaticIntegrator, TransientIntegrator
 from .algorithms import Algorithm, AlgorithmManager
 from .systems import System, SystemManager
 from .constraint_handlers import ConstraintHandler, ConstraintHandlerManager
@@ -17,30 +17,55 @@ class Analysis(AnalysisComponent):
     """
     _instances = {}  # Class-level dictionary to track all created analyses
     _next_tag = 1    # Class variable to track the next tag to assign
+    _names = set()   # Class-level set to track used names
     
     def __init__(self, name: str, analysis_type: str, constraint_handler: ConstraintHandler, 
                  numberer: Numberer, system: System, algorithm: Algorithm, 
-                 test: Test, integrator: Integrator):
+                 test: Test, integrator: Integrator, num_steps: Optional[int] = None,
+                 final_time: Optional[float] = None, dt: Optional[float] = None,
+                 dt_min: Optional[float] = None, dt_max: Optional[float] = None,
+                 jd: Optional[int] = None, num_sublevels: Optional[int] = None,
+                 num_substeps: Optional[int] = None):
         """
         Initialize an Analysis with all required components.
         
         Args:
-            name (str): Name of the analysis for identification
-            analysis_type (str): Type of analysis (e.g., "Static", "Transient", "VariableTransient")
+            name (str): Name of the analysis for identification (must be unique)
+            analysis_type (str): Type of analysis ("Static", "Transient", "VariableTransient")
             constraint_handler (ConstraintHandler): The constraint handler for the analysis
             numberer (Numberer): The numberer for the analysis
             system (System): The system for the analysis
             algorithm (Algorithm): The algorithm for the analysis
             test (Test): The convergence test for the analysis
             integrator (Integrator): The integrator for the analysis
+            num_steps (Optional[int]): Number of analysis steps (either this or final_time must be provided)
+            final_time (Optional[float]): Final time for analysis (either this or num_steps must be provided)
+            dt (Optional[float]): Time step increment (required for Transient or VariableTransient analysis)
+            dt_min (Optional[float]): Minimum time step (required for VariableTransient analysis)
+            dt_max (Optional[float]): Maximum time step (required for VariableTransient analysis)
+            jd (Optional[int]): Number of iterations desired at each step (required for VariableTransient analysis)
+            num_sublevels (Optional[int]): Number of sublevels in case of analysis failure (optional)
+            num_substeps (Optional[int]): Number of substeps to try at each sublevel (optional)
             
         Raises:
             ValueError: If integrator type is incompatible with analysis type
+            ValueError: If analysis parameters are inconsistent with analysis type
+            ValueError: If analysis name is not unique
         """
+        # Check if name is unique
+        if name in Analysis._names:
+            raise ValueError(f"Analysis name '{name}' is already in use. Names must be unique.")
+        
         self.tag = Analysis._next_tag
         Analysis._next_tag += 1
         self.name = name
+        Analysis._names.add(name)
+        
         self.analysis_type = analysis_type
+        
+        # Validate analysis type
+        if analysis_type not in ["Static", "Transient", "VariableTransient"]:
+            raise ValueError(f"Unknown analysis type: {analysis_type}. Must be 'Static', 'Transient', or 'VariableTransient'.")
         
         # Set all components
         self.constraint_handler = constraint_handler
@@ -49,13 +74,52 @@ class Analysis(AnalysisComponent):
         self.algorithm = algorithm
         self.test = test
         
-        if analysis_type.lower() == "static" and not isinstance(integrator, StaticIntegrator):
+        # Validate integrator compatibility
+        if analysis_type == "Static" and not isinstance(integrator, StaticIntegrator):
             raise ValueError(f"Static analysis requires a static integrator. {integrator.integrator_type} is not compatible.")
         
-        elif analysis_type.lower() in ["transient", "variabletransient"] and not isinstance(integrator, TransientIntegrator):
+        elif analysis_type in ["Transient", "VariableTransient"] and not isinstance(integrator, TransientIntegrator):
             raise ValueError(f"Transient analysis requires a transient integrator. {integrator.integrator_type} is not compatible.")
         
         self.integrator = integrator
+        
+        # Validate and set analysis parameters
+        if num_steps is None and final_time is None:
+            raise ValueError("Either num_steps or final_time must be provided.")
+        
+        if num_steps is not None and final_time is not None:
+            raise ValueError("Only one of num_steps or final_time should be provided, not both.")
+        
+        self.num_steps = num_steps
+        self.final_time = final_time
+        
+        # Time step parameters
+        if analysis_type in ["Transient", "VariableTransient"] and dt is None:
+            raise ValueError(f"{analysis_type} analysis requires a time step (dt).")
+        
+        self.dt = dt
+        
+        # VariableTransient specific parameters
+        if analysis_type == "VariableTransient":
+            if dt_min is None or dt_max is None:
+                raise ValueError("VariableTransient analysis requires dt_min and dt_max parameters.")
+            
+            if jd is None:
+                raise ValueError("VariableTransient analysis requires jd parameter (desired iterations per step).")
+        
+        self.dt_min = dt_min
+        self.dt_max = dt_max
+        self.jd = jd
+        
+        # Optional sublevel parameters (only applicable to Transient analyses)
+        if analysis_type == "Static" and (num_sublevels is not None or num_substeps is not None):
+            raise ValueError("num_sublevels and num_substeps are only applicable to Transient analysis.")
+        
+        if (num_sublevels is not None and num_substeps is None) or (num_sublevels is None and num_substeps is not None):
+            raise ValueError("Both num_sublevels and num_substeps must be provided if either is specified.")
+        
+        self.num_sublevels = num_sublevels
+        self.num_substeps = num_substeps
         
         # Register this analysis in the class-level tracking dictionary
         Analysis._instances[self.tag] = self
@@ -94,6 +158,7 @@ class Analysis(AnalysisComponent):
         Clear all analyses and reset tags.
         """
         cls._instances.clear()
+        cls._names.clear()
         cls._next_tag = 1
     
     def validate(self) -> bool:
@@ -162,14 +227,10 @@ class Analysis(AnalysisComponent):
         
         return "\n".join(commands)
         
-    def run_analysis_tcl(self, num_steps: int, time_step: float = 1.0) -> str:
+    def run_analysis_tcl(self) -> str:
         """
         Generate TCL commands to run the analysis.
         
-        Args:
-            num_steps (int): Number of analysis steps to run
-            time_step (float, optional): Time step size. Defaults to 1.0.
-            
         Returns:
             str: TCL command string to run the analysis
             
@@ -185,7 +246,33 @@ class Analysis(AnalysisComponent):
         
         # Run analysis
         commands.append(f"# Run {self.analysis_type.lower()} analysis - {self.name}")
-        commands.append(f"analyze {num_steps} {time_step}")
+        
+        # Construct the analyze command based on analysis type and parameters
+        analyze_cmd = "analyze"
+        
+        if self.analysis_type == "Static":
+            if self.num_steps is not None:
+                analyze_cmd += f" {self.num_steps}"
+            else:
+                analyze_cmd += f" 0 {self.final_time}"
+        
+        elif self.analysis_type == "Transient":
+            if self.num_steps is not None:
+                analyze_cmd += f" {self.num_steps} {self.dt}"
+            else:
+                analyze_cmd += f" 0 {self.dt} {self.final_time}"
+                
+            # Add optional sublevel parameters if provided
+            if self.num_sublevels is not None and self.num_substeps is not None:
+                analyze_cmd += f" {self.num_sublevels} {self.num_substeps}"
+        
+        elif self.analysis_type == "VariableTransient":
+            if self.num_steps is not None:
+                analyze_cmd += f" {self.num_steps} {self.dt} {self.dt_min} {self.dt_max} {self.jd}"
+            else:
+                analyze_cmd += f" 0 {self.dt} {self.final_time} {self.dt_min} {self.dt_max} {self.jd}"
+        
+        commands.append(analyze_cmd)
             
         return "\n".join(commands)
     
@@ -199,7 +286,25 @@ class Analysis(AnalysisComponent):
         values = {
             "name": self.name,
             "analysis_type": self.analysis_type,
+            "num_steps": self.num_steps,
+            "final_time": self.final_time,
+            "dt": self.dt
         }
+        
+        # Add VariableTransient specific parameters if applicable
+        if self.analysis_type == "VariableTransient":
+            values.update({
+                "dt_min": self.dt_min,
+                "dt_max": self.dt_max,
+                "jd": self.jd
+            })
+        
+        # Add sublevel parameters if provided
+        if self.num_sublevels is not None:
+            values.update({
+                "num_sublevels": self.num_sublevels,
+                "num_substeps": self.num_substeps
+            })
         
         # Add component info if set
         if self.constraint_handler:
@@ -253,7 +358,11 @@ class AnalysisManager:
     
     def create_analysis(self, name: str, analysis_type: str, constraint_handler: ConstraintHandler, 
                      numberer: Numberer, system: System, algorithm: Algorithm, 
-                     test: Test, integrator: Integrator) -> Analysis:
+                     test: Test, integrator: Integrator, num_steps: Optional[int] = None, 
+                     final_time: Optional[float] = None, dt: Optional[float] = None,
+                     dt_min: Optional[float] = None, dt_max: Optional[float] = None,
+                     jd: Optional[int] = None, num_sublevels: Optional[int] = None,
+                     num_substeps: Optional[int] = None) -> Analysis:
         """
         Create a new analysis with all required components.
         
@@ -266,19 +375,29 @@ class AnalysisManager:
             algorithm (Algorithm): The algorithm for the analysis
             test (Test): The convergence test for the analysis
             integrator (Integrator): The integrator for the analysis
+            num_steps (Optional[int]): Number of analysis steps (either this or final_time must be provided)
+            final_time (Optional[float]): Final time for analysis (either this or num_steps must be provided)
+            dt (Optional[float]): Time step increment (required for Transient or VariableTransient analysis)
+            dt_min (Optional[float]): Minimum time step (required for VariableTransient analysis)
+            dt_max (Optional[float]): Maximum time step (required for VariableTransient analysis)
+            jd (Optional[int]): Number of iterations desired at each step (required for VariableTransient analysis)
+            num_sublevels (Optional[int]): Number of sublevels in case of analysis failure (optional)
+            num_substeps (Optional[int]): Number of substeps to try at each sublevel (optional)
         
         Returns:
             Analysis: The created analysis
             
         Raises:
-            ValueError: If integrator type is incompatible with analysis type
+            ValueError: If analysis parameters are inconsistent with analysis type
         """
-        return Analysis(name, analysis_type, constraint_handler, numberer, 
-                     system, algorithm, test, integrator)
+        return Analysis(name, analysis_type, constraint_handler, numberer, system, algorithm, 
+                      test, integrator, num_steps, final_time, dt, dt_min, dt_max, jd,
+                      num_sublevels, num_substeps)
     
     def create_static_analysis(self, name: str, constraint_handler: ConstraintHandler, 
                             numberer: Numberer, system: System, algorithm: Algorithm, 
-                            test: Test, integrator: Integrator) -> Analysis:
+                            test: Test, integrator: Integrator, num_steps: Optional[int] = None,
+                            final_time: Optional[float] = None) -> Analysis:
         """
         Create a static analysis with the specified components.
         
@@ -290,19 +409,26 @@ class AnalysisManager:
             algorithm (Algorithm): The algorithm for the analysis
             test (Test): The convergence test for the analysis
             integrator (Integrator): The integrator for the analysis (must be a static integrator)
+            num_steps (Optional[int]): Number of analysis steps (either this or final_time must be provided)
+            final_time (Optional[float]): Final time for analysis (either this or num_steps must be provided)
             
         Returns:
             Analysis: The created static analysis
             
         Raises:
             ValueError: If the integrator is not a static integrator
+            ValueError: If neither num_steps nor final_time is provided, or if both are provided
         """
         return Analysis(name, "Static", constraint_handler, numberer, 
-                     system, algorithm, test, integrator)
+                      system, algorithm, test, integrator, 
+                      num_steps=num_steps, final_time=final_time)
     
     def create_transient_analysis(self, name: str, constraint_handler: ConstraintHandler, 
                                numberer: Numberer, system: System, algorithm: Algorithm, 
-                               test: Test, integrator: Integrator) -> Analysis:
+                               test: Test, integrator: Integrator, dt: float,
+                               num_steps: Optional[int] = None, final_time: Optional[float] = None,
+                               num_sublevels: Optional[int] = None, 
+                               num_substeps: Optional[int] = None) -> Analysis:
         """
         Create a transient analysis with the specified components.
         
@@ -314,15 +440,61 @@ class AnalysisManager:
             algorithm (Algorithm): The algorithm for the analysis
             test (Test): The convergence test for the analysis
             integrator (Integrator): The integrator for the analysis (must be a transient integrator)
+            dt (float): Time step increment
+            num_steps (Optional[int]): Number of analysis steps (either this or final_time must be provided)
+            final_time (Optional[float]): Final time for analysis (either this or num_steps must be provided)
+            num_sublevels (Optional[int]): Number of sublevels in case of analysis failure (optional)
+            num_substeps (Optional[int]): Number of substeps to try at each sublevel (optional)
             
         Returns:
             Analysis: The created transient analysis
             
         Raises:
             ValueError: If the integrator is not a transient integrator
+            ValueError: If dt is not provided
+            ValueError: If neither num_steps nor final_time is provided, or if both are provided
         """
         return Analysis(name, "Transient", constraint_handler, numberer, 
-                     system, algorithm, test, integrator)
+                      system, algorithm, test, integrator, 
+                      num_steps=num_steps, final_time=final_time, dt=dt,
+                      num_sublevels=num_sublevels, num_substeps=num_substeps)
+    
+    def create_variable_transient_analysis(self, name: str, constraint_handler: ConstraintHandler, 
+                                        numberer: Numberer, system: System, algorithm: Algorithm, 
+                                        test: Test, integrator: Integrator, dt: float,
+                                        dt_min: float, dt_max: float, jd: int,
+                                        num_steps: Optional[int] = None, 
+                                        final_time: Optional[float] = None) -> Analysis:
+        """
+        Create a variable transient analysis with the specified components.
+        
+        Args:
+            name (str): Name of the analysis
+            constraint_handler (ConstraintHandler): The constraint handler for the analysis
+            numberer (Numberer): The numberer for the analysis
+            system (System): The system for the analysis
+            algorithm (Algorithm): The algorithm for the analysis
+            test (Test): The convergence test for the analysis
+            integrator (Integrator): The integrator for the analysis (must be a transient integrator)
+            dt (float): Time step increment
+            dt_min (float): Minimum time step
+            dt_max (float): Maximum time step
+            jd (int): Number of iterations desired at each step
+            num_steps (Optional[int]): Number of analysis steps (either this or final_time must be provided)
+            final_time (Optional[float]): Final time for analysis (either this or num_steps must be provided)
+            
+        Returns:
+            Analysis: The created variable transient analysis
+            
+        Raises:
+            ValueError: If the integrator is not a transient integrator
+            ValueError: If dt, dt_min, dt_max, or jd is not provided
+            ValueError: If neither num_steps nor final_time is provided, or if both are provided
+        """
+        return Analysis(name, "VariableTransient", constraint_handler, numberer, 
+                      system, algorithm, test, integrator, 
+                      num_steps=num_steps, final_time=final_time, dt=dt,
+                      dt_min=dt_min, dt_max=dt_max, jd=jd)
     
     def get_analysis(self, tag: int) -> Analysis:
         """
@@ -362,7 +534,10 @@ class AnalysisManager:
             KeyError: If no analysis with the given tag exists
         """
         # Check if analysis exists
-        Analysis.get_analysis(tag)
+        analysis = Analysis.get_analysis(tag)
+        
+        # Remove from name set
+        Analysis._names.remove(analysis.name)
         
         # Remove from instances dictionary
         if tag in Analysis._instances:
@@ -457,10 +632,29 @@ class AnalysisManager:
             analysis: The analysis to modify
             integrator: The new integrator
         """
-        if analysis.analysis_type.lower() == "static" and not isinstance(integrator, StaticIntegrator):
+        if analysis.analysis_type == "Static" and not isinstance(integrator, StaticIntegrator):
             raise ValueError(f"Static analysis requires a static integrator. {integrator.integrator_type} is not compatible.")
         
-        elif analysis.analysis_type.lower() in ["transient", "variabletransient"] and not isinstance(integrator, TransientIntegrator):
+        elif analysis.analysis_type in ["Transient", "VariableTransient"] and not isinstance(integrator, TransientIntegrator):
             raise ValueError(f"Transient analysis requires a transient integrator. {integrator.integrator_type} is not compatible.")
         
         analysis.integrator = integrator
+    
+    def rename_analysis(self, analysis: Analysis, new_name: str) -> None:
+        """
+        Rename an analysis.
+        
+        Args:
+            analysis: The analysis to rename
+            new_name: The new name for the analysis
+            
+        Raises:
+            ValueError: If the new name is already in use
+        """
+        if new_name in Analysis._names:
+            raise ValueError(f"Analysis name '{new_name}' is already in use. Names must be unique.")
+        
+        # Remove old name and add new name
+        Analysis._names.remove(analysis.name)
+        analysis.name = new_name
+        Analysis._names.add(new_name)
