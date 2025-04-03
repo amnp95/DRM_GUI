@@ -3,8 +3,7 @@ from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
     QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout, QTabWidget,
-    QGroupBox, QWizard, QWizardPage, QSpinBox, QDoubleSpinBox, 
-    QRadioButton, QCheckBox
+    QGroupBox, QSpinBox, QDoubleSpinBox, QRadioButton, QCheckBox
 )
 
 from meshmaker.components.Analysis.analysis import Analysis, AnalysisManager
@@ -169,7 +168,7 @@ class AnalysisManagerDialog(QDialog):
     def create_new_analysis(self):
         """Open wizard to create a new analysis"""
         wizard = AnalysisWizard(self)
-        if wizard.exec() == QWizard.Accepted and wizard.created_analysis:
+        if wizard.exec() == QDialog.Accepted and wizard.created_analysis:
             self.refresh_analyses_list()
 
     def edit_selected_analysis(self):
@@ -182,7 +181,7 @@ class AnalysisManagerDialog(QDialog):
         try:
             analysis = self.analysis_manager.get_analysis(tag)
             wizard = AnalysisWizard(self, analysis)
-            if wizard.exec() == QWizard.Accepted:
+            if wizard.exec() == QDialog.Accepted:
                 self.refresh_analyses_list()
                 
         except Exception as e:
@@ -209,9 +208,9 @@ class AnalysisManagerDialog(QDialog):
                 QMessageBox.critical(self, "Error", str(e))
 
 
-class AnalysisWizard(QWizard):
+class AnalysisWizard(QDialog):
     """
-    Simplified wizard for creating/editing an analysis
+    Simplified dialog for creating/editing an analysis with all options in one tabbed interface
     """
     def __init__(self, parent=None, analysis=None):
         super().__init__(parent)
@@ -224,7 +223,7 @@ class AnalysisWizard(QWizard):
         else:
             self.setWindowTitle("Create New Analysis")
             
-        self.resize(800, 600)
+        self.resize(900, 700)
         
         # Initialize manager instances
         self.analysis_manager = AnalysisManager()
@@ -235,165 +234,52 @@ class AnalysisWizard(QWizard):
         self.test_manager = TestManager()
         self.integrator_manager = IntegratorManager()
         
-        # Set wizard style
-        self.setWizardStyle(QWizard.ModernStyle)
+        # Main layout
+        layout = QVBoxLayout(self)
         
-        # Add pages
-        self.addPage(BasicInfoPage(self))
-        self.addPage(ComponentsPage(self))
-        self.addPage(ParametersPage(self))
-        self.addPage(SummaryPage(self))
+        # Create tabbed interface
+        self.tabs = QTabWidget()
+        self.tabs.addTab(self.create_basic_tab(), "Basic Info")
+        self.tabs.addTab(self.create_components_tab(), "Components")
+        self.tabs.addTab(self.create_time_stepping_tab(), "Time Stepping")
+        self.tabs.addTab(self.create_summary_tab(), "Summary")
         
-        # Set options
-        self.setOption(QWizard.NoBackButtonOnStartPage, True)
-        self.setOption(QWizard.HaveFinishButtonOnEarlyPages, False)
-        self.setOption(QWizard.HaveNextButtonOnLastPage, False)
-        self.setOption(QWizard.HaveHelpButton, False)
+        layout.addWidget(self.tabs)
+        
+        # Buttons
+        button_box = QHBoxLayout()
+        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn.clicked.connect(self.reject)
+        
+        self.finish_btn = QPushButton("Finish")
+        self.finish_btn.clicked.connect(self.accept_and_create)
+        self.finish_btn.setDefault(True)
+        
+        button_box.addStretch()
+        button_box.addWidget(self.cancel_btn)
+        button_box.addWidget(self.finish_btn)
+        
+        layout.addLayout(button_box)
         
         # Connect signals
-        self.finished.connect(self.on_wizard_finished)
+        self.tabs.currentChanged.connect(self.update_summary)
         
-    def on_wizard_finished(self, result):
-        """Handle wizard completion"""
-        if result == QWizard.Accepted:
-            try:
-                # Collect parameters
-                name = self.field("name")
-                analysis_type = self.field("analysis_type")
-                
-                # Get components 
-                constraint_handler_tag = self.field("constraint_handler_tag")
-                constraint_handler = self.constraint_handler_manager.get_handler(constraint_handler_tag)
-                
-                numberer_type = self.field("numberer_type")
-                numberer = self.numberer_manager.get_numberer(numberer_type)
-                
-                system_tag = self.field("system_tag")
-                system = self.system_manager.get_system(system_tag)
-                
-                algorithm_tag = self.field("algorithm_tag")
-                algorithm = self.algorithm_manager.get_algorithm(algorithm_tag)
-                
-                test_tag = self.field("test_tag")
-                test = self.test_manager.get_test(test_tag)
-                
-                integrator_tag = self.field("integrator_tag")
-                integrator = self.integrator_manager.get_integrator(integrator_tag)
-                
-                # Get analysis parameters
-                use_num_steps = self.field("use_num_steps")
-                
-                num_steps = None
-                final_time = None
-                
-                if use_num_steps:
-                    num_steps = self.field("num_steps")
-                else:
-                    final_time = self.field("final_time")
-                
-                dt = None
-                dt_min = None
-                dt_max = None
-                jd = None
-                num_sublevels = None
-                num_substeps = None
-                
-                if analysis_type != "Static":
-                    dt = self.field("dt")
-                    
-                    if analysis_type == "VariableTransient":
-                        dt_min = self.field("dt_min")
-                        dt_max = self.field("dt_max")
-                        jd = self.field("jd")
-                
-                use_substepping = self.field("use_substepping")
-                if use_substepping and analysis_type != "Static":
-                    num_sublevels = self.field("num_sublevels")
-                    num_substeps = self.field("num_substeps")
-                
-                if self.analysis:
-                    # Update existing analysis
-                    self.update_analysis(name, constraint_handler, numberer, system, algorithm, 
-                                      test, integrator, num_steps, final_time, dt,
-                                      dt_min, dt_max, jd, num_sublevels, num_substeps)
-                    QMessageBox.information(self, "Success", f"Analysis '{name}' updated successfully!")
-                else:
-                    # Create new analysis
-                    self.created_analysis = self.analysis_manager.create_analysis(
-                        name=name,
-                        analysis_type=analysis_type,
-                        constraint_handler=constraint_handler,
-                        numberer=numberer,
-                        system=system,
-                        algorithm=algorithm,
-                        test=test,
-                        integrator=integrator,
-                        num_steps=num_steps,
-                        final_time=final_time,
-                        dt=dt,
-                        dt_min=dt_min,
-                        dt_max=dt_max,
-                        jd=jd,
-                        num_sublevels=num_sublevels,
-                        num_substeps=num_substeps
-                    )
-                    QMessageBox.information(self, "Success", f"Analysis '{name}' created successfully!")
-                
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Failed to create/update analysis: {str(e)}")
-                
-    def update_analysis(self, name, constraint_handler, numberer, system, algorithm, 
-                    test, integrator, num_steps, final_time, dt,
-                    dt_min, dt_max, jd, num_sublevels, num_substeps):
-        """Update an existing analysis"""
-        # Check if name changed and is not a duplicate
-        if name != self.analysis.name and name in Analysis._names:
-            raise ValueError(f"Analysis name '{name}' is already in use. Names must be unique.")
-        
-        # Update analysis components
-        self.analysis_manager.update_constraint_handler(self.analysis, constraint_handler)
-        self.analysis.numberer = numberer
-        self.analysis_manager.update_system(self.analysis, system)
-        self.analysis_manager.update_algorithm(self.analysis, algorithm)
-        self.analysis_manager.update_test(self.analysis, test)
-        self.analysis_manager.update_integrator(self.analysis, integrator)
-        
-        # Update analysis parameters
-        if name != self.analysis.name:
-            Analysis._names.remove(self.analysis.name)
-            self.analysis.name = name
-            Analysis._names.add(name)
-        
-        self.analysis.num_steps = num_steps
-        self.analysis.final_time = final_time
-        self.analysis.dt = dt
-        self.analysis.dt_min = dt_min
-        self.analysis.dt_max = dt_max
-        self.analysis.jd = jd
-        self.analysis.num_sublevels = num_sublevels
-        self.analysis.num_substeps = num_substeps
-
-
-class BasicInfoPage(QWizardPage):
-    """First page for basic analysis information"""
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setTitle("Analysis Basic Information")
-        self.setSubTitle("Enter the basic information for the analysis.")
-        
-        layout = QFormLayout(self)
+    def create_basic_tab(self):
+        """Create basic info tab with name and analysis type"""
+        tab = QWidget()
+        layout = QFormLayout(tab)
         
         # Name field
         self.name_edit = QLineEdit()
-        if parent.analysis:
-            self.name_edit.setText(parent.analysis.name)
+        if self.analysis:
+            self.name_edit.setText(self.analysis.name)
         layout.addRow("Analysis Name:", self.name_edit)
         
         # Analysis type
         self.analysis_type_combo = QComboBox()
         self.analysis_type_combo.addItems(["Static", "Transient", "VariableTransient"])
-        if parent.analysis:
-            index = self.analysis_type_combo.findText(parent.analysis.analysis_type)
+        if self.analysis:
+            index = self.analysis_type_combo.findText(self.analysis.analysis_type)
             if index >= 0:
                 self.analysis_type_combo.setCurrentIndex(index)
             # Disable changing analysis type in edit mode
@@ -401,8 +287,8 @@ class BasicInfoPage(QWizardPage):
         layout.addRow("Analysis Type:", self.analysis_type_combo)
         
         # Description box
-        self.description_group = QGroupBox("Description")
-        desc_layout = QVBoxLayout(self.description_group)
+        description_group = QGroupBox("Description")
+        desc_layout = QVBoxLayout(description_group)
         
         self.static_desc = QLabel("Static: Used for problems where inertial and damping effects are not considered.")
         self.transient_desc = QLabel("Transient: Used for dynamic analysis where inertial and damping effects are considered.")
@@ -412,247 +298,94 @@ class BasicInfoPage(QWizardPage):
         desc_layout.addWidget(self.transient_desc)
         desc_layout.addWidget(self.var_trans_desc)
         
-        layout.addRow(self.description_group)
+        layout.addRow(description_group)
         
         # Update descriptions when analysis type changes
         self.analysis_type_combo.currentTextChanged.connect(self.update_description)
-        
-        # Register fields
-        self.registerField("name*", self.name_edit)
-        self.registerField("analysis_type", self.analysis_type_combo, "currentText")
+        self.analysis_type_combo.currentTextChanged.connect(self.update_time_stepping_tab)
         
         # Initial update
         self.update_description(self.analysis_type_combo.currentText())
         
+        return tab
+    
     def update_description(self, analysis_type):
         """Update the description based on selected analysis type"""
         self.static_desc.setVisible(analysis_type == "Static")
         self.transient_desc.setVisible(analysis_type == "Transient")
         self.var_trans_desc.setVisible(analysis_type == "VariableTransient")
-        
-    def validatePage(self):
-        """Validate the page before proceeding"""
-        name = self.name_edit.text().strip()
-        
-        if not name:
-            QMessageBox.warning(self, "Validation Error", "Please enter a name for the analysis.")
-            return False
-        
-        # Check for duplicate name, but allow keeping the same name in edit mode
-        wizard = self.wizard()
-        if name in Analysis._names and (not wizard.analysis or wizard.analysis.name != name):
-            QMessageBox.warning(self, "Validation Error", f"Analysis name '{name}' is already in use. Names must be unique.")
-            return False
-        
-        return True
-
-
-class ComponentsPage(QWizardPage):
-    """Page for selecting all the components of the analysis"""
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setTitle("Analysis Components")
-        self.setSubTitle("Select the components for the analysis.")
-        
-        layout = QVBoxLayout(self)
-        
-        # Create tabbed interface for the components
-        self.tabs = QTabWidget()
-        
-        # Add tabs for each component
-        self.tabs.addTab(self.create_constraint_handler_tab(), "Constraint Handler")
-        self.tabs.addTab(self.create_numberer_tab(), "Numberer")
-        self.tabs.addTab(self.create_system_tab(), "System")
-        self.tabs.addTab(self.create_algorithm_tab(), "Algorithm")
-        self.tabs.addTab(self.create_test_tab(), "Test")
-        self.tabs.addTab(self.create_integrator_tab(), "Integrator")
-        
-        layout.addWidget(self.tabs)
-        
-    def create_constraint_handler_tab(self):
-        """Create the constraint handler selection tab"""
+    
+    def create_components_tab(self):
+        """Create tab with component selection tabs"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
         
-        # Use an embedded ConstraintHandlerManagerTab for selection
-        self.constraint_handler_manager_tab = ConstraintHandlerManagerTab()
-        layout.addWidget(self.constraint_handler_manager_tab)
+        components_tabs = QTabWidget()
         
-        # Register fields
-        self.registerField("constraint_handler_tag", self, "selectedHandlerTag")
+        # Create inner tabs for components
+        self.constraint_handler_tab = ConstraintHandlerManagerTab()
+        self.numberer_tab = NumbererManagerTab()
+        self.system_tab = SystemManagerTab()
+        self.algorithm_tab = AlgorithmManagerTab()
+        self.test_tab = TestManagerTab()
+        self.integrator_tab = IntegratorManagerTab()
         
-        return tab
-    
-    def create_numberer_tab(self):
-        """Create the numberer selection tab"""
-        tab = QWidget()
-        layout = QVBoxLayout(tab)
+        components_tabs.addTab(self.constraint_handler_tab, "Constraint Handler")
+        components_tabs.addTab(self.numberer_tab, "Numberer")
+        components_tabs.addTab(self.system_tab, "System")
+        components_tabs.addTab(self.algorithm_tab, "Algorithm")
+        components_tabs.addTab(self.test_tab, "Test")
+        components_tabs.addTab(self.integrator_tab, "Integrator")
         
-        # Use an embedded NumbererManagerTab for selection
-        self.numberer_manager_tab = NumbererManagerTab()
-        layout.addWidget(self.numberer_manager_tab)
+        layout.addWidget(components_tabs)
         
-        # Register fields
-        self.registerField("numberer_type", self, "selectedNumbererType")
-        
-        return tab
-    
-    def create_system_tab(self):
-        """Create the system selection tab"""
-        tab = QWidget()
-        layout = QVBoxLayout(tab)
-        
-        # Use an embedded SystemManagerTab for selection
-        self.system_manager_tab = SystemManagerTab()
-        layout.addWidget(self.system_manager_tab)
-        
-        # Register fields
-        self.registerField("system_tag", self, "selectedSystemTag")
-        
-        return tab
-    
-    def create_algorithm_tab(self):
-        """Create the algorithm selection tab"""
-        tab = QWidget()
-        layout = QVBoxLayout(tab)
-        
-        # Use an embedded AlgorithmManagerTab for selection
-        self.algorithm_manager_tab = AlgorithmManagerTab()
-        layout.addWidget(self.algorithm_manager_tab)
-        
-        # Register fields
-        self.registerField("algorithm_tag", self, "selectedAlgorithmTag")
-        
-        return tab
-    
-    def create_test_tab(self):
-        """Create the test selection tab"""
-        tab = QWidget()
-        layout = QVBoxLayout(tab)
-        
-        # Use an embedded TestManagerTab for selection
-        self.test_manager_tab = TestManagerTab()
-        layout.addWidget(self.test_manager_tab)
-        
-        # Register fields
-        self.registerField("test_tag", self, "selectedTestTag")
-        
-        return tab
-    
-    def create_integrator_tab(self):
-        """Create the integrator selection tab"""
-        tab = QWidget()
-        layout = QVBoxLayout(tab)
-        
-        # Use an embedded IntegratorManagerTab for selection
-        self.integrator_manager_tab = IntegratorManagerTab()
-        layout.addWidget(self.integrator_manager_tab)
-        
-        # Register fields
-        self.registerField("integrator_tag", self, "selectedIntegratorTag")
-        
-        return tab
-    
-    def selectedHandlerTag(self):
-        """Get selected constraint handler tag"""
-        # Get the tag from constraint handler tab
-        return self.constraint_handler_manager_tab.get_selected_handler_tag()
-    
-    def selectedNumbererType(self):
-        """Get selected numberer type"""
-        # Extract selection from numberer tab
-        selected_btn = self.numberer_manager_tab.numberer_buttons.checkedButton()
-        if selected_btn:
-            return selected_btn.text().lower()
-        return None
-    
-    def selectedSystemTag(self):
-        """Get selected system tag"""
-        return self.system_manager_tab.get_selected_system_tag()
-    
-    def selectedAlgorithmTag(self):
-        """Get selected algorithm tag"""
-        return self.algorithm_manager_tab.get_selected_algorithm_tag()
-    
-    def selectedTestTag(self):
-        """Get selected test tag"""
-        return self.test_manager_tab.get_selected_test_tag()
-    
-    def selectedIntegratorTag(self):
-        """Get selected integrator tag"""
-        return self.integrator_manager_tab.get_selected_integrator_tag()
-    
-    def validatePage(self):
-        """Validate that all components are selected"""
-        wizard = self.wizard()
-        errors = []
-        
-        # Check constraint handler
-        if not self.selectedHandlerTag():
-            errors.append("Constraint Handler")
+        # If we're editing an existing analysis, select the components
+        if self.analysis:
+            if self.analysis.constraint_handler:
+                self.constraint_handler_tab.select_handler(self.analysis.constraint_handler.tag)
             
-        # Check numberer
-        if not self.selectedNumbererType():
-            errors.append("Numberer")
-            
-        # Check system
-        if not self.selectedSystemTag():
-            errors.append("System")
-            
-        # Check algorithm
-        if not self.selectedAlgorithmTag():
-            errors.append("Algorithm")
-            
-        # Check test
-        if not self.selectedTestTag():
-            errors.append("Convergence Test")
-            
-        # Check integrator
-        if not self.selectedIntegratorTag():
-            errors.append("Integrator")
-        else:
-            # Check integrator compatibility with analysis type
-            analysis_type = wizard.field("analysis_type")
-            integrator = wizard.integrator_manager.get_integrator(self.selectedIntegratorTag())
-            
-            if analysis_type == "Static" and not isinstance(integrator, StaticIntegrator):
-                QMessageBox.warning(self, "Validation Error", 
-                                   f"Static analysis requires a static integrator. {integrator.integrator_type} is not compatible.")
-                return False
+            if self.analysis.numberer:
+                self.numberer_tab.select_numberer(self.analysis.numberer.numberer_type)
                 
-            elif analysis_type in ["Transient", "VariableTransient"] and not isinstance(integrator, TransientIntegrator):
-                QMessageBox.warning(self, "Validation Error", 
-                                   f"Transient analysis requires a transient integrator. {integrator.integrator_type} is not compatible.")
-                return False
+            if self.analysis.system:
+                self.system_tab.select_system(self.analysis.system.tag)
+                
+            if self.analysis.algorithm:
+                self.algorithm_tab.select_algorithm(self.analysis.algorithm.tag)
+                
+            if self.analysis.test:
+                self.test_tab.select_test(self.analysis.test.tag)
+                
+            if self.analysis.integrator:
+                self.integrator_tab.select_integrator(self.analysis.integrator.tag)
         
-        if errors:
-            QMessageBox.warning(self, "Validation Error", 
-                               f"Please select the following components: {', '.join(errors)}")
-            return False
+        return tab
+    
+    def create_time_stepping_tab(self):
+        """Create time stepping parameters tab"""
+        self.time_stepping_tab = QWidget()
+        self.time_stepping_layout = QVBoxLayout(self.time_stepping_tab)
+        
+        # Initialize with current analysis type
+        analysis_type = self.analysis_type_combo.currentText() if hasattr(self, 'analysis_type_combo') else "Static"
+        self.update_time_stepping_tab(analysis_type)
+        
+        return self.time_stepping_tab
+    
+    def update_time_stepping_tab(self, analysis_type=None):
+        """Update the time stepping tab based on selected analysis type"""
+        if not hasattr(self, 'time_stepping_layout'):
+            return
             
-        return True
-
-
-class ParametersPage(QWizardPage):
-    """Page for analysis parameters"""
-    def __init__(self, parent):
-        super().__init__(parent)
-        
-        self.setTitle("Analysis Parameters")
-        self.setSubTitle("Configure the parameters for the analysis.")
-        
-        self.layout = QVBoxLayout(self)
-        
-    def initializePage(self):
-        """Initialize page when it becomes active"""
         # Clear existing widgets
-        while self.layout.count():
-            item = self.layout.takeAt(0)
+        while self.time_stepping_layout.count():
+            item = self.time_stepping_layout.takeAt(0)
             widget = item.widget()
             if widget:
                 widget.deleteLater()
         
-        analysis_type = self.wizard().field("analysis_type")
+        if not analysis_type:
+            analysis_type = self.analysis_type_combo.currentText()
         
         # Time Step Control
         time_step_group = QGroupBox("Analysis Time/Steps")
@@ -685,20 +418,19 @@ class ParametersPage(QWizardPage):
         self.time_radio.toggled.connect(lambda checked: self.final_time_spin.setEnabled(checked))
         
         # Default checked state
-        analysis = self.wizard().analysis
-        if analysis and analysis.num_steps is not None:
+        if self.analysis and self.analysis.num_steps is not None:
             self.steps_radio.setChecked(True)
-            self.num_steps_spin.setValue(analysis.num_steps)
+            self.num_steps_spin.setValue(self.analysis.num_steps)
             self.final_time_spin.setEnabled(False)
-        elif analysis and analysis.final_time is not None:
+        elif self.analysis and self.analysis.final_time is not None:
             self.time_radio.setChecked(True)
-            self.final_time_spin.setValue(analysis.final_time)
+            self.final_time_spin.setValue(self.analysis.final_time)
             self.num_steps_spin.setEnabled(False)
         else:
             self.steps_radio.setChecked(True)
             self.final_time_spin.setEnabled(False)
         
-        self.layout.addWidget(time_step_group)
+        self.time_stepping_layout.addWidget(time_step_group)
         
         # For Transient analyses, add time step parameters
         if analysis_type in ["Transient", "VariableTransient"]:
@@ -713,8 +445,8 @@ class ParametersPage(QWizardPage):
             transient_layout.addRow("Time Step (dt):", self.dt_spin)
             
             # Set value from editing analysis
-            if analysis and analysis.dt is not None:
-                self.dt_spin.setValue(analysis.dt)
+            if self.analysis and self.analysis.dt is not None:
+                self.dt_spin.setValue(self.analysis.dt)
             
             # For VariableTransient, add specific parameters
             if analysis_type == "VariableTransient":
@@ -736,12 +468,12 @@ class ParametersPage(QWizardPage):
                 transient_layout.addRow("J-Steps (jd):", self.jd_spin)
                 
                 # Set values from editing analysis
-                if analysis and analysis.dt_min is not None:
-                    self.dt_min_spin.setValue(analysis.dt_min)
-                if analysis and analysis.dt_max is not None:
-                    self.dt_max_spin.setValue(analysis.dt_max)
-                if analysis and analysis.jd is not None:
-                    self.jd_spin.setValue(analysis.jd)
+                if self.analysis and self.analysis.dt_min is not None:
+                    self.dt_min_spin.setValue(self.analysis.dt_min)
+                if self.analysis and self.analysis.dt_max is not None:
+                    self.dt_max_spin.setValue(self.analysis.dt_max)
+                if self.analysis and self.analysis.jd is not None:
+                    self.jd_spin.setValue(self.analysis.jd)
             
             # Sub-stepping parameters for Transient/VariableTransient
             self.substep_group = QGroupBox("Sub-stepping Options")
@@ -760,168 +492,306 @@ class ParametersPage(QWizardPage):
             substep_layout.addRow("Number of Sub-steps per level:", self.num_substeps_spin)
             
             # Set values from editing analysis
-            if analysis and analysis.num_sublevels is not None:
+            if self.analysis and self.analysis.num_sublevels is not None:
                 self.substep_group.setChecked(True)
-                self.num_sublevels_spin.setValue(analysis.num_sublevels)
-            if analysis and analysis.num_substeps is not None:
-                self.num_substeps_spin.setValue(analysis.num_substeps)
+                self.num_sublevels_spin.setValue(self.analysis.num_sublevels)
+            if self.analysis and self.analysis.num_substeps is not None:
+                self.num_substeps_spin.setValue(self.analysis.num_substeps)
                 
             transient_layout.addRow(self.substep_group)
             
-            self.layout.addWidget(transient_group)
-        
-        # Register fields
-        self.registerField("use_num_steps", self.steps_radio)
-        self.registerField("num_steps", self.num_steps_spin)
-        self.registerField("final_time", self.final_time_spin)
-        
-        if analysis_type in ["Transient", "VariableTransient"]:
-            self.registerField("dt", self.dt_spin)
-            
-            if analysis_type == "VariableTransient":
-                self.registerField("dt_min", self.dt_min_spin)
-                self.registerField("dt_max", self.dt_max_spin)
-                self.registerField("jd", self.jd_spin)
-            
-            self.registerField("use_substepping", self.substep_group, "checked")
-            self.registerField("num_sublevels", self.num_sublevels_spin)
-            self.registerField("num_substeps", self.num_substeps_spin)
+            self.time_stepping_layout.addWidget(transient_group)
     
-    def validatePage(self):
-        """Validate input parameters"""
-        analysis_type = self.wizard().field("analysis_type")
+    def create_summary_tab(self):
+        """Create summary tab for reviewing settings"""
+        tab = QWidget()
+        self.summary_layout = QVBoxLayout(tab)
         
-        # Validate time step/final time
-        if self.steps_radio.isChecked():
-            if self.num_steps_spin.value() <= 0:
-                QMessageBox.warning(self, "Validation Error", "Number of steps must be greater than 0.")
-                return False
-        else:  # final time selected
-            if self.final_time_spin.value() <= 0:
-                QMessageBox.warning(self, "Validation Error", "Final time must be greater than 0.")
-                return False
+        # Summary content will be updated when tab is shown
+        self.summary_label = QLabel("Please review your analysis configuration.")
+        self.summary_label.setWordWrap(True)
+        self.summary_layout.addWidget(self.summary_label)
         
-        # Validate time step for Transient/VariableTransient
-        if analysis_type in ["Transient", "VariableTransient"]:
-            if self.dt_spin.value() <= 0:
-                QMessageBox.warning(self, "Validation Error", "Time step (dt) must be greater than 0.")
-                return False
+        return tab
+    
+    def update_summary(self):
+        """Update the summary tab content"""
+        if self.tabs.currentWidget() != self.tabs.widget(3):  # Not on summary tab
+            return
+        
+        try:
+            # Get basic info
+            name = self.name_edit.text()
+            analysis_type = self.analysis_type_combo.currentText()
             
-            # Validate VariableTransient specific parameters
-            if analysis_type == "VariableTransient":
-                if self.dt_min_spin.value() <= 0:
-                    QMessageBox.warning(self, "Validation Error", "Minimum time step must be greater than 0.")
-                    return False
-                if self.dt_max_spin.value() <= 0:
-                    QMessageBox.warning(self, "Validation Error", "Maximum time step must be greater than 0.")
-                    return False
-                if self.dt_min_spin.value() > self.dt_max_spin.value():
-                    QMessageBox.warning(self, "Validation Error", "Minimum time step cannot be greater than maximum time step.")
-                    return False
-                if self.dt_spin.value() < self.dt_min_spin.value() or self.dt_spin.value() > self.dt_max_spin.value():
-                    QMessageBox.warning(self, "Validation Error", "Initial time step must be between minimum and maximum time step.")
-                    return False
+            # Format summary
+            summary_text = f"<b>Name:</b> {name}<br>"
+            summary_text += f"<b>Analysis Type:</b> {analysis_type}<br><br>"
+            
+            # Add component information
+            constraint_handler_tag = self.constraint_handler_tab.get_selected_handler_tag()
+            if constraint_handler_tag:
+                constraint_handler = self.constraint_handler_manager.get_handler(constraint_handler_tag)
+                summary_text += f"<b>Constraint Handler:</b> {constraint_handler.handler_type} (Tag: {constraint_handler_tag})<br>"
+            
+            numberer_type = self.numberer_tab.get_selected_numberer_type()
+            if numberer_type:
+                summary_text += f"<b>Numberer:</b> {numberer_type.capitalize()}<br>"
+            
+            system_tag = self.system_tab.get_selected_system_tag()
+            if system_tag:
+                system = self.system_manager.get_system(system_tag)
+                summary_text += f"<b>System:</b> {system.system_type} (Tag: {system_tag})<br>"
+            
+            algorithm_tag = self.algorithm_tab.get_selected_algorithm_tag()
+            if algorithm_tag:
+                algorithm = self.algorithm_manager.get_algorithm(algorithm_tag)
+                summary_text += f"<b>Algorithm:</b> {algorithm.algorithm_type} (Tag: {algorithm_tag})<br>"
+            
+            test_tag = self.test_tab.get_selected_test_tag()
+            if test_tag:
+                test = self.test_manager.get_test(test_tag)
+                summary_text += f"<b>Convergence Test:</b> {test.test_type} (Tag: {test_tag})<br>"
+            
+            integrator_tag = self.integrator_tab.get_selected_integrator_tag()
+            if integrator_tag:
+                integrator = self.integrator_manager.get_integrator(integrator_tag)
+                summary_text += f"<b>Integrator:</b> {integrator.integrator_type} (Tag: {integrator_tag})<br><br>"
+            
+            # Add analysis parameters if time stepping tab has been initialized
+            if hasattr(self, 'steps_radio'):
+                if self.steps_radio.isChecked():
+                    num_steps = self.num_steps_spin.value()
+                    summary_text += f"<b>Number of Steps:</b> {num_steps}<br>"
+                else:
+                    final_time = self.final_time_spin.value()
+                    summary_text += f"<b>Final Time:</b> {final_time}<br>"
+                
+                # For Transient and VariableTransient
+                if analysis_type in ["Transient", "VariableTransient"] and hasattr(self, 'dt_spin'):
+                    dt = self.dt_spin.value()
+                    summary_text += f"<b>Time Step (dt):</b> {dt}<br>"
+                    
+                    # For VariableTransient
+                    if analysis_type == "VariableTransient" and hasattr(self, 'dt_min_spin'):
+                        dt_min = self.dt_min_spin.value()
+                        dt_max = self.dt_max_spin.value()
+                        jd = self.jd_spin.value()
+                        summary_text += f"<b>Minimum Time Step:</b> {dt_min}<br>"
+                        summary_text += f"<b>Maximum Time Step:</b> {dt_max}<br>"
+                        summary_text += f"<b>J-Steps (jd):</b> {jd}<br>"
+                    
+                    # Sub-stepping parameters
+                    if hasattr(self, 'substep_group') and self.substep_group.isChecked():
+                        num_sublevels = self.num_sublevels_spin.value()
+                        num_substeps = self.num_substeps_spin.value()
+                        summary_text += f"<b>Number of Sub-levels:</b> {num_sublevels}<br>"
+                        summary_text += f"<b>Number of Sub-steps per level:</b> {num_substeps}<br>"
+            
+            # Display the summary
+            self.summary_label.setText(summary_text)
+            
+        except Exception as e:
+            self.summary_label.setText(f"Error generating summary: {str(e)}")
+    
+    def accept_and_create(self):
+        """Validate and create/update the analysis when Finish is clicked"""
+        # Validate basic info
+        name = self.name_edit.text().strip()
+        if not name:
+            QMessageBox.warning(self, "Validation Error", "Please enter a name for the analysis.")
+            self.tabs.setCurrentIndex(0)  # Switch to basic tab
+            return
         
-        return True
-
-
-class SummaryPage(QWizardPage):
-    """Final summary page for the analysis"""
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setTitle("Analysis Summary")
-        self.setSubTitle("Review your analysis configuration before creating/updating it.")
+        # Check for duplicate name, but allow keeping the same name in edit mode
+        if name in Analysis._names and (not self.analysis or self.analysis.name != name):
+            QMessageBox.warning(self, "Validation Error", f"Analysis name '{name}' is already in use. Names must be unique.")
+            self.tabs.setCurrentIndex(0)  # Switch to basic tab
+            return
         
-        self.layout = QVBoxLayout(self)
+        analysis_type = self.analysis_type_combo.currentText()
         
-    def initializePage(self):
-        """Initialize page when it becomes active"""
-        # Clear existing widgets
-        while self.layout.count():
-            item = self.layout.takeAt(0)
-            widget = item.widget()
-            if widget:
-                widget.deleteLater()
+        # Validate components
+        errors = []
         
-        # Get all parameters from wizard fields
-        wizard = self.wizard()
-        name = wizard.field("name")
-        analysis_type = wizard.field("analysis_type")
+        constraint_handler_tag = self.constraint_handler_tab.get_selected_handler_tag()
+        if not constraint_handler_tag:
+            errors.append("Constraint Handler")
         
-        # Create summary group
-        summary_group = QGroupBox("Analysis Configuration")
-        summary_layout = QVBoxLayout(summary_group)
+        numberer_type = self.numberer_tab.get_selected_numberer_type()
+        if not numberer_type:
+            errors.append("Numberer")
         
-        # Format summary
-        summary_text = f"<b>Name:</b> {name}<br>"
-        summary_text += f"<b>Analysis Type:</b> {analysis_type}<br><br>"
+        system_tag = self.system_tab.get_selected_system_tag()
+        if not system_tag:
+            errors.append("System")
         
-        # Add component information 
-        constraint_handler_tag = wizard.field("constraint_handler_tag")
-        constraint_handler = wizard.constraint_handler_manager.get_handler(constraint_handler_tag)
-        summary_text += f"<b>Constraint Handler:</b> {constraint_handler.handler_type} (Tag: {constraint_handler_tag})<br>"
+        algorithm_tag = self.algorithm_tab.get_selected_algorithm_tag()
+        if not algorithm_tag:
+            errors.append("Algorithm")
         
-        numberer_type = wizard.field("numberer_type")
-        summary_text += f"<b>Numberer:</b> {numberer_type.capitalize()}<br>"
+        test_tag = self.test_tab.get_selected_test_tag()
+        if not test_tag:
+            errors.append("Convergence Test")
         
-        system_tag = wizard.field("system_tag")
-        system = wizard.system_manager.get_system(system_tag)
-        summary_text += f"<b>System:</b> {system.system_type} (Tag: {system_tag})<br>"
+        integrator_tag = self.integrator_tab.get_selected_integrator_tag()
+        if not integrator_tag:
+            errors.append("Integrator")
         
-        algorithm_tag = wizard.field("algorithm_tag")
-        algorithm = wizard.algorithm_manager.get_algorithm(algorithm_tag)
-        summary_text += f"<b>Algorithm:</b> {algorithm.algorithm_type} (Tag: {algorithm_tag})<br>"
+        if errors:
+            QMessageBox.warning(self, "Validation Error", 
+                              f"Please select the following components: {', '.join(errors)}")
+            self.tabs.setCurrentIndex(1)  # Switch to components tab
+            return
         
-        test_tag = wizard.field("test_tag")
-        test = wizard.test_manager.get_test(test_tag)
-        summary_text += f"<b>Convergence Test:</b> {test.test_type} (Tag: {test_tag})<br>"
+        # Check integrator compatibility
+        integrator = self.integrator_manager.get_integrator(integrator_tag)
+        if analysis_type == "Static" and not isinstance(integrator, StaticIntegrator):
+            QMessageBox.warning(self, "Validation Error", 
+                               f"Static analysis requires a static integrator. {integrator.integrator_type} is not compatible.")
+            self.tabs.setCurrentIndex(1)  # Switch to components tab
+            return
+            
+        if analysis_type in ["Transient", "VariableTransient"] and not isinstance(integrator, TransientIntegrator):
+            QMessageBox.warning(self, "Validation Error", 
+                               f"Transient analysis requires a transient integrator. {integrator.integrator_type} is not compatible.")
+            self.tabs.setCurrentIndex(1)  # Switch to components tab
+            return
         
-        integrator_tag = wizard.field("integrator_tag")
-        integrator = wizard.integrator_manager.get_integrator(integrator_tag)
-        summary_text += f"<b>Integrator:</b> {integrator.integrator_type} (Tag: {integrator_tag})<br><br>"
+        # Validate time stepping parameters
+        use_num_steps = self.steps_radio.isChecked()
         
-        # Add analysis parameters
-        use_num_steps = wizard.field("use_num_steps")
         if use_num_steps:
-            num_steps = wizard.field("num_steps")
-            summary_text += f"<b>Number of Steps:</b> {num_steps}<br>"
+            num_steps = self.num_steps_spin.value()
+            final_time = None
+            if num_steps <= 0:
+                QMessageBox.warning(self, "Validation Error", "Number of steps must be greater than 0.")
+                self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                return
         else:
-            final_time = wizard.field("final_time")
-            summary_text += f"<b>Final Time:</b> {final_time}<br>"
+            num_steps = None
+            final_time = self.final_time_spin.value()
+            if final_time <= 0:
+                QMessageBox.warning(self, "Validation Error", "Final time must be greater than 0.")
+                self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                return
         
-        # For Transient and VariableTransient
+        # Default values
+        dt = None
+        dt_min = None
+        dt_max = None
+        jd = None
+        num_sublevels = None
+        num_substeps = None
+        
+        # Transient specific parameters
         if analysis_type in ["Transient", "VariableTransient"]:
-            dt = wizard.field("dt")
-            summary_text += f"<b>Time Step (dt):</b> {dt}<br>"
+            dt = self.dt_spin.value()
+            if dt <= 0:
+                QMessageBox.warning(self, "Validation Error", "Time step (dt) must be greater than 0.")
+                self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                return
             
-            # For VariableTransient
+            # VariableTransient specific parameters
             if analysis_type == "VariableTransient":
-                dt_min = wizard.field("dt_min")
-                dt_max = wizard.field("dt_max")
-                jd = wizard.field("jd")
-                summary_text += f"<b>Minimum Time Step:</b> {dt_min}<br>"
-                summary_text += f"<b>Maximum Time Step:</b> {dt_max}<br>"
-                summary_text += f"<b>J-Steps (jd):</b> {jd}<br>"
+                dt_min = self.dt_min_spin.value()
+                dt_max = self.dt_max_spin.value()
+                jd = self.jd_spin.value()
+                
+                if dt_min <= 0:
+                    QMessageBox.warning(self, "Validation Error", "Minimum time step must be greater than 0.")
+                    self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                    return
+                if dt_max <= 0:
+                    QMessageBox.warning(self, "Validation Error", "Maximum time step must be greater than 0.")
+                    self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                    return
+                if dt_min > dt_max:
+                    QMessageBox.warning(self, "Validation Error", "Minimum time step cannot be greater than maximum time step.")
+                    self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                    return
+                if dt < dt_min or dt > dt_max:
+                    QMessageBox.warning(self, "Validation Error", "Initial time step must be between minimum and maximum time step.")
+                    self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                    return
             
-            # Sub-stepping parameters
-            use_substepping = wizard.field("use_substepping")
-            if use_substepping:
-                num_sublevels = wizard.field("num_sublevels")
-                num_substeps = wizard.field("num_substeps")
-                summary_text += f"<b>Number of Sub-levels:</b> {num_sublevels}<br>"
-                summary_text += f"<b>Number of Sub-steps per level:</b> {num_substeps}<br>"
+            # Substepping parameters
+            if self.substep_group.isChecked():
+                num_sublevels = self.num_sublevels_spin.value()
+                num_substeps = self.num_substeps_spin.value()
         
-        # Display the summary
-        summary_label = QLabel(summary_text)
-        summary_label.setWordWrap(True)
-        summary_layout.addWidget(summary_label)
+        try:
+            # Get component instances
+            constraint_handler = self.constraint_handler_manager.get_handler(constraint_handler_tag)
+            numberer = self.numberer_manager.get_numberer(numberer_type)
+            system = self.system_manager.get_system(system_tag)
+            algorithm = self.algorithm_manager.get_algorithm(algorithm_tag)
+            test = self.test_manager.get_test(test_tag)
+            
+            if self.analysis:
+                # Update existing analysis
+                self.update_analysis(name, constraint_handler, numberer, system, algorithm,
+                                 test, integrator, num_steps, final_time, dt,
+                                 dt_min, dt_max, jd, num_sublevels, num_substeps)
+                QMessageBox.information(self, "Success", f"Analysis '{name}' updated successfully!")
+            else:
+                # Create new analysis
+                self.created_analysis = self.analysis_manager.create_analysis(
+                    name=name,
+                    analysis_type=analysis_type,
+                    constraint_handler=constraint_handler,
+                    numberer=numberer,
+                    system=system,
+                    algorithm=algorithm,
+                    test=test,
+                    integrator=integrator,
+                    num_steps=num_steps,
+                    final_time=final_time,
+                    dt=dt,
+                    dt_min=dt_min,
+                    dt_max=dt_max,
+                    jd=jd,
+                    num_sublevels=num_sublevels,
+                    num_substeps=num_substeps
+                )
+                QMessageBox.information(self, "Success", f"Analysis '{name}' created successfully!")
+            
+            # Accept dialog
+            self.accept()
+            
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to create/update analysis: {str(e)}")
+    
+    def update_analysis(self, name, constraint_handler, numberer, system, algorithm, 
+                    test, integrator, num_steps, final_time, dt,
+                    dt_min, dt_max, jd, num_sublevels, num_substeps):
+        """Update an existing analysis"""
+        # Check if name changed and is not a duplicate
+        if name != self.analysis.name and name in Analysis._names:
+            raise ValueError(f"Analysis name '{name}' is already in use. Names must be unique.")
         
-        self.layout.addWidget(summary_group)
+        # Update analysis components
+        self.analysis_manager.update_constraint_handler(self.analysis, constraint_handler)
+        self.analysis.numberer = numberer
+        self.analysis_manager.update_system(self.analysis, system)
+        self.analysis_manager.update_algorithm(self.analysis, algorithm)
+        self.analysis_manager.update_test(self.analysis, test)
+        self.analysis_manager.update_integrator(self.analysis, integrator)
         
-        # Add note about finishing
-        note = QLabel("<b>Note:</b> Click 'Finish' to create or update the analysis.")
-        note.setWordWrap(True)
-        self.layout.addWidget(note)
+        # Update analysis parameters
+        if name != self.analysis.name:
+            Analysis._names.remove(self.analysis.name)
+            self.analysis.name = name
+            Analysis._names.add(name)
+        
+        self.analysis.num_steps = num_steps
+        self.analysis.final_time = final_time
+        self.analysis.dt = dt
+        self.analysis.dt_min = dt_min
+        self.analysis.dt_max = dt_max
+        self.analysis.jd = jd
+        self.analysis.num_sublevels = num_sublevels
+        self.analysis.num_substeps = num_substeps
 
 
 if __name__ == "__main__":
