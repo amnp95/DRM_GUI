@@ -80,7 +80,7 @@ class ProcessListWidget(QListWidget):
         self.process_manager = ProcessManager()
         self.setAcceptDrops(True)
         self.setDragDropMode(QAbstractItemView.DropOnly)
-        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)  # Allow multiple selection
         
         # Enable context menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -160,11 +160,22 @@ class ProcessListWidget(QListWidget):
         # Get selected rows in reverse order (to avoid index shifting when removing)
         selected_rows = sorted([self.row(item) for item in self.selectedItems()], reverse=True)
         
+        if not selected_rows:
+            return
+            
         for row in selected_rows:
             self.process_manager.remove_step(row)
         
         # Refresh list
         self.refresh_process_list()
+        
+    def keyPressEvent(self, event):
+        """Handle key press events"""
+        if event.key() == Qt.Key_Delete:
+            self.remove_selected_steps()
+        else:
+            # Pass other key events to parent class
+            super().keyPressEvent(event)
 
 
 class ProcessTab(QWidget):
@@ -251,9 +262,10 @@ class ProcessTab(QWidget):
             # Add to process manager
             ProcessManager().add_step(component, description)
             
-            # Notify parent to refresh process list
-            if hasattr(self.parent(), 'refresh_process_panel'):
-                self.parent().refresh_process_panel()
+            # Notify parent to refresh process list - Get the main dialog (window)
+            parent_dialog = self.window()
+            if hasattr(parent_dialog, 'refresh_process_panel'):
+                parent_dialog.refresh_process_panel()
 
 
 class ProcessGUI(QDialog):
@@ -295,13 +307,13 @@ class ProcessGUI(QDialog):
         right_panel = QFrame()
         right_layout = QVBoxLayout(right_panel)
         
-        right_layout.addWidget(QLabel("Process Steps (Drop Components Here)"))
+        right_layout.addWidget(QLabel("Process Steps (Drop Components Here or Select and Delete)"))
         
         # Process list
         self.process_list = ProcessListWidget()
         right_layout.addWidget(self.process_list)
         
-        # Control buttons
+        # Control buttons - Removed run process button
         button_layout = QHBoxLayout()
         
         clear_btn = QPushButton("Clear All Steps")
@@ -311,10 +323,6 @@ class ProcessGUI(QDialog):
         refresh_btn = QPushButton("Refresh Process List")
         refresh_btn.clicked.connect(self.refresh_process_panel)
         button_layout.addWidget(refresh_btn)
-        
-        run_btn = QPushButton("Run Process")
-        run_btn.clicked.connect(self.run_process)
-        button_layout.addWidget(run_btn)
         
         right_layout.addLayout(button_layout)
         
@@ -346,34 +354,6 @@ class ProcessGUI(QDialog):
         if reply == QMessageBox.Yes:
             self.process_manager.clear_steps()
             self.refresh_process_panel()
-    
-    def run_process(self):
-        """Execute the process (placeholder for actual execution)"""
-        # Count steps
-        steps = self.process_manager.get_steps()
-        if not steps:
-            QMessageBox.warning(self, "Empty Process", "No steps in the process to run.")
-            return
-        
-        # This is a placeholder for actual process execution
-        # In a real implementation, you would call appropriate methods on each component
-        
-        step_texts = []
-        for i, step in enumerate(steps):
-            component_ref = step["component"]
-            component = component_ref()
-            
-            if component:
-                component_type = type(component).__name__
-                tag = getattr(component, 'tag', 'unknown')
-                step_texts.append(f"Step {i+1}: {component_type} (Tag: {tag})")
-        
-        summary = "\n".join(step_texts)
-        QMessageBox.information(
-            self, "Process Execution",
-            f"Process would execute these steps:\n\n{summary}\n\n"
-            f"(This is a placeholder for actual execution.)"
-        )
 
 
 # Run as standalone for testing
@@ -388,7 +368,6 @@ if __name__ == "__main__":
     from meshmaker.components.Recorder.recorderBase import NodeRecorder, VTKHDFRecorder
     recorder1 = NodeRecorder(file_name="disp.out", nodes=[1, 2, 3], dofs=[1, 2], resp_type="disp")
     recorder2 = VTKHDFRecorder(file_base_name="results", resp_types=["disp", "vel"])
-    recorder1 = NodeRecorder(file_name="disp.out", nodes=[1, 2, 3], dofs=[1, 2], resp_type="disp")
     
     # Create sample analyses (Note: This is simplified as actual Analysis objects require many components)
     # In a real implementation, you would create proper Analysis objects with all required components
@@ -410,7 +389,7 @@ if __name__ == "__main__":
         
         # Create analysis
         analysis1 = AnalysisManager().create_analysis(
-            name="Static Analysis", 
+            name="Gravity Analysis", 
             analysis_type="Static",
             constraint_handler=constraint_handler,
             numberer=numberer,
