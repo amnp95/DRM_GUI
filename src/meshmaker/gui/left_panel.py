@@ -12,6 +12,7 @@ from meshmaker.components.Constraint.spConstraintGUI import SPConstraintManagerT
 from meshmaker.components.Pattern.patternGUI import PatternManagerTab
 from meshmaker.components.Recorder.recorderGUI import RecorderManagerTab
 from meshmaker.components.Analysis.analysisGUI import AnalysisManagerTab
+from meshmaker.components.Process.processGUI import ProcessGUI
 from .drmGUI import DRMGUI
 
 class LeftPanel(QFrame):
@@ -64,7 +65,7 @@ class LeftPanel(QFrame):
         self.tabs.addTab(self.mesh_tab, "Mesh")
         self.tabs.addTab(self.Assemble_tab, "Assemble")
         self.tabs.addTab(self.absorbing_tab, "DRM")
-        self.tabs.addTab(self.analysis_tab, "Analysis")
+        self.tabs.addTab(self.analysis_tab, "Process")
         self.tabs.addTab(self.manage_tab, "Manage")
 
 
@@ -92,9 +93,9 @@ class LeftPanel(QFrame):
         self.absorbing_tab.layout.addWidget(DRMGUI())
         self.absorbing_tab.setLayout(self.absorbing_tab.layout)
 
-        # Analysis tab
+        # Process tab
         self.analysis_tab.layout = QVBoxLayout()
-        self.analysis_tab.layout.addWidget(QLabel("Analysis content here"))
+        self.analysis_tab.layout.addWidget(ProcessGUI())
         self.analysis_tab.setLayout(self.analysis_tab.layout)
 
         # Manage Tab
