@@ -30,11 +30,9 @@ class IntegratorManagerTab(QDialog):
         # Main layout
         layout = QVBoxLayout(self)
         
-        # Add tabs for Static and Transient integrators
-        self.tab_widget = QTabWidget()
-        self.tab_widget.addTab(self.create_static_tab(), "Static")
-        self.tab_widget.addTab(self.create_transient_tab(), "Transient")
-        layout.addWidget(self.tab_widget)
+        # Create combined integrator selection section
+        self.create_integrator_selection()
+        layout.addWidget(self.integrator_selection_group)
         
         # Integrators table
         self.integrators_table = QTableWidget()
@@ -73,83 +71,197 @@ class IntegratorManagerTab(QDialog):
         # Disable edit/delete buttons initially
         self.update_button_state()
         
-    def create_static_tab(self):
-        """Create tab for static integrators"""
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
+    def create_integrator_selection(self):
+        """Create unified integrator selection section"""
+        self.integrator_selection_group = QGroupBox("Create New Integrator")
+        layout = QVBoxLayout(self.integrator_selection_group)
         
-        # Static integrator type selection
+        # Create type selection layout
         type_layout = QGridLayout()
-        self.static_integrator_type_combo = QComboBox()
-        self.static_integrator_type_combo.addItems(self.integrator_manager.get_static_types())
         
-        create_static_btn = QPushButton("Create Static Integrator")
-        create_static_btn.clicked.connect(self.open_static_integrator_creation_dialog)
+        # Integrator category radio buttons
+        self.category_group = QGroupBox("Integrator Category")
+        category_layout = QHBoxLayout(self.category_group)
         
-        type_layout.addWidget(QLabel("Integrator Type:"), 0, 0)
-        type_layout.addWidget(self.static_integrator_type_combo, 0, 1)
-        type_layout.addWidget(create_static_btn, 1, 0, 1, 2)
+        self.static_radio = QRadioButton("Static")
+        self.transient_radio = QRadioButton("Transient")
+        self.static_radio.setChecked(True)  # Default selection
+        
+        category_layout.addWidget(self.static_radio)
+        category_layout.addWidget(self.transient_radio)
+        
+        # Connect radio buttons to update integrator types list
+        self.static_radio.toggled.connect(self.update_integrator_types)
+        
+        type_layout.addWidget(self.category_group, 0, 0, 1, 2)
+        
+        # Integrator type combo box
+        self.integrator_type_combo = QComboBox()
+        self.integrator_type_combo.currentTextChanged.connect(self.update_description)
+        
+        type_layout.addWidget(QLabel("Integrator Type:"), 1, 0)
+        type_layout.addWidget(self.integrator_type_combo, 1, 1)
+        
+        # Create integrator button
+        self.create_btn = QPushButton("Create Integrator")
+        self.create_btn.clicked.connect(self.create_new_integrator)
+        type_layout.addWidget(self.create_btn, 2, 0, 1, 2)
         
         layout.addLayout(type_layout)
         
-        # Add description
-        desc = QTextEdit()
-        desc.setReadOnly(True)
-        desc.setHtml("""
-        <b>Static Integrators:</b><br><br>
-        <b>LoadControl</b>: Controls load increments in static analysis<br>
-        <b>DisplacementControl</b>: Controls displacement increments in static analysis<br>
-        <b>ParallelDisplacementControl</b>: For parallel models using displacement control<br>
-        <b>MinUnbalDispNorm</b>: Uses minimum unbalanced displacement norm<br>
-        <b>ArcLength</b>: Arc-length method for tracing unstable equilibrium paths
-        """)
-        layout.addWidget(desc)
+        # Add description text area
+        self.description_text = QTextEdit()
+        self.description_text.setReadOnly(True)
+        self.description_text.setMaximumHeight(120)
+        layout.addWidget(self.description_text)
         
-        return widget
+        # Initialize with static integrators
+        self.update_integrator_types()
+        
+    def update_integrator_types(self):
+        """Update the integrator types based on selected category"""
+        self.integrator_type_combo.clear()
+        
+        if self.static_radio.isChecked():
+            self.integrator_type_combo.addItems(self.integrator_manager.get_static_types())
+        else:
+            self.integrator_type_combo.addItems(self.integrator_manager.get_transient_types())
+        
+        # Update the description for the first item
+        self.update_description()
+        
+    def update_description(self):
+        """Update the description text based on selected integrator type"""
+        integrator_type = self.integrator_type_combo.currentText().lower()
+        
+        descriptions = {
+            # Static integrators
+            "loadcontrol": """
+                <b>LoadControl Integrator</b><br>
+                Controls load increments in static analysis. Used when you want to apply
+                loads in small increments to solve a nonlinear problem. The algorithm updates
+                the load factor by a fixed amount at each step.
+            """,
+            "displacementcontrol": """
+                <b>DisplacementControl Integrator</b><br>
+                Controls displacement increments at a specific degree of freedom (DOF) of a
+                specific node. Useful when you want to impose a fixed displacement increment
+                rather than a load increment. Often used for problems where load control might fail
+                due to limit points or snap-through behavior.
+            """,
+            "paralleldisplacementcontrol": """
+                <b>ParallelDisplacementControl Integrator</b><br>
+                Similar to DisplacementControl but designed for parallel computing environments.
+                It specifies a displacement increment for a specific DOF at a specific node,
+                optimized for distributed memory parallel processing.
+            """,
+            "minunbaldispnorm": """
+                <b>MinUnbalDispNorm Integrator</b><br>
+                Uses minimum unbalanced displacement norm to determine the increment size.
+                The algorithm searches for the minimum displacement norm among all DOFs and
+                uses that to determine the next step size.
+            """,
+            "arclength": """
+                <b>ArcLength Integrator</b><br>
+                Uses the arc-length method for tracing nonlinear equilibrium paths,
+                particularly useful for problems with snap-through or snap-back behavior.
+                It controls both load and displacement increments simultaneously.
+            """,
+            # Transient integrators
+            "centraldifference": """
+                <b>CentralDifference Integrator</b><br>
+                An explicit method for dynamic analysis that requires no iteration.
+                It is conditionally stable, meaning the time step must be less than
+                a critical value determined by the highest frequency in the system.
+                Has no parameters to configure.
+            """,
+            "newmark": """
+                <b>Newmark Integrator</b><br>
+                An implicit time integration method for dynamic analysis with parameters gamma and beta.
+                When gamma=0.5 and beta=0.25 (default), it's the constant average acceleration method
+                and unconditionally stable. When gamma=0.5 and beta=0, it becomes the central difference method.
+            """,
+            "hht": """
+                <b>HHT (Hilber-Hughes-Taylor) Integrator</b><br>
+                An implicit method with numerical damping controlled by alpha parameter (typically
+                between -1/3 and 0). When alpha=0, it's equivalent to Newmark method. It provides
+                better high-frequency damping than Newmark while maintaining second-order accuracy.
+            """,
+            "generalizedalpha": """
+                <b>GeneralizedAlpha Integrator</b><br>
+                An extension of the HHT method with two alpha parameters (alpha_m and alpha_f)
+                to provide high-frequency energy dissipation while maintaining accuracy.
+                Offers better control over numerical damping properties.
+            """,
+            "trbdf2": """
+                <b>TRBDF2 Integrator</b><br>
+                A composite implicit method that alternates between trapezoidal rule and
+                backward difference formula. Unconditionally stable and second-order accurate,
+                particularly effective for stiff systems. Has no parameters to configure.
+            """,
+            "explicitdifference": """
+                <b>ExplicitDifference Integrator</b><br>
+                An explicit method specifically designed for uncoupled dynamic equations.
+                Conditionally stable with a critical time step dependent on the highest system frequency.
+                Has no parameters to configure.
+            """,
+            "pfem": """
+                <b>PFEM (Particle Finite Element Method) Integrator</b><br>
+                Used for fluid-structure interaction problems where the mesh can undergo large deformations.
+                Parameters gamma and beta are similar to the Newmark method.
+            """
+        }
+        
+        if integrator_type in descriptions:
+            self.description_text.setHtml(descriptions[integrator_type])
+        else:
+            self.description_text.setHtml("<b>No description available</b>")
     
-    def create_transient_tab(self):
-        """Create tab for transient integrators"""
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
+    def create_new_integrator(self):
+        """Open dialog to create a new integrator of selected type"""
+        integrator_type = self.integrator_type_combo.currentText().lower()
         
-        # Transient integrator type selection
-        type_layout = QGridLayout()
-        self.transient_integrator_type_combo = QComboBox()
-        self.transient_integrator_type_combo.addItems(self.integrator_manager.get_transient_types())
+        dialog = None
+        # Static integrators
+        if integrator_type == "loadcontrol":
+            dialog = LoadControlIntegratorDialog(self)
+        elif integrator_type == "displacementcontrol":
+            dialog = DisplacementControlIntegratorDialog(self)
+        elif integrator_type == "paralleldisplacementcontrol":
+            dialog = ParallelDisplacementControlIntegratorDialog(self)
+        elif integrator_type == "minunbaldispnorm":
+            dialog = MinUnbalDispNormIntegratorDialog(self)
+        elif integrator_type == "arclength":
+            dialog = ArcLengthIntegratorDialog(self)
+        # Transient integrators
+        elif integrator_type == "centraldifference":
+            dialog = CentralDifferenceIntegratorDialog(self)
+        elif integrator_type == "newmark":
+            dialog = NewmarkIntegratorDialog(self)
+        elif integrator_type == "hht":
+            dialog = HHTIntegratorDialog(self)
+        elif integrator_type == "generalizedalpha":
+            dialog = GeneralizedAlphaIntegratorDialog(self)
+        elif integrator_type == "trbdf2":
+            dialog = TRBDF2IntegratorDialog(self)
+        elif integrator_type == "explicitdifference":
+            dialog = ExplicitDifferenceIntegratorDialog(self)
+        elif integrator_type == "pfem":
+            dialog = PFEMIntegratorDialog(self)
         
-        create_transient_btn = QPushButton("Create Transient Integrator")
-        create_transient_btn.clicked.connect(self.open_transient_integrator_creation_dialog)
-        
-        type_layout.addWidget(QLabel("Integrator Type:"), 0, 0)
-        type_layout.addWidget(self.transient_integrator_type_combo, 0, 1)
-        type_layout.addWidget(create_transient_btn, 1, 0, 1, 2)
-        
-        layout.addLayout(type_layout)
-        
-        # Add description
-        desc = QTextEdit()
-        desc.setReadOnly(True)
-        desc.setHtml("""
-        <b>Transient Integrators:</b><br><br>
-        <b>CentralDifference</b>: Explicit method for dynamic analysis<br>
-        <b>Newmark</b>: Implicit method for dynamic analysis (second-order accurate)<br>
-        <b>HHT</b>: Hilber-Hughes-Taylor method with numerical damping<br>
-        <b>GeneralizedAlpha</b>: Generalized-α method with high-frequency energy dissipation<br>
-        <b>TRBDF2</b>: TR-BDF2 method that alternates between trapezoidal and backward Euler<br>
-        <b>ExplicitDifference</b>: Explicit method for uncoupled dynamic equations<br>
-        <b>PFEM</b>: For Particle Finite Element Method in fluid-structure interaction
-        """)
-        layout.addWidget(desc)
-        
-        return widget
-    
+        if dialog:
+            if dialog.exec() == QDialog.Accepted:
+                self.refresh_integrators_list()
+        else:
+            QMessageBox.warning(self, "Error", f"No creation dialog available for integrator type: {integrator_type}")
+
     def refresh_integrators_list(self):
         """Update the integrators table with current integrators"""
         self.integrators_table.setRowCount(0)
         integrators = self.integrator_manager.get_all_integrators()
         
         self.integrators_table.setRowCount(len(integrators))
-        self.checkboxes = []  # Changed from radio_buttons to checkboxes
+        self.checkboxes = []
         
         # Hide vertical header (row indices)
         self.integrators_table.verticalHeader().setVisible(False)
@@ -158,7 +270,6 @@ class IntegratorManagerTab(QDialog):
             # Select checkbox
             checkbox = QCheckBox()
             checkbox.setStyleSheet("QCheckBox::indicator { width: 15px; height: 15px; }")
-            # Connect checkboxes to a common slot to ensure mutual exclusivity
             checkbox.toggled.connect(lambda checked, btn=checkbox: self.on_checkbox_toggled(checked, btn))
             self.checkboxes.append(checkbox)
             checkbox_cell = QWidget()
@@ -190,7 +301,6 @@ class IntegratorManagerTab(QDialog):
     def on_checkbox_toggled(self, checked, btn):
         """Handle checkbox toggling to ensure mutual exclusivity"""
         if checked:
-            # Uncheck all other checkboxes
             for checkbox in self.checkboxes:
                 if checkbox != btn and checkbox.isChecked():
                     checkbox.setChecked(False)
@@ -212,54 +322,6 @@ class IntegratorManagerTab(QDialog):
                 tag_item = self.integrators_table.item(row, 1)
                 return int(tag_item.text())
         return None
-
-    def open_static_integrator_creation_dialog(self):
-        """Open dialog to create a new static integrator of selected type"""
-        integrator_type = self.static_integrator_type_combo.currentText()
-        
-        dialog = None
-        if integrator_type.lower() == "loadcontrol":
-            dialog = LoadControlIntegratorDialog(self)
-        elif integrator_type.lower() == "displacementcontrol":
-            dialog = DisplacementControlIntegratorDialog(self)
-        elif integrator_type.lower() == "paralleldisplacementcontrol":
-            dialog = ParallelDisplacementControlIntegratorDialog(self)
-        elif integrator_type.lower() == "minunbaldispnorm":
-            dialog = MinUnbalDispNormIntegratorDialog(self)
-        elif integrator_type.lower() == "arclength":
-            dialog = ArcLengthIntegratorDialog(self)
-        
-        if dialog:
-            if dialog.exec() == QDialog.Accepted:
-                self.refresh_integrators_list()
-        else:
-            QMessageBox.warning(self, "Error", f"No creation dialog available for integrator type: {integrator_type}")
-
-    def open_transient_integrator_creation_dialog(self):
-        """Open dialog to create a new transient integrator of selected type"""
-        integrator_type = self.transient_integrator_type_combo.currentText()
-        
-        dialog = None
-        if integrator_type.lower() == "centraldifference":
-            dialog = CentralDifferenceIntegratorDialog(self)
-        elif integrator_type.lower() == "newmark":
-            dialog = NewmarkIntegratorDialog(self)
-        elif integrator_type.lower() == "hht":
-            dialog = HHTIntegratorDialog(self)
-        elif integrator_type.lower() == "generalizedalpha":
-            dialog = GeneralizedAlphaIntegratorDialog(self)
-        elif integrator_type.lower() == "trbdf2":
-            dialog = TRBDF2IntegratorDialog(self)
-        elif integrator_type.lower() == "explicitdifference":
-            dialog = ExplicitDifferenceIntegratorDialog(self)
-        elif integrator_type.lower() == "pfem":
-            dialog = PFEMIntegratorDialog(self)
-        
-        if dialog:
-            if dialog.exec() == QDialog.Accepted:
-                self.refresh_integrators_list()
-        else:
-            QMessageBox.warning(self, "Error", f"No creation dialog available for integrator type: {integrator_type}")
 
     def edit_selected_integrator(self):
         """Edit the selected integrator"""
@@ -292,7 +354,6 @@ class IntegratorManagerTab(QDialog):
             elif isinstance(integrator, PFEMIntegrator):
                 dialog = PFEMIntegratorEditDialog(integrator, self)
             elif isinstance(integrator, (CentralDifferenceIntegrator, TRBDF2Integrator, ExplicitDifferenceIntegrator)):
-                # For integrators with no parameters
                 QMessageBox.information(self, "Info", f"The {integrator.integrator_type} integrator has no parameters to edit")
                 return
             
@@ -325,8 +386,6 @@ class IntegratorManagerTab(QDialog):
         if reply == QMessageBox.Yes:
             self.integrator_manager.remove_integrator(tag)
             self.refresh_integrators_list()
-
-
 #------------------------------------------------------
 # Static Integrators Dialog Classes
 #------------------------------------------------------
