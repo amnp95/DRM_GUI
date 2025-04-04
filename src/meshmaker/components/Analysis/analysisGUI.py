@@ -22,7 +22,7 @@ from meshmaker.components.Analysis.convergenceTests import TestManager
 from meshmaker.components.Analysis.integrators import IntegratorManager, StaticIntegrator, TransientIntegrator
 
 
-class AnalysisManagerDialog(QDialog):
+class AnalysisManagerTab(QDialog):
     """
     Main dialog for managing analyses
     """
@@ -830,6 +830,6 @@ if __name__ == "__main__":
     from qtpy.QtWidgets import QApplication
     
     app = QApplication(sys.argv)
-    dialog = AnalysisManagerDialog()
+    dialog = AnalysisManagerTab()
     dialog.show()
     sys.exit(app.exec_())
