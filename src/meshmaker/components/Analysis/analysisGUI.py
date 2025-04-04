@@ -223,7 +223,10 @@ class AnalysisWizard(QDialog):
         else:
             self.setWindowTitle("Create New Analysis")
             
-        self.resize(900, 700)
+        # self.resize(900, 700)
+        # make the widget larger to accommodate all tabs
+        self.resize(850, 550)
+
         
         # Initialize manager instances
         self.analysis_manager = AnalysisManager()

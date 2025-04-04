@@ -88,23 +88,24 @@ class AlgorithmManagerTab(QDialog):
         algorithms = self.algorithm_manager.get_all_algorithms()
         
         self.algorithms_table.setRowCount(len(algorithms))
-        self.radio_buttons = []
+        self.checkboxes = []  # Changed from radio_buttons to checkboxes
         
         # Hide vertical header (row indices)
         self.algorithms_table.verticalHeader().setVisible(False)
         
         for row, (tag, algorithm) in enumerate(algorithms.items()):
-            # Select radio button
-            radio_btn = QRadioButton()
-            # Connect radio buttons to a common slot to ensure mutual exclusivity
-            radio_btn.toggled.connect(lambda checked, btn=radio_btn: self.on_radio_toggled(checked, btn))
-            self.radio_buttons.append(radio_btn)
-            radio_cell = QWidget()
-            radio_layout = QHBoxLayout(radio_cell)
-            radio_layout.addWidget(radio_btn)
-            radio_layout.setAlignment(Qt.AlignCenter)
-            radio_layout.setContentsMargins(0, 0, 0, 0)
-            self.algorithms_table.setCellWidget(row, 0, radio_cell)
+            # Select checkbox
+            checkbox = QCheckBox()
+            checkbox.setStyleSheet("QCheckBox::indicator { width: 15px; height: 15px; }")
+            # Connect checkboxes to a common slot to ensure mutual exclusivity
+            checkbox.toggled.connect(lambda checked, btn=checkbox: self.on_checkbox_toggled(checked, btn))
+            self.checkboxes.append(checkbox)
+            checkbox_cell = QWidget()
+            checkbox_layout = QHBoxLayout(checkbox_cell)
+            checkbox_layout.addWidget(checkbox)
+            checkbox_layout.setAlignment(Qt.AlignCenter)
+            checkbox_layout.setContentsMargins(0, 0, 0, 0)
+            self.algorithms_table.setCellWidget(row, 0, checkbox_cell)
             
             # Tag
             tag_item = QTableWidgetItem(str(tag))
@@ -118,34 +119,32 @@ class AlgorithmManagerTab(QDialog):
             
             # Parameters
             params = algorithm.get_values()
-            params_str = ", ".join([f"{k}: {v}" for k, v in params.items() if v])
-            if not params_str:
-                params_str = "No parameters"
+            params_str = ", ".join([f"{k}: {v}" for k, v in params.items()]) if params else "None"
             params_item = QTableWidgetItem(params_str)
             params_item.setFlags(params_item.flags() & ~Qt.ItemIsEditable)
             self.algorithms_table.setItem(row, 3, params_item)
         
         self.update_button_state()
         
-    def on_radio_toggled(self, checked, btn):
-        """Handle radio button toggling to ensure mutual exclusivity"""
+    def on_checkbox_toggled(self, checked, btn):
+        """Handle checkbox toggling to ensure mutual exclusivity"""
         if checked:
-            # Uncheck all other radio buttons
-            for radio_btn in self.radio_buttons:
-                if radio_btn != btn and radio_btn.isChecked():
-                    radio_btn.setChecked(False)
+            # Uncheck all other checkboxes
+            for checkbox in self.checkboxes:
+                if checkbox != btn and checkbox.isChecked():
+                    checkbox.setChecked(False)
         self.update_button_state()
 
     def update_button_state(self):
         """Enable/disable edit and delete buttons based on selection"""
-        enable_buttons = any(rb.isChecked() for rb in self.radio_buttons)
+        enable_buttons = any(cb.isChecked() for cb in self.checkboxes) if hasattr(self, 'checkboxes') else False
         self.edit_btn.setEnabled(enable_buttons)
         self.delete_selected_btn.setEnabled(enable_buttons)
 
     def get_selected_algorithm_tag(self):
         """Get the tag of the selected algorithm"""
-        for row, radio_btn in enumerate(self.radio_buttons):
-            if radio_btn.isChecked():
+        for row, checkbox in enumerate(self.checkboxes):
+            if checkbox.isChecked():
                 tag_item = self.algorithms_table.item(row, 1)
                 return int(tag_item.text())
         return None

@@ -2,7 +2,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
     QDialog, QMessageBox, QTableWidget, QTableWidgetItem, 
-    QPushButton, QHeaderView, QRadioButton
+    QPushButton, QHeaderView, QCheckBox
 )
 
 from meshmaker.components.Analysis.numberers import NumbererManager, Numberer
@@ -62,28 +62,29 @@ class NumbererManagerTab(QDialog):
         selected_numberer = self.get_selected_numberer()
         
         self.numberers_table.setRowCount(len(numberers))
-        self.radio_buttons = []
+        self.checkboxes = []  # Changed from radio_buttons to checkboxes
         
         # Hide vertical header (row indices)
         self.numberers_table.verticalHeader().setVisible(False)
         
         for row, (type_name, numberer) in enumerate(numberers.items()):
-            # Select radio button
-            radio_btn = QRadioButton()
-            # Connect radio buttons to ensure mutual exclusivity
-            radio_btn.toggled.connect(lambda checked, btn=radio_btn: self.on_radio_toggled(checked, btn))
-            self.radio_buttons.append(radio_btn)
+            # Select checkbox
+            checkbox = QCheckBox()
+            checkbox.setStyleSheet("QCheckBox::indicator { width: 15px; height: 15px; }")
+            # Connect checkboxes to ensure mutual exclusivity
+            checkbox.toggled.connect(lambda checked, btn=checkbox: self.on_checkbox_toggled(checked, btn))
+            self.checkboxes.append(checkbox)
             
-            # If this was the previously selected numberer, check its radio button
+            # If this was the previously selected numberer, check its checkbox
             if selected_numberer and selected_numberer == type_name:
-                radio_btn.setChecked(True)
+                checkbox.setChecked(True)
             
-            radio_cell = QWidget()
-            radio_layout = QHBoxLayout(radio_cell)
-            radio_layout.addWidget(radio_btn)
-            radio_layout.setAlignment(Qt.AlignCenter)
-            radio_layout.setContentsMargins(0, 0, 0, 0)
-            self.numberers_table.setCellWidget(row, 0, radio_cell)
+            checkbox_cell = QWidget()
+            checkbox_layout = QHBoxLayout(checkbox_cell)
+            checkbox_layout.addWidget(checkbox)
+            checkbox_layout.setAlignment(Qt.AlignCenter)
+            checkbox_layout.setContentsMargins(0, 0, 0, 0)
+            self.numberers_table.setCellWidget(row, 0, checkbox_cell)
             
             # Numberer Type
             type_item = QTableWidgetItem(type_name.capitalize())
@@ -96,18 +97,18 @@ class NumbererManagerTab(QDialog):
             desc_item.setFlags(desc_item.flags() & ~Qt.ItemIsEditable)
             self.numberers_table.setItem(row, 2, desc_item)
 
-    def on_radio_toggled(self, checked, btn):
-        """Handle radio button toggling to ensure mutual exclusivity"""
+    def on_checkbox_toggled(self, checked, btn):
+        """Handle checkbox toggling to ensure mutual exclusivity"""
         if checked:
-            # Uncheck all other radio buttons
-            for radio_btn in self.radio_buttons:
-                if radio_btn != btn and radio_btn.isChecked():
-                    radio_btn.setChecked(False)
+            # Uncheck all other checkboxes
+            for checkbox in self.checkboxes:
+                if checkbox != btn and checkbox.isChecked():
+                    checkbox.setChecked(False)
 
     def get_selected_numberer_type(self):
         """Get the type of the selected numberer"""
-        for row, radio_btn in enumerate(self.radio_buttons):
-            if radio_btn.isChecked():
+        for row, checkbox in enumerate(self.checkboxes):
+            if checkbox.isChecked():
                 type_item = self.numberers_table.item(row, 1)
                 return type_item.text().lower()
         return None
