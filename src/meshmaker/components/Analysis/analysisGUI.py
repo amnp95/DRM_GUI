@@ -210,7 +210,7 @@ class AnalysisManagerDialog(QDialog):
 
 class AnalysisWizard(QDialog):
     """
-    Simplified dialog for creating/editing an analysis with all options in one tabbed interface
+    Simplified dialog for creating/editing an analysis with all options in a single level of tabs
     """
     def __init__(self, parent=None, analysis=None):
         super().__init__(parent)
@@ -237,10 +237,15 @@ class AnalysisWizard(QDialog):
         # Main layout
         layout = QVBoxLayout(self)
         
-        # Create tabbed interface
+        # Create tabbed interface with all tabs in a single level
         self.tabs = QTabWidget()
         self.tabs.addTab(self.create_basic_tab(), "Basic Info")
-        self.tabs.addTab(self.create_components_tab(), "Components")
+        self.tabs.addTab(self.create_constraint_handler_tab(), "Constraint Handler")
+        self.tabs.addTab(self.create_numberer_tab(), "Numberer")
+        self.tabs.addTab(self.create_system_tab(), "System")
+        self.tabs.addTab(self.create_algorithm_tab(), "Algorithm")
+        self.tabs.addTab(self.create_test_tab(), "Convergence Test")
+        self.tabs.addTab(self.create_integrator_tab(), "Integrator")
         self.tabs.addTab(self.create_time_stepping_tab(), "Time Stepping")
         self.tabs.addTab(self.create_summary_tab(), "Summary")
         
@@ -315,51 +320,59 @@ class AnalysisWizard(QDialog):
         self.transient_desc.setVisible(analysis_type == "Transient")
         self.var_trans_desc.setVisible(analysis_type == "VariableTransient")
     
-    def create_components_tab(self):
-        """Create tab with component selection tabs"""
-        tab = QWidget()
-        layout = QVBoxLayout(tab)
-        
-        components_tabs = QTabWidget()
-        
-        # Create inner tabs for components
+    def create_constraint_handler_tab(self):
+        """Create constraint handler tab"""
         self.constraint_handler_tab = ConstraintHandlerManagerTab()
+        
+        if self.analysis and self.analysis.constraint_handler:
+            self.constraint_handler_tab.select_handler(self.analysis.constraint_handler.tag)
+            
+        return self.constraint_handler_tab
+    
+    def create_numberer_tab(self):
+        """Create numberer tab"""
         self.numberer_tab = NumbererManagerTab()
+        
+        if self.analysis and self.analysis.numberer:
+            self.numberer_tab.select_numberer(self.analysis.numberer.numberer_type)
+            
+        return self.numberer_tab
+    
+    def create_system_tab(self):
+        """Create system tab"""
         self.system_tab = SystemManagerTab()
+        
+        if self.analysis and self.analysis.system:
+            self.system_tab.select_system(self.analysis.system.tag)
+            
+        return self.system_tab
+    
+    def create_algorithm_tab(self):
+        """Create algorithm tab"""
         self.algorithm_tab = AlgorithmManagerTab()
+        
+        if self.analysis and self.analysis.algorithm:
+            self.algorithm_tab.select_algorithm(self.analysis.algorithm.tag)
+            
+        return self.algorithm_tab
+    
+    def create_test_tab(self):
+        """Create convergence test tab"""
         self.test_tab = TestManagerTab()
+        
+        if self.analysis and self.analysis.test:
+            self.test_tab.select_test(self.analysis.test.tag)
+            
+        return self.test_tab
+    
+    def create_integrator_tab(self):
+        """Create integrator tab"""
         self.integrator_tab = IntegratorManagerTab()
         
-        components_tabs.addTab(self.constraint_handler_tab, "Constraint Handler")
-        components_tabs.addTab(self.numberer_tab, "Numberer")
-        components_tabs.addTab(self.system_tab, "System")
-        components_tabs.addTab(self.algorithm_tab, "Algorithm")
-        components_tabs.addTab(self.test_tab, "Test")
-        components_tabs.addTab(self.integrator_tab, "Integrator")
-        
-        layout.addWidget(components_tabs)
-        
-        # If we're editing an existing analysis, select the components
-        if self.analysis:
-            if self.analysis.constraint_handler:
-                self.constraint_handler_tab.select_handler(self.analysis.constraint_handler.tag)
+        if self.analysis and self.analysis.integrator:
+            self.integrator_tab.select_integrator(self.analysis.integrator.tag)
             
-            if self.analysis.numberer:
-                self.numberer_tab.select_numberer(self.analysis.numberer.numberer_type)
-                
-            if self.analysis.system:
-                self.system_tab.select_system(self.analysis.system.tag)
-                
-            if self.analysis.algorithm:
-                self.algorithm_tab.select_algorithm(self.analysis.algorithm.tag)
-                
-            if self.analysis.test:
-                self.test_tab.select_test(self.analysis.test.tag)
-                
-            if self.analysis.integrator:
-                self.integrator_tab.select_integrator(self.analysis.integrator.tag)
-        
-        return tab
+        return self.integrator_tab
     
     def create_time_stepping_tab(self):
         """Create time stepping parameters tab"""
@@ -516,7 +529,7 @@ class AnalysisWizard(QDialog):
     
     def update_summary(self):
         """Update the summary tab content"""
-        if self.tabs.currentWidget() != self.tabs.widget(3):  # Not on summary tab
+        if self.tabs.currentWidget() != self.tabs.widget(8):  # Not on summary tab (now at index 8)
             return
         
         try:
@@ -611,37 +624,52 @@ class AnalysisWizard(QDialog):
         
         analysis_type = self.analysis_type_combo.currentText()
         
-        # Validate components
+        # Validate components with specific tab indices for each component
         errors = []
+        component_tab_indices = {}
         
+        # Constraint Handler (Tab index 1)
         constraint_handler_tag = self.constraint_handler_tab.get_selected_handler_tag()
         if not constraint_handler_tag:
             errors.append("Constraint Handler")
+            component_tab_indices["Constraint Handler"] = 1
         
+        # Numberer (Tab index 2)
         numberer_type = self.numberer_tab.get_selected_numberer_type()
         if not numberer_type:
             errors.append("Numberer")
+            component_tab_indices["Numberer"] = 2
         
+        # System (Tab index 3)
         system_tag = self.system_tab.get_selected_system_tag()
         if not system_tag:
             errors.append("System")
+            component_tab_indices["System"] = 3
         
+        # Algorithm (Tab index 4)
         algorithm_tag = self.algorithm_tab.get_selected_algorithm_tag()
         if not algorithm_tag:
             errors.append("Algorithm")
+            component_tab_indices["Algorithm"] = 4
         
+        # Test (Tab index 5)
         test_tag = self.test_tab.get_selected_test_tag()
         if not test_tag:
             errors.append("Convergence Test")
+            component_tab_indices["Convergence Test"] = 5
         
+        # Integrator (Tab index 6)
         integrator_tag = self.integrator_tab.get_selected_integrator_tag()
         if not integrator_tag:
             errors.append("Integrator")
+            component_tab_indices["Integrator"] = 6
         
         if errors:
+            # Take user to the first missing component tab
+            first_error = errors[0]
+            self.tabs.setCurrentIndex(component_tab_indices[first_error])
             QMessageBox.warning(self, "Validation Error", 
                               f"Please select the following components: {', '.join(errors)}")
-            self.tabs.setCurrentIndex(1)  # Switch to components tab
             return
         
         # Check integrator compatibility
@@ -649,13 +677,13 @@ class AnalysisWizard(QDialog):
         if analysis_type == "Static" and not isinstance(integrator, StaticIntegrator):
             QMessageBox.warning(self, "Validation Error", 
                                f"Static analysis requires a static integrator. {integrator.integrator_type} is not compatible.")
-            self.tabs.setCurrentIndex(1)  # Switch to components tab
+            self.tabs.setCurrentIndex(6)  # Switch to integrator tab
             return
             
         if analysis_type in ["Transient", "VariableTransient"] and not isinstance(integrator, TransientIntegrator):
             QMessageBox.warning(self, "Validation Error", 
                                f"Transient analysis requires a transient integrator. {integrator.integrator_type} is not compatible.")
-            self.tabs.setCurrentIndex(1)  # Switch to components tab
+            self.tabs.setCurrentIndex(6)  # Switch to integrator tab
             return
         
         # Validate time stepping parameters
@@ -666,14 +694,14 @@ class AnalysisWizard(QDialog):
             final_time = None
             if num_steps <= 0:
                 QMessageBox.warning(self, "Validation Error", "Number of steps must be greater than 0.")
-                self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                self.tabs.setCurrentIndex(7)  # Switch to time stepping tab
                 return
         else:
             num_steps = None
             final_time = self.final_time_spin.value()
             if final_time <= 0:
                 QMessageBox.warning(self, "Validation Error", "Final time must be greater than 0.")
-                self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                self.tabs.setCurrentIndex(7)  # Switch to time stepping tab
                 return
         
         # Default values
@@ -689,7 +717,7 @@ class AnalysisWizard(QDialog):
             dt = self.dt_spin.value()
             if dt <= 0:
                 QMessageBox.warning(self, "Validation Error", "Time step (dt) must be greater than 0.")
-                self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                self.tabs.setCurrentIndex(7)  # Switch to time stepping tab
                 return
             
             # VariableTransient specific parameters
@@ -700,19 +728,19 @@ class AnalysisWizard(QDialog):
                 
                 if dt_min <= 0:
                     QMessageBox.warning(self, "Validation Error", "Minimum time step must be greater than 0.")
-                    self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                    self.tabs.setCurrentIndex(7)  # Switch to time stepping tab
                     return
                 if dt_max <= 0:
                     QMessageBox.warning(self, "Validation Error", "Maximum time step must be greater than 0.")
-                    self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                    self.tabs.setCurrentIndex(7)  # Switch to time stepping tab
                     return
                 if dt_min > dt_max:
                     QMessageBox.warning(self, "Validation Error", "Minimum time step cannot be greater than maximum time step.")
-                    self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                    self.tabs.setCurrentIndex(7)  # Switch to time stepping tab
                     return
                 if dt < dt_min or dt > dt_max:
                     QMessageBox.warning(self, "Validation Error", "Initial time step must be between minimum and maximum time step.")
-                    self.tabs.setCurrentIndex(2)  # Switch to time stepping tab
+                    self.tabs.setCurrentIndex(7)  # Switch to time stepping tab
                     return
             
             # Substepping parameters
