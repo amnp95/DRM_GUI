@@ -285,11 +285,11 @@ class ProcessGUI(QDialog):
         main_layout = QHBoxLayout(self)
         
         # Create splitter for resizable panels
-        splitter = QSplitter(Qt.Horizontal)
+        splitter = QSplitter(Qt.Vertical)
         
-        # Left panel (component types)
-        left_panel = QFrame()
-        left_layout = QVBoxLayout(left_panel)
+        # Top panel (component types)
+        top_panel = QFrame()
+        top_layout = QVBoxLayout(top_panel)
         
         # Create tabs for different component types
         self.tabs = QTabWidget()
@@ -301,17 +301,17 @@ class ProcessGUI(QDialog):
         self.tabs.addTab(self.analysis_tab, "Analysis")
         self.tabs.addTab(self.recorder_tab, "Recorders")
         
-        left_layout.addWidget(self.tabs)
+        top_layout.addWidget(self.tabs)
         
-        # Right panel (process steps)
-        right_panel = QFrame()
-        right_layout = QVBoxLayout(right_panel)
+        # Bottom panel (process steps)
+        bottom_panel = QFrame()
+        bottom_layout = QVBoxLayout(bottom_panel)
         
-        right_layout.addWidget(QLabel("Process Steps (Drop Components Here or Select and Delete)"))
+        bottom_layout.addWidget(QLabel("Process Steps (Drop Components Here or Select and Delete)"))
         
         # Process list
         self.process_list = ProcessListWidget()
-        right_layout.addWidget(self.process_list)
+        bottom_layout.addWidget(self.process_list)
         
         # Control buttons - Removed run process button
         button_layout = QHBoxLayout()
@@ -324,14 +324,14 @@ class ProcessGUI(QDialog):
         refresh_btn.clicked.connect(self.refresh_process_panel)
         button_layout.addWidget(refresh_btn)
         
-        right_layout.addLayout(button_layout)
+        bottom_layout.addLayout(button_layout)
         
         # Add panels to splitter
-        splitter.addWidget(left_panel)
-        splitter.addWidget(right_panel)
+        splitter.addWidget(top_panel)
+        splitter.addWidget(bottom_panel)
         
         # Set initial splitter sizes
-        splitter.setSizes([300, 600])
+        splitter.setSizes([250, 350])
         
         # Add splitter to main layout
         main_layout.addWidget(splitter)
