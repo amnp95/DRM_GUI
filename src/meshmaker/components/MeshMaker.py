@@ -7,6 +7,7 @@ from meshmaker.components.Constraint.constraint import Constraint
 from meshmaker.components.Mesh.meshPartBase import MeshPartRegistry
 from meshmaker.components.Mesh.meshPartInstance import *
 from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeriesManager
+from meshmaker.components.Analysis.analysis import AnalysisManager
 import os
 from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat, where, isin
 from pyvista import Cube, MultiBlock, StructuredGrid
@@ -56,6 +57,7 @@ class MeshMaker:
         self.constraint = Constraint()
         self.meshPart = MeshPartRegistry()
         self.timeSeries = TimeSeriesManager()
+        self.analysis = AnalysisManager()
 
     @classmethod
     def get_instance(cls, **kwargs):
