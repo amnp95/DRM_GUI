@@ -1,3 +1,7 @@
+# Suppress specific sipPyTypeDict deprecation warnings
+import warnings
+warnings.filterwarnings("ignore", message="sipPyTypeDict\(\) is deprecated", category=DeprecationWarning)
+
 from qtpy.QtGui import QDrag, QPixmap, QColor, QPainter
 from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QListWidget, 
@@ -68,8 +72,8 @@ class ComponentListWidget(QListWidget):
         drag.setPixmap(pixmap)
         drag.setHotSpot(QPoint(10, 15))
         
-        # Execute drag
-        result = drag.exec_(Qt.CopyAction)
+        # Execute drag - Replace exec_ with exec to fix deprecation warning
+        result = drag.exec(Qt.CopyAction)
 
 
 class ProcessListWidget(QListWidget):
@@ -157,7 +161,7 @@ class ProcessListWidget(QListWidget):
         menu.addAction(remove_action)
         
         # Execute menu
-        menu.exec_(self.mapToGlobal(position))
+        menu.exec(self.mapToGlobal(position))
     
     def remove_selected_steps(self):
         """Remove selected steps from the process"""
@@ -449,4 +453,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     gui = ProcessGUI()
     gui.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
