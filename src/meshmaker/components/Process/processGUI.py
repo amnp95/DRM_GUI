@@ -392,7 +392,7 @@ if __name__ == "__main__":
         from meshmaker.components.Pattern.patternBase import UniformExcitation, H5DRMPattern
         
         # Create a sample time series
-        time_series = TimeSeriesManager().create_time_series("Path", dt=0.01, file_name="accel.dat")
+        time_series = TimeSeriesManager().create_time_series("Path", filePath="accel.dat", fileTime="accel.time" )
         
         # Create a sample UniformExcitation pattern
         pattern1 = pattern_manager.create_pattern("uniformexcitation", 
