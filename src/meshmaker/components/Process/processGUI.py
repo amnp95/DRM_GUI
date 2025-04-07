@@ -9,6 +9,7 @@ from qtpy.QtCore import Qt, QMimeData, QPoint
 from meshmaker.components.Process.process import ProcessManager
 from meshmaker.components.Recorder.recorderBase import Recorder, RecorderManager
 from meshmaker.components.Analysis.analysis import Analysis, AnalysisManager
+from meshmaker.components.Pattern.patternBase import Pattern, PatternManager
 
 
 class ComponentDragItem(QListWidgetItem):
@@ -31,7 +32,7 @@ class ComponentListWidget(QListWidget):
         Initialize component list widget
         
         Args:
-            component_type (str): Type of component ('Analysis' or 'Recorder')
+            component_type (str): Type of component ('Analysis', 'Recorder' or 'Pattern')
             parent: Parent widget
         """
         super().__init__(parent)
@@ -113,6 +114,9 @@ class ProcessListWidget(QListWidget):
             elif component_type == "Recorder":
                 component = RecorderManager().get_recorder(tag)
                 description = f"Recorder: {component.recorder_type}"
+            elif component_type == "Pattern":
+                component = PatternManager().get_pattern(tag)
+                description = f"Pattern: {component.pattern_type}"
             
             if component:
                 # Add to process manager
@@ -187,7 +191,7 @@ class ProcessTab(QWidget):
         Initialize process tab
         
         Args:
-            component_type (str): Type of component ('Analysis' or 'Recorder')
+            component_type (str): Type of component ('Analysis', 'Recorder' or 'Pattern')
             parent: Parent widget
         """
         super().__init__(parent)
@@ -236,6 +240,13 @@ class ProcessTab(QWidget):
             for tag, recorder in manager.get_all_recorders().items():
                 item = ComponentDragItem(tag, self.component_type, recorder.recorder_type)
                 self.component_list.addItem(item)
+        
+        elif self.component_type == "Pattern":
+            # Get patterns from the manager
+            manager = PatternManager()
+            for tag, pattern in manager.get_all_patterns().items():
+                item = ComponentDragItem(tag, self.component_type, pattern.pattern_type)
+                self.component_list.addItem(item)
     
     def add_to_process(self):
         """Add selected component to process (alternative to drag-and-drop)"""
@@ -257,6 +268,9 @@ class ProcessTab(QWidget):
         elif self.component_type == "Recorder":
             component = RecorderManager().get_recorder(tag)
             description = f"Recorder: {component.recorder_type}"
+        elif self.component_type == "Pattern":
+            component = PatternManager().get_pattern(tag)
+            description = f"Pattern: {component.pattern_type}"
         
         if component:
             # Add to process manager
@@ -297,9 +311,11 @@ class ProcessGUI(QDialog):
         # Add tabs for component types
         self.analysis_tab = ProcessTab("Analysis")
         self.recorder_tab = ProcessTab("Recorder")
+        self.pattern_tab = ProcessTab("Pattern")
         
         self.tabs.addTab(self.analysis_tab, "Analysis")
         self.tabs.addTab(self.recorder_tab, "Recorders")
+        self.tabs.addTab(self.pattern_tab, "Patterns")
         
         top_layout.addWidget(self.tabs)
         
@@ -363,11 +379,39 @@ if __name__ == "__main__":
     # Create some sample components for testing
     recorder_manager = RecorderManager()
     analysis_manager = AnalysisManager()
+    pattern_manager = PatternManager()
     
     # Create sample recorders
     from meshmaker.components.Recorder.recorderBase import NodeRecorder, VTKHDFRecorder
     recorder1 = NodeRecorder(file_name="disp.out", nodes=[1, 2, 3], dofs=[1, 2], resp_type="disp")
     recorder2 = VTKHDFRecorder(file_base_name="results", resp_types=["disp", "vel"])
+    
+    # Create sample patterns
+    try:
+        from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeries, TimeSeriesManager
+        from meshmaker.components.Pattern.patternBase import UniformExcitation, H5DRMPattern
+        
+        # Create a sample time series
+        time_series = TimeSeriesManager().create_time_series("Path", dt=0.01, file_name="accel.dat")
+        
+        # Create a sample UniformExcitation pattern
+        pattern1 = pattern_manager.create_pattern("uniformexcitation", 
+                                                dof=1, 
+                                                time_series=time_series,
+                                                vel0=0.0,
+                                                factor=1.0)
+        
+        # Create a sample H5DRM pattern
+        pattern2 = pattern_manager.create_pattern("h5drm",
+                                                filepath="/path/to/drm_data.h5",
+                                                factor=1.0,
+                                                crd_scale=1.0,
+                                                distance_tolerance=0.1,
+                                                do_coordinate_transformation=0,
+                                                transform_matrix=[1,0,0, 0,1,0, 0,0,1],
+                                                origin=[0,0,0])
+    except Exception as e:
+        print(f"Error creating pattern components: {e}")
     
     # Create sample analyses (Note: This is simplified as actual Analysis objects require many components)
     # In a real implementation, you would create proper Analysis objects with all required components
