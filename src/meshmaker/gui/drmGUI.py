@@ -84,15 +84,64 @@ class DRMGUI(QWidget):
         self.distToleranceSpinBox.setDecimals(4)
         h5drmLayout.addWidget(self.distToleranceSpinBox, 3, 1)
         
-        # Auto set from mesh and Use center from mesh
-        self.useFromMeshCheckbox = QCheckBox("Auto set transform from mesh")
-        self.useFromMeshCheckbox.setChecked(True)
-        h5drmLayout.addWidget(self.useFromMeshCheckbox, 4, 0, 1, 2)
+        # Add transformation matrix group
+        transform_group = QGroupBox("Transformation Matrix")
+        transform_layout = QGridLayout()
         
-        # Matrix transformation button
-        self.transformButton = QPushButton("Configure Transformation Matrix...")
-        self.transformButton.clicked.connect(self.configure_transformation)
-        h5drmLayout.addWidget(self.transformButton, 5, 0, 1, 2)
+        # Create matrix input fields
+        self.matrix_inputs = []
+        for i in range(3):
+            for j in range(3):
+                idx = i * 3 + j
+                transform_layout.addWidget(QLabel(f"M[{i+1},{j+1}]"), i, j*2)
+                input_field = QDoubleSpinBox()
+                input_field.setRange(-1000, 1000)
+                input_field.setDecimals(6)
+                input_field.setSingleStep(0.1)
+                transform_layout.addWidget(input_field, i, j*2+1)
+                self.matrix_inputs.append(input_field)
+        
+        # Add identity matrix button
+        identity_btn = QPushButton("Set Identity Matrix")
+        identity_btn.clicked.connect(self.set_identity_matrix)
+        transform_layout.addWidget(identity_btn, 3, 0, 1, 6)
+        
+        transform_group.setLayout(transform_layout)
+        h5drmLayout.addWidget(transform_group, 4, 0, 1, 2)
+        
+        # Add origin group
+        origin_group = QGroupBox("Origin Location")
+        origin_layout = QGridLayout()
+        
+        # Create origin input fields
+        self.origin_inputs = []
+        for i, label in enumerate(["X:", "Y:", "Z:"]):
+            origin_layout.addWidget(QLabel(label), 0, i*2)
+            input_field = QDoubleSpinBox()
+            input_field.setRange(-10000, 10000)
+            input_field.setDecimals(6)
+            input_field.setSingleStep(0.1)
+            origin_layout.addWidget(input_field, 0, i*2+1)
+            self.origin_inputs.append(input_field)
+        
+        # Add buttons for origin control
+        origin_buttons_layout = QHBoxLayout()
+        
+        # Reset origin button
+        reset_origin_btn = QPushButton("Reset Origin")
+        reset_origin_btn.clicked.connect(self.reset_origin)
+        origin_buttons_layout.addWidget(reset_origin_btn)
+        
+        # Auto set from mesh button - only affects origin coordinates
+        auto_set_origin_btn = QPushButton("Auto Set Origin from Mesh")
+        auto_set_origin_btn.clicked.connect(self.auto_set_origin_from_mesh)
+        auto_set_origin_btn.setToolTip("Sets origin coordinates based on mesh center (preserves transform matrix)")
+        origin_buttons_layout.addWidget(auto_set_origin_btn)
+        
+        origin_layout.addLayout(origin_buttons_layout, 1, 0, 1, 6)
+        
+        origin_group.setLayout(origin_layout)
+        h5drmLayout.addWidget(origin_group, 5, 0, 1, 2)
         
         # DRM Points Visualization
         pointsGroup = QGroupBox("DRM Points Visualization")
@@ -158,18 +207,36 @@ class DRMGUI(QWidget):
         
         pointsLayout.addWidget(visualGroup, 2, 0, 1, 2)
         
-        h5drmLayout.addWidget(pointsGroup, 6, 0, 1, 2)
+        # Add DRM points control buttons
+        pointsControlGroup = QGroupBox("DRM Points Control")
+        pointsControlLayout = QGridLayout(pointsControlGroup)
         
         # Show DRM Points Button
         self.showDRMPointsButton = QPushButton("Show DRM Points")
         self.showDRMPointsButton.clicked.connect(self.show_drm_points)
-        h5drmLayout.addWidget(self.showDRMPointsButton, 7, 0, 1, 2)
+        pointsControlLayout.addWidget(self.showDRMPointsButton, 0, 0)
+        
+        # Toggle visibility button
+        self.togglePointsVisibilityButton = QPushButton("Hide Points")
+        self.togglePointsVisibilityButton.setEnabled(False)  # Initially disabled
+        self.togglePointsVisibilityButton.clicked.connect(self.toggle_points_visibility)
+        pointsControlLayout.addWidget(self.togglePointsVisibilityButton, 0, 1)
+        
+        # Remove points button
+        self.removePointsButton = QPushButton("Remove Points")
+        self.removePointsButton.setEnabled(False)  # Initially disabled
+        self.removePointsButton.clicked.connect(self.remove_drm_points)
+        pointsControlLayout.addWidget(self.removePointsButton, 1, 0, 1, 2)
+        
+        pointsLayout.addWidget(pointsControlGroup, 3, 0, 1, 2)
+        
+        h5drmLayout.addWidget(pointsGroup, 6, 0, 1, 2)
         
         # Add H5DRM Pattern button
         self.addH5DRMButton = QPushButton("Add H5DRM Pattern")
         self.addH5DRMButton.setStyleSheet("background-color: blue; color: white")
         self.addH5DRMButton.clicked.connect(self.add_h5drm_pattern)
-        h5drmLayout.addWidget(self.addH5DRMButton, 8, 0, 1, 2)
+        h5drmLayout.addWidget(self.addH5DRMButton, 7, 0, 1, 2)
         
         h5drmLayout.setContentsMargins(10, 10, 10, 10)
         h5drmLayout.setSpacing(10)
@@ -247,9 +314,58 @@ class DRMGUI(QWidget):
         self.transform_matrix = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         self.origin = [0.0, 0.0, 0.0]
         
+        # Update the UI to show the initial values
+        self.update_transform_ui()
+        
         # Initialize DRM points visualization attributes
         self.drm_points_actor = None
+        self.points_visible = True  # Track visibility state
 
+    def update_transform_ui(self):
+        """Update the UI to reflect the current transformation matrix and origin"""
+        # Update matrix inputs
+        for i, value in enumerate(self.transform_matrix):
+            self.matrix_inputs[i].setValue(value)
+        
+        # Update origin inputs
+        for i, value in enumerate(self.origin):
+            self.origin_inputs[i].setValue(value)
+
+    def set_identity_matrix(self):
+        """Set the transformation matrix to identity"""
+        self.transform_matrix = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        self.update_transform_ui()
+
+    def reset_origin(self):
+        """Reset the origin to zero"""
+        self.origin = [0.0, 0.0, 0.0]
+        for i, value in enumerate(self.origin):
+            self.origin_inputs[i].setValue(value)
+    
+    def auto_set_origin_from_mesh(self):
+        """Set origin coordinates from mesh center (preserves transform matrix)"""
+        if self.meshmaker.assembler.AssembeledMesh is None:
+            QMessageBox.warning(self, "Warning", "No assembled mesh available. Please assemble a mesh first.")
+            return False
+        
+        # Get mesh bounds
+        bounds = self.meshmaker.assembler.AssembeledMesh.bounds
+        xmin, xmax, ymin, ymax, zmin, zmax = bounds
+        
+        # Calculate center for x and y, but use zmax for z
+        center_x = (xmin + xmax) / 2
+        center_y = (ymin + ymax) / 2
+        center_z = zmax  # As requested, use zmax for z-coordinate
+        
+        # Set origin only - preserve transform matrix
+        self.origin = [center_x, center_y, center_z]
+        
+        # Update only the origin fields in UI
+        for i, value in enumerate(self.origin):
+            self.origin_inputs[i].setValue(value)
+        
+        return True
+    
     def browse_h5drm_file(self):
         """Open file dialog to select H5DRM file"""
         file_path, _ = QFileDialog.getOpenFileName(
@@ -283,45 +399,53 @@ class DRMGUI(QWidget):
             style = f"background-color: rgb({color.red()}, {color.green()}, {color.blue()})"
             self.pointColorButton.setStyleSheet(style)
     
-    def configure_transformation(self):
-        """Open dialog to configure transformation matrix and origin"""
-        # If auto set from mesh is checked and mesh is available, calculate from mesh first
-        if self.useFromMeshCheckbox.isChecked() and self.meshmaker.assembler.AssembeledMesh is not None:
-            self.set_transform_from_mesh()
-
-        dialog = TransformationDialog(self.transform_matrix, self.origin, self)
-        if dialog.exec_() == QDialog.Accepted:
-            self.transform_matrix = dialog.get_transform_matrix()
-            self.origin = dialog.get_origin()
+    def toggle_points_visibility(self):
+        """Toggle the visibility of DRM points"""
+        if self.drm_points_actor is None:
+            return
+            
+        plotter = PlotterManager.get_plotter()
+        
+        # Toggle visibility
+        self.points_visible = not self.points_visible
+        self.drm_points_actor.SetVisibility(self.points_visible)
+        
+        # Update button text based on current state
+        if self.points_visible:
+            self.togglePointsVisibilityButton.setText("Hide Points")
+        else:
+            self.togglePointsVisibilityButton.setText("Show Points")
+            
+        # Render the scene to reflect changes
+        plotter.render()
     
-    def set_transform_from_mesh(self):
-        """Calculate transformation matrix and origin from assembled mesh bounds"""
-        if self.meshmaker.assembler.AssembeledMesh is None:
-            QMessageBox.warning(self, "Warning", "No assembled mesh available. Please assemble a mesh first.")
-            return False
+    def remove_drm_points(self):
+        """Remove DRM points from the scene"""
+        if self.drm_points_actor is None:
+            return
+            
+        plotter = PlotterManager.get_plotter()
+        plotter.remove_actor(self.drm_points_actor)
+        self.drm_points_actor = None
         
-        # Get mesh bounds
-        bounds = self.meshmaker.assembler.AssembeledMesh.bounds
-        xmin, xmax, ymin, ymax, zmin, zmax = bounds
+        # Disable the control buttons
+        self.togglePointsVisibilityButton.setEnabled(False)
+        self.removePointsButton.setEnabled(False)
         
-        # Calculate center for x and y, but use zmax for z
-        center_x = (xmin + xmax) / 2
-        center_y = (ymin + ymax) / 2
-        center_z = zmax  # As requested, use zmax for z-coordinate
+        # Render the scene to reflect changes
+        plotter.render()
         
-        # Set origin
-        self.origin = [center_x, center_y, center_z]
-        
-        # Keep identity transform matrix
-        self.transform_matrix = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-        
-        return True
+        QMessageBox.information(self, "Points Removed", "DRM points have been removed from the visualization.")
     
     def show_drm_points(self):
         """Visualize DRM points on the plotter"""
         if not self.showPointsCheckbox.isChecked():
             QMessageBox.warning(self, "Warning", "Please check 'Show DRM points in visualization' first.")
             return
+        
+        # Get current matrix and origin values from UI
+        self.transform_matrix = [input_field.value() for input_field in self.matrix_inputs]
+        self.origin = [input_field.value() for input_field in self.origin_inputs]
         
         # Get the plotter
         try:
@@ -434,6 +558,14 @@ class DRMGUI(QWidget):
                 render_points_as_spheres=True
             )
             
+            # Reset visibility state
+            self.points_visible = True
+            
+            # Enable the control buttons
+            self.togglePointsVisibilityButton.setEnabled(True)
+            self.togglePointsVisibilityButton.setText("Hide Points")
+            self.removePointsButton.setEnabled(True)
+            
             plotter.update()
             plotter.render()
             
@@ -453,11 +585,9 @@ class DRMGUI(QWidget):
             QMessageBox.warning(self, "Missing File", "Please select a H5DRM file.")
             return
         
-        # If auto set from mesh is checked, calculate from mesh
-        if self.useFromMeshCheckbox.isChecked():
-            if not self.set_transform_from_mesh():
-                # set_transform_from_mesh will show its own warning
-                return
+        # Get current matrix and origin values from UI
+        self.transform_matrix = [input_field.value() for input_field in self.matrix_inputs]
+        self.origin = [input_field.value() for input_field in self.origin_inputs]
         
         try:
             # Get parameters
@@ -569,89 +699,6 @@ class DRMGUI(QWidget):
         if hasattr(self, 'progress_dialog'):
             self.progress_dialog.setValue(int(value))
             QApplication.processEvents()
-
-
-class TransformationDialog(QDialog):
-    """Dialog for configuring transformation matrix and origin"""
-    def __init__(self, transform_matrix, origin, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Configure Transformation")
-        self.setMinimumWidth(500)
-        
-        # Store initial values
-        self.transform_matrix = transform_matrix.copy()
-        self.origin = origin.copy()
-        
-        layout = QVBoxLayout(self)
-        
-        # Matrix group
-        matrix_group = QGroupBox("Transformation Matrix (3x3)")
-        matrix_layout = QGridLayout()
-        
-        self.matrix_inputs = []
-        for i in range(3):
-            for j in range(3):
-                idx = i * 3 + j
-                input_field = QDoubleSpinBox()
-                input_field.setRange(-1000, 1000)
-                input_field.setDecimals(6)
-                input_field.setSingleStep(0.1)
-                input_field.setValue(transform_matrix[idx])
-                matrix_layout.addWidget(input_field, i, j)
-                self.matrix_inputs.append(input_field)
-        
-        matrix_group.setLayout(matrix_layout)
-        layout.addWidget(matrix_group)
-        
-        # Origin group
-        origin_group = QGroupBox("Origin Location")
-        origin_layout = QHBoxLayout()
-        
-        self.origin_inputs = []
-        for i, label in enumerate(["X:", "Y:", "Z:"]):
-            origin_layout.addWidget(QLabel(label))
-            input_field = QDoubleSpinBox()
-            input_field.setRange(-1000, 1000)
-            input_field.setDecimals(6)
-            input_field.setSingleStep(0.1)
-            input_field.setValue(origin[i])
-            origin_layout.addWidget(input_field)
-            self.origin_inputs.append(input_field)
-        
-        origin_group.setLayout(origin_layout)
-        layout.addWidget(origin_group)
-        
-        # Preset buttons
-        preset_group = QGroupBox("Matrix Presets")
-        preset_layout = QHBoxLayout()
-        
-        identity_btn = QPushButton("Identity Matrix")
-        identity_btn.clicked.connect(self.set_identity_matrix)
-        preset_layout.addWidget(identity_btn)
-        
-        # Add more presets if needed
-        preset_group.setLayout(preset_layout)
-        layout.addWidget(preset_group)
-        
-        # Buttons
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        button_box.accepted.connect(self.accept)
-        button_box.rejected.connect(self.reject)
-        layout.addWidget(button_box)
-    
-    def set_identity_matrix(self):
-        """Set the transformation matrix to identity"""
-        identity = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-        for i, value in enumerate(identity):
-            self.matrix_inputs[i].setValue(value)
-    
-    def get_transform_matrix(self):
-        """Get the current transformation matrix values"""
-        return [input_field.value() for input_field in self.matrix_inputs]
-    
-    def get_origin(self):
-        """Get the current origin values"""
-        return [input_field.value() for input_field in self.origin_inputs]
 
 
 def is_number(s):
