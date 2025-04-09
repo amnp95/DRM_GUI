@@ -160,6 +160,7 @@ class MainWindow(QMainWindow):
         self.dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
         self.dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
         self.dark_palette.setColor(QPalette.HighlightedText, Qt.black)
+        self.dark_palette.setColor(QPalette.PlaceholderText, QColor(160, 160, 160))
 
         # Light Palette (system default)
         self.light_palette = QApplication.style().standardPalette()
