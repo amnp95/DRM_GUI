@@ -7,7 +7,8 @@ from qtpy.QtWidgets import (
     QScrollArea
 )
 from meshmaker.components.Constraint.spConstraint import (
-    SPConstraint, FixConstraint, FixXConstraint, FixYConstraint, FixZConstraint, SPConstraintManager
+    SPConstraint, FixConstraint, FixXConstraint, FixYConstraint, FixZConstraint, SPConstraintManager,
+    FixMacroX_max, FixMacroX_min, FixMacroY_max, FixMacroY_min, FixMacroZ_max, FixMacroZ_min
 )
 from meshmaker.utils.validator import DoubleValidator, IntValidator
 from meshmaker.gui.plotter import PlotterManager
@@ -27,7 +28,12 @@ class SPConstraintManagerTab(QDialog):
         
         # Constraint type dropdown
         self.constraint_type_combo = QComboBox()
-        self.constraint_type_combo.addItems(["fix", "fixX", "fixY", "fixZ"])
+        self.constraint_type_combo.addItems([
+            "fix", "fixX", "fixY", "fixZ", 
+            "fixMacroXmax", "fixMacroXmin", 
+            "fixMacroYmax", "fixMacroYmin", 
+            "fixMacroZmax", "fixMacroZmin"
+        ])
         
         create_constraint_btn = QPushButton("Create New SP Constraint")
         create_constraint_btn.clicked.connect(self.open_constraint_creation_dialog)
@@ -98,6 +104,18 @@ class SPConstraintManagerTab(QDialog):
                 params = f"Y: {constraint.yCoordinate}, DOFs: {' '.join(map(str, constraint.dofs))}, Tol: {constraint.tol}"
             elif isinstance(constraint, FixZConstraint):
                 params = f"Z: {constraint.zCoordinate}, DOFs: {' '.join(map(str, constraint.dofs))}, Tol: {constraint.tol}"
+            elif isinstance(constraint, FixMacroX_max):
+                params = f"X: $X_MAX, DOFs: {' '.join(map(str, constraint.dofs))}, Tol: {constraint.tol}"
+            elif isinstance(constraint, FixMacroX_min):
+                params = f"X: $X_MIN, DOFs: {' '.join(map(str, constraint.dofs))}, Tol: {constraint.tol}"
+            elif isinstance(constraint, FixMacroY_max):
+                params = f"Y: $Y_MAX, DOFs: {' '.join(map(str, constraint.dofs))}, Tol: {constraint.tol}"
+            elif isinstance(constraint, FixMacroY_min):
+                params = f"Y: $Y_MIN, DOFs: {' '.join(map(str, constraint.dofs))}, Tol: {constraint.tol}"
+            elif isinstance(constraint, FixMacroZ_max):
+                params = f"Z: $Z_MAX, DOFs: {' '.join(map(str, constraint.dofs))}, Tol: {constraint.tol}"
+            elif isinstance(constraint, FixMacroZ_min):
+                params = f"Z: $Z_MIN, DOFs: {' '.join(map(str, constraint.dofs))}, Tol: {constraint.tol}"
             else:
                 params = "Unknown constraint type"
                 
@@ -153,6 +171,18 @@ class SPConstraintManagerTab(QDialog):
             dialog = SPConstraintEditDialog("fixY", constraint, self)
         elif isinstance(constraint, FixZConstraint):
             dialog = SPConstraintEditDialog("fixZ", constraint, self)
+        elif isinstance(constraint, FixMacroX_max):
+            dialog = SPConstraintEditDialog("fixMacroXmax", constraint, self)
+        elif isinstance(constraint, FixMacroX_min):
+            dialog = SPConstraintEditDialog("fixMacroXmin", constraint, self)
+        elif isinstance(constraint, FixMacroY_max):
+            dialog = SPConstraintEditDialog("fixMacroYmax", constraint, self)
+        elif isinstance(constraint, FixMacroY_min):
+            dialog = SPConstraintEditDialog("fixMacroYmin", constraint, self)
+        elif isinstance(constraint, FixMacroZ_max):
+            dialog = SPConstraintEditDialog("fixMacroZmax", constraint, self)
+        elif isinstance(constraint, FixMacroZ_min):
+            dialog = SPConstraintEditDialog("fixMacroZmin", constraint, self)
         
         if dialog and dialog.exec() == QDialog.Accepted:
             self.refresh_constraints_list()
@@ -319,6 +349,12 @@ class SPConstraintCreationDialog(QDialog):
         self.setup_fix_x_page()
         self.setup_fix_y_page()
         self.setup_fix_z_page()
+        self.setup_fix_macro_x_max_page()
+        self.setup_fix_macro_x_min_page()
+        self.setup_fix_macro_y_max_page()
+        self.setup_fix_macro_y_min_page()
+        self.setup_fix_macro_z_max_page()
+        self.setup_fix_macro_z_min_page()
         
         # Set the current page based on the constraint type
         if constraint_type == "fix":
@@ -329,6 +365,18 @@ class SPConstraintCreationDialog(QDialog):
             self.stack.setCurrentIndex(2)
         elif constraint_type == "fixZ":
             self.stack.setCurrentIndex(3)
+        elif constraint_type == "fixMacroXmax":
+            self.stack.setCurrentIndex(4)
+        elif constraint_type == "fixMacroXmin":
+            self.stack.setCurrentIndex(5)
+        elif constraint_type == "fixMacroYmax":
+            self.stack.setCurrentIndex(6)
+        elif constraint_type == "fixMacroYmin":
+            self.stack.setCurrentIndex(7)
+        elif constraint_type == "fixMacroZmax":
+            self.stack.setCurrentIndex(8)
+        elif constraint_type == "fixMacroZmin":
+            self.stack.setCurrentIndex(9)
         
         layout.addWidget(self.stack)
         
@@ -489,6 +537,102 @@ class SPConstraintCreationDialog(QDialog):
         
         self.stack.addWidget(fix_z_page)
 
+    def setup_fix_macro_x_max_page(self):
+        """Setup the page for fixMacroXmax constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with X coordinate = $X_MAX")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.x_max_tolerance_input = QLineEdit()
+        self.x_max_tolerance_input.setValidator(self.double_validator)
+        self.x_max_tolerance_input.setText("1e-10")
+        fix_layout.addRow("Tolerance:", self.x_max_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_x_min_page(self):
+        """Setup the page for fixMacroXmin constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with X coordinate = $X_MIN")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.x_min_tolerance_input = QLineEdit()
+        self.x_min_tolerance_input.setValidator(self.double_validator)
+        self.x_min_tolerance_input.setText("1e-10")
+        fix_layout.addRow("Tolerance:", self.x_min_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_y_max_page(self):
+        """Setup the page for fixMacroYmax constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with Y coordinate = $Y_MAX")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.y_max_tolerance_input = QLineEdit()
+        self.y_max_tolerance_input.setValidator(self.double_validator)
+        self.y_max_tolerance_input.setText("1e-10")
+        fix_layout.addRow("Tolerance:", self.y_max_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_y_min_page(self):
+        """Setup the page for fixMacroYmin constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with Y coordinate = $Y_MIN")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.y_min_tolerance_input = QLineEdit()
+        self.y_min_tolerance_input.setValidator(self.double_validator)
+        self.y_min_tolerance_input.setText("1e-10")
+        fix_layout.addRow("Tolerance:", self.y_min_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_z_max_page(self):
+        """Setup the page for fixMacroZmax constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with Z coordinate = $Z_MAX")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.z_max_tolerance_input = QLineEdit()
+        self.z_max_tolerance_input.setValidator(self.double_validator)
+        self.z_max_tolerance_input.setText("1e-10")
+        fix_layout.addRow("Tolerance:", self.z_max_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_z_min_page(self):
+        """Setup the page for fixMacroZmin constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with Z coordinate = $Z_MIN")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.z_min_tolerance_input = QLineEdit()
+        self.z_min_tolerance_input.setValidator(self.double_validator)
+        self.z_min_tolerance_input.setText("1e-10")
+        fix_layout.addRow("Tolerance:", self.z_min_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
     def create_constraint(self):
         try:
             dofs = self.dof_widget.get_dof_values()
@@ -529,6 +673,48 @@ class SPConstraintCreationDialog(QDialog):
                 except ValueError:
                     QMessageBox.warning(self, "Input Error", "Z coordinate and tolerance must be valid numbers")
                     return
+            elif self.constraint_type == "fixMacroXmax":
+                try:
+                    tolerance = float(self.x_max_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroXmin":
+                try:
+                    tolerance = float(self.x_min_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroYmax":
+                try:
+                    tolerance = float(self.y_max_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroYmin":
+                try:
+                    tolerance = float(self.y_min_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroZmax":
+                try:
+                    tolerance = float(self.z_max_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroZmin":
+                try:
+                    tolerance = float(self.z_min_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
             
             self.manager.create_constraint(self.constraint_type, *args)
             self.accept()
@@ -560,8 +746,14 @@ class SPConstraintEditDialog(QDialog):
         self.setup_fix_x_page()
         self.setup_fix_y_page()
         self.setup_fix_z_page()
+        self.setup_fix_macro_x_max_page()
+        self.setup_fix_macro_x_min_page()
+        self.setup_fix_macro_y_max_page()
+        self.setup_fix_macro_y_min_page()
+        self.setup_fix_macro_z_max_page()
+        self.setup_fix_macro_z_min_page()
         
-        # Set the current page based on the constraint type
+        # Set the current page based on the constraint type and populate fields
         if constraint_type == "fix":
             self.stack.setCurrentIndex(0)
             self.node_tag_input.setText(str(constraint.node_tag))
@@ -577,6 +769,24 @@ class SPConstraintEditDialog(QDialog):
             self.stack.setCurrentIndex(3)
             self.z_coordinate_input.setText(str(constraint.zCoordinate))
             self.z_tolerance_input.setText(str(constraint.tol))
+        elif constraint_type == "fixMacroXmax":
+            self.stack.setCurrentIndex(4)
+            self.x_max_tolerance_input.setText(str(constraint.tol))
+        elif constraint_type == "fixMacroXmin":
+            self.stack.setCurrentIndex(5)
+            self.x_min_tolerance_input.setText(str(constraint.tol))
+        elif constraint_type == "fixMacroYmax":
+            self.stack.setCurrentIndex(6)
+            self.y_max_tolerance_input.setText(str(constraint.tol))
+        elif constraint_type == "fixMacroYmin":
+            self.stack.setCurrentIndex(7)
+            self.y_min_tolerance_input.setText(str(constraint.tol))
+        elif constraint_type == "fixMacroZmax":
+            self.stack.setCurrentIndex(8)
+            self.z_max_tolerance_input.setText(str(constraint.tol))
+        elif constraint_type == "fixMacroZmin":
+            self.stack.setCurrentIndex(9)
+            self.z_min_tolerance_input.setText(str(constraint.tol))
         
         layout.addWidget(self.stack)
         
@@ -702,6 +912,96 @@ class SPConstraintEditDialog(QDialog):
         
         self.stack.addWidget(fix_z_page)
 
+    def setup_fix_macro_x_max_page(self):
+        """Setup the page for fixMacroXmax constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with X coordinate = $X_MAX")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.x_max_tolerance_input = QLineEdit()
+        self.x_max_tolerance_input.setValidator(self.double_validator)
+        fix_layout.addRow("Tolerance:", self.x_max_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_x_min_page(self):
+        """Setup the page for fixMacroXmin constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with X coordinate = $X_MIN")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.x_min_tolerance_input = QLineEdit()
+        self.x_min_tolerance_input.setValidator(self.double_validator)
+        fix_layout.addRow("Tolerance:", self.x_min_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_y_max_page(self):
+        """Setup the page for fixMacroYmax constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with Y coordinate = $Y_MAX")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.y_max_tolerance_input = QLineEdit()
+        self.y_max_tolerance_input.setValidator(self.double_validator)
+        fix_layout.addRow("Tolerance:", self.y_max_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_y_min_page(self):
+        """Setup the page for fixMacroYmin constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with Y coordinate = $Y_MIN")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.y_min_tolerance_input = QLineEdit()
+        self.y_min_tolerance_input.setValidator(self.double_validator)
+        fix_layout.addRow("Tolerance:", self.y_min_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_z_max_page(self):
+        """Setup the page for fixMacroZmax constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with Z coordinate = $Z_MAX")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.z_max_tolerance_input = QLineEdit()
+        self.z_max_tolerance_input.setValidator(self.double_validator)
+        fix_layout.addRow("Tolerance:", self.z_max_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
+    def setup_fix_macro_z_min_page(self):
+        """Setup the page for fixMacroZmin constraint"""
+        fix_page = QWidget()
+        fix_layout = QFormLayout(fix_page)
+        
+        info_label = QLabel("This constraint will apply to all nodes with Z coordinate = $Z_MIN")
+        info_label.setWordWrap(True)
+        fix_layout.addRow(info_label)
+        
+        self.z_min_tolerance_input = QLineEdit()
+        self.z_min_tolerance_input.setValidator(self.double_validator)
+        fix_layout.addRow("Tolerance:", self.z_min_tolerance_input)
+        
+        self.stack.addWidget(fix_page)
+
     def save_constraint(self):
         try:
             dofs = self.dof_widget.get_dof_values()
@@ -731,14 +1031,6 @@ class SPConstraintEditDialog(QDialog):
                 except ValueError:
                     QMessageBox.warning(self, "Input Error", "X coordinate and tolerance must be valid numbers")
                     return
-            elif self.constraint_type == "fixX":
-                try:
-                    x_coordinate = float(self.x_coordinate_input.text())
-                    tolerance = float(self.x_tolerance_input.text())
-                    args = [x_coordinate, dofs, tolerance]
-                except ValueError:
-                    QMessageBox.warning(self, "Input Error", "X coordinate and tolerance must be valid numbers")
-                    return
             elif self.constraint_type == "fixY":
                 try:
                     y_coordinate = float(self.y_coordinate_input.text())
@@ -754,6 +1046,48 @@ class SPConstraintEditDialog(QDialog):
                     args = [z_coordinate, dofs, tolerance]
                 except ValueError:
                     QMessageBox.warning(self, "Input Error", "Z coordinate and tolerance must be valid numbers")
+                    return
+            elif self.constraint_type == "fixMacroXmax":
+                try:
+                    tolerance = float(self.x_max_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroXmin":
+                try:
+                    tolerance = float(self.x_min_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroYmax":
+                try:
+                    tolerance = float(self.y_max_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroYmin":
+                try:
+                    tolerance = float(self.y_min_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroZmax":
+                try:
+                    tolerance = float(self.z_max_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
+                    return
+            elif self.constraint_type == "fixMacroZmin":
+                try:
+                    tolerance = float(self.z_min_tolerance_input.text())
+                    args = [dofs, tolerance]
+                except ValueError:
+                    QMessageBox.warning(self, "Input Error", "Tolerance must be a valid number")
                     return
             
             self.manager.create_constraint(self.constraint_type, *args)
@@ -836,10 +1170,16 @@ class FixConstraintView(QWidget):
         
         # Define colors for different constraint types
         colors = {
-            FixConstraint: [1.0, 0.0, 0.0],    # Red for fix
-            FixXConstraint: [0.0, 1.0, 0.0],   # Green for fixX
-            FixYConstraint: [0.0, 0.0, 1.0],   # Blue for fixY
-            FixZConstraint: [1.0, 1.0, 0.0]    # Yellow for fixZ
+            FixConstraint: [1.0, 0.0, 0.0],      # Red for fix
+            FixXConstraint: [0.0, 1.0, 0.0],     # Green for fixX
+            FixYConstraint: [0.0, 0.0, 1.0],     # Blue for fixY
+            FixZConstraint: [1.0, 1.0, 0.0],     # Yellow for fixZ
+            FixMacroX_max: [1.0, 0.5, 0.0],      # Orange for fixMacroXmax
+            FixMacroX_min: [0.5, 1.0, 0.0],      # Light green for fixMacroXmin
+            FixMacroY_max: [0.0, 1.0, 0.5],      # Cyan for fixMacroYmax
+            FixMacroY_min: [0.5, 0.0, 1.0],      # Purple for fixMacroYmin
+            FixMacroZ_max: [1.0, 0.0, 0.5],      # Pink for fixMacroZmax
+            FixMacroZ_min: [0.0, 0.5, 1.0]       # Light blue for fixMacroZmin
         }
         
         for constraint in constraints:
