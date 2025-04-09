@@ -153,6 +153,150 @@ class FixZConstraint(SPConstraint):
     def to_tcl(self) -> str:
         """Convert constraint to TCL command for OpenSees"""
         return f"fixZ {self.zCoordinate} {' '.join(map(str, self.dofs))} -tol {self.tol};"
+    
+
+class FixMacroX_max(SPConstraint):
+    """
+    FixX constraint for maximum X coordinate which is 
+    defined as macro with name X_MAX in the TCL file
+    """
+    def __init__(self, dofs: List[int], tol: float = 1e-10):
+        """
+        Initialize FixX constraint
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        """
+        # Use -1 as a placeholder for node tag since it applies to multiple nodes
+        super().__init__(-1, dofs)
+        self.tol = tol
+    
+    def to_tcl(self) -> str:
+        """Convert constraint to TCL command for OpenSees"""
+        return f"fixX $X_MAX {' '.join(map(str, self.dofs))} -tol {self.tol};"
+    
+class FixMacroY_max(SPConstraint):
+    """
+    FixY constraint for maximum Y coordinate which is 
+    defined as macro with name Y_MAX in the TCL file
+    """
+    def __init__(self, dofs: List[int], tol: float = 1e-10):
+        """
+        Initialize FixY constraint
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        """
+        # Use -1 as a placeholder for node tag since it applies to multiple nodes
+        super().__init__(-1, dofs)
+        self.tol = tol
+    
+    def to_tcl(self) -> str:
+        """Convert constraint to TCL command for OpenSees"""
+        return f"fixY $Y_MAX {' '.join(map(str, self.dofs))} -tol {self.tol};"
+    
+class FixMacroZ_max(SPConstraint):
+    """
+    FixZ constraint for maximum Z coordinate which is 
+    defined as macro with name Z_MAX in the TCL file
+    """
+    def __init__(self, dofs: List[int], tol: float = 1e-10):
+        """
+        Initialize FixZ constraint
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        """
+        # Use -1 as a placeholder for node tag since it applies to multiple nodes
+        super().__init__(-1, dofs)
+        self.tol = tol
+    
+    def to_tcl(self) -> str:
+        """Convert constraint to TCL command for OpenSees"""
+        return f"fixZ $Z_MAX {' '.join(map(str, self.dofs))} -tol {self.tol};"
+
+
+class FixMacroX_min(SPConstraint):
+    """
+    FixX constraint for minimum X coordinate which is 
+    defined as macro with name X_MIN in the TCL file
+    """
+    def __init__(self, dofs: List[int], tol: float = 1e-10):
+        """
+        Initialize FixX constraint
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        """
+        # Use -1 as a placeholder for node tag since it applies to multiple nodes
+        super().__init__(-1, dofs)
+        self.tol = tol
+    
+    def to_tcl(self) -> str:
+        """Convert constraint to TCL command for OpenSees"""
+        return f"fixX $X_MIN {' '.join(map(str, self.dofs))} -tol {self.tol};"
+    
+
+class FixMacroY_min(SPConstraint):
+    """
+    FixY constraint for minimum Y coordinate which is 
+    defined as macro with name Y_MIN in the TCL file
+    """
+    def __init__(self, dofs: List[int], tol: float = 1e-10):
+        """
+        Initialize FixY constraint
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        """
+        # Use -1 as a placeholder for node tag since it applies to multiple nodes
+        super().__init__(-1, dofs)
+        self.tol = tol
+    
+    def to_tcl(self) -> str:
+        """Convert constraint to TCL command for OpenSees"""
+        return f"fixY $Y_MIN {' '.join(map(str, self.dofs))} -tol {self.tol};"
+    
+
+class FixMacroZ_min(SPConstraint):
+    """
+    FixZ constraint for minimum Z coordinate which is 
+    defined as macro with name Z_MIN in the TCL file
+    """
+    def __init__(self, dofs: List[int], tol: float = 1e-10):
+        """
+        Initialize FixZ constraint
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        """
+        # Use -1 as a placeholder for node tag since it applies to multiple nodes
+        super().__init__(-1, dofs)
+        self.tol = tol
+    
+    def to_tcl(self) -> str:
+        """Convert constraint to TCL command for OpenSees"""
+        return f"fixZ $Z_MIN {' '.join(map(str, self.dofs))} -tol {self.tol};"
+    
+
 
 
 class SPConstraintManager:
@@ -246,6 +390,97 @@ class SPConstraintManager:
             FixZConstraint: The created fixZ constraint
         """
         return FixZConstraint(zCoordinate, dofs, tol)
+    
+
+    def fixMacroXmin(self, dofs: List[int], tol: float = 1e-10) -> FixMacroX_min:
+        """
+        Create a fixX constraint for the minimum X coordinate defined as a macro.
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        
+        Returns:
+            FixMacroX_min: The created fixX constraint for X_MIN macro
+        """
+        return FixMacroX_min(dofs, tol)
+
+    def fixMacroXmax(self, dofs: List[int], tol: float = 1e-10) -> FixMacroX_max:
+        """
+        Create a fixX constraint for the maximum X coordinate defined as a macro.
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        
+        Returns:
+            FixMacroX_max: The created fixX constraint for X_MAX macro
+        """
+        return FixMacroX_max(dofs, tol)
+
+    def fixMacroYmin(self, dofs: List[int], tol: float = 1e-10) -> FixMacroY_min:
+        """
+        Create a fixY constraint for the minimum Y coordinate defined as a macro.
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        
+        Returns:
+            FixMacroY_min: The created fixY constraint for Y_MIN macro
+        """
+        return FixMacroY_min(dofs, tol)
+
+    def fixMacroYmax(self, dofs: List[int], tol: float = 1e-10) -> FixMacroY_max:
+        """
+        Create a fixY constraint for the maximum Y coordinate defined as a macro.
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        
+        Returns:
+            FixMacroY_max: The created fixY constraint for Y_MAX macro
+        """
+        return FixMacroY_max(dofs, tol)
+
+    def fixMacroZmin(self, dofs: List[int], tol: float = 1e-10) -> FixMacroZ_min:
+        """
+        Create a fixZ constraint for the minimum Z coordinate defined as a macro.
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        
+        Returns:
+            FixMacroZ_min: The created fixZ constraint for Z_MIN macro
+        """
+        return FixMacroZ_min(dofs, tol)
+
+    def fixMacroZmax(self, dofs: List[int], tol: float = 1e-10) -> FixMacroZ_max:
+        """
+        Create a fixZ constraint for the maximum Z coordinate defined as a macro.
+        
+        Args:
+            dofs: List of DOF constraint values (0 or 1)
+                  0 unconstrained (or free)
+                  1 constrained (or fixed)
+            tol: Tolerance for coordinate comparison (default: 1e-10)
+        
+        Returns:
+            FixMacroZ_max: The created fixZ constraint for Z_MAX macro
+        """
+        return FixMacroZ_max(dofs, tol)
 
     def create_constraint(self, constraint_type: str, *args) -> SPConstraint:
         """
@@ -270,6 +505,18 @@ class SPConstraintManager:
             return self.fixY(*args)
         elif constraint_type.lower() == "fixz":
             return self.fixZ(*args)
+        elif constraint_type.lower() == "fixmacroxmin":
+            return self.fixMacroXmin(*args)
+        elif constraint_type.lower() == "fixmacroxmax":
+            return self.fixMacroXmax(*args)
+        elif constraint_type.lower() == "fixmacroymin":
+            return self.fixMacroYmin(*args)
+        elif constraint_type.lower() == "fixmacroymax":
+            return self.fixMacroYmax(*args)
+        elif constraint_type.lower() == "fixmacrozmin":
+            return self.fixMacroZmin(*args)
+        elif constraint_type.lower() == "fixmacrozmax":
+            return self.fixMacroZmax(*args)
         else:
             raise ValueError(f"Unknown constraint type: {constraint_type}")
 
