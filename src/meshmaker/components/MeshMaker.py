@@ -8,6 +8,9 @@ from meshmaker.components.Mesh.meshPartBase import MeshPartRegistry
 from meshmaker.components.Mesh.meshPartInstance import *
 from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeriesManager
 from meshmaker.components.Analysis.analysis import AnalysisManager
+from meshmaker.components.Pattern.patternBase import PatternManager
+from meshmaker.components.Recorder.recorderBase import RecorderManager
+from meshmaker.components.Process.process import ProcessManager
 import os
 from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat, where, isin
 from pyvista import Cube, MultiBlock, StructuredGrid
@@ -58,6 +61,9 @@ class MeshMaker:
         self.meshPart = MeshPartRegistry()
         self.timeSeries = TimeSeriesManager()
         self.analysis = AnalysisManager()
+        self.pattern = PatternManager()
+        self.recorder = RecorderManager()
+        self.process = ProcessManager()
 
     @classmethod
     def get_instance(cls, **kwargs):
@@ -794,4 +800,83 @@ class MeshMaker:
                 
                 self.constraint.mp.create_equal_dof(masterNode, [slaveNode],[1,2,3])
 
-                
+
+
+    def createDefaultProcess(self, dT, finalTime):
+        '''
+        Create the default process for doing Domain Reduction method analysis
+        details:
+            1 create fix the boundaries of the model using macros
+            2 create the vtkhdf recorder
+            3 create specfic recorders
+            4 create the gravity analysis
+            5 create dynamic analysis
+        '''
+
+
+        # create the fixities
+        dofsVals = [1,1,1,1,1,1]
+        c1 = self.constraint.sp.fixMacroXmax(dofs=dofsVals)
+        c2 = self.constraint.sp.fixMacroXmin(dofs=dofsVals)
+        c3 = self.constraint.sp.fixMacroYmax(dofs=dofsVals)
+        c4 = self.constraint.sp.fixMacroYmin(dofs=dofsVals)
+        c5 = self.constraint.sp.fixMacroZmin(dofs=dofsVals)
+
+        # create the vtkhdf recorder
+        vtkRecordr = self.recorder.create_recorder(recorder_type="vtkhdf",
+                                      file_base_name="result",
+                                      resp_types=["disp", "vel", "accel", "stress3D6", "strain3D6"],
+                                      delta_t=0.02)
+        
+        # create the specific recorders
+        # ....  to be implemented
+
+        # create the gravity analysis
+        GravityElastic = self.analysis.create_analysis(name="Gravity-Elastic",
+                                      analysis_type="Transient",
+                                      constraint_handler=self.analysis.constraint.create_handler("plain"),
+                                      numberer=self.analysis.numberer.get_numberer("RCM"),
+                                      system=self.analysis.system.create_system(system_type="mumps",icntl14=200, icntl7=7),
+                                      algorithm=self.analysis.algorithm.create_algorithm(algorithm_type="modifiednewton", factor_once=True),
+                                      test=self.analysis.test.create_test("relativeenergyincr",tol=1e-4, max_iter=10, print_flag=2),
+                                      integrator=self.analysis.integrator.create_integrator(integrator_type="newmark", gamma=0.5, beta=0.25, form="D"),
+                                      dt=dT,
+                                      num_steps=20,
+                                      )
+        GravityPlastic = self.analysis.create_analysis(name="Gravity-Plastic",
+                                        analysis_type="Transient",
+                                        constraint_handler=self.analysis.constraint.create_handler("plain"),
+                                        numberer=self.analysis.numberer.get_numberer("RCM"),
+                                        system=self.analysis.system.create_system(system_type="mumps",icntl14=200, icntl7=7),
+                                        algorithm=self.analysis.algorithm.create_algorithm(algorithm_type="modifiednewton", factor_once=True),
+                                        test=self.analysis.test.create_test("relativeenergyincr",tol=1e-4, max_iter=10, print_flag=2),
+                                        integrator=self.analysis.integrator.create_integrator(integrator_type="newmark", gamma=0.5, beta=0.25, form="D"),
+                                        dt=dT,
+                                        num_steps=50,
+                                        )
+        
+        DynamicAnalysis = self.analysis.create_analysis(
+                                    name="DynamicAnalysis",
+                                    analysis_type="Transient",
+                                    constraint_handler=self.analysis.constraint.create_handler("plain"),
+                                    numberer=self.analysis.numberer.get_numberer("RCM"),
+                                    system=self.analysis.system.create_system(system_type="mumps",icntl14=200, icntl7=7),
+                                    algorithm=self.analysis.algorithm.create_algorithm(algorithm_type="modifiednewton", factor_once=True),
+                                    test=self.analysis.test.create_test("relativeenergyincr",tol=1e-4, max_iter=10, print_flag=2),
+                                    integrator=self.analysis.integrator.create_integrator(integrator_type="newmark", gamma=0.5, beta=0.25, form="D"),
+                                    dt=dT,
+                                    final_time=finalTime,
+                                    )
+        
+
+        self.process.add_step(c1)
+        self.process.add_step(c2)   
+        self.process.add_step(c3)
+        self.process.add_step(c4)
+        self.process.add_step(c5)
+        self.process.add_step(GravityElastic)
+        self.process.add_step(GravityPlastic)
+        self.process.add_step(vtkRecordr)
+        self.process.add_step(DynamicAnalysis)
+
+        
