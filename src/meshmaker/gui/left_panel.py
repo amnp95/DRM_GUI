@@ -14,6 +14,7 @@ from meshmaker.components.Recorder.recorderGUI import RecorderManagerTab
 from meshmaker.components.Analysis.analysisGUI import AnalysisManagerTab
 from meshmaker.components.Process.processGUI import ProcessGUI
 from .drmGUI import DRMGUI
+from .absorbingGUI import AbsorbingGUI
 
 class LeftPanel(QFrame):
     '''
@@ -21,7 +22,7 @@ class LeftPanel(QFrame):
     '''
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumWidth(400)
+        self.setMinimumWidth(500)
         self.init_ui()
         
     def init_ui(self):
@@ -56,6 +57,7 @@ class LeftPanel(QFrame):
         self.material_tab = QWidget()
         self.mesh_tab = QWidget()
         self.Assemble_tab = QWidget()
+        self.drm_tab = QWidget()
         self.absorbing_tab = QWidget()
         self.manage_tab = QWidget()
         self.analysis_tab = QWidget()
@@ -64,7 +66,8 @@ class LeftPanel(QFrame):
         self.tabs.addTab(self.material_tab, "Material")
         self.tabs.addTab(self.mesh_tab, "Mesh")
         self.tabs.addTab(self.Assemble_tab, "Assemble")
-        self.tabs.addTab(self.absorbing_tab, "DRM")
+        self.tabs.addTab(self.drm_tab, "DRM")
+        self.tabs.addTab(self.absorbing_tab, "Absorbing")
         self.tabs.addTab(self.analysis_tab, "Process")
         self.tabs.addTab(self.manage_tab, "Manage")
 
@@ -88,9 +91,15 @@ class LeftPanel(QFrame):
         self.Assemble_tab.layout.addWidget(AssemblyManagerTab())
         self.Assemble_tab.setLayout(self.Assemble_tab.layout)
 
+
+        # DRM tab
+        self.drm_tab.layout = QVBoxLayout()
+        self.drm_tab.layout.addWidget(DRMGUI())
+        self.drm_tab.setLayout(self.drm_tab.layout)
+
         # Absorbing tab
         self.absorbing_tab.layout = QVBoxLayout()
-        self.absorbing_tab.layout.addWidget(DRMGUI())
+        self.absorbing_tab.layout.addWidget(AbsorbingGUI())
         self.absorbing_tab.setLayout(self.absorbing_tab.layout)
 
         # Process tab
