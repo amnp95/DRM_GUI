@@ -310,7 +310,20 @@ class AnalysisManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(AnalysisManager, cls).__new__(cls)
+            # Initialize instance variables in __new__ since it's a singleton
+            cls._instance._initialized = False
         return cls._instance
+    
+    def __init__(self):
+        # Only initialize the managers once
+        if not self._initialized:
+            self.test = TestManager()
+            self.constraint = ConstraintHandlerManager()
+            self.numberer = NumbererManager()
+            self.system = SystemManager()
+            self.algorithm = AlgorithmManager()
+            self.integrator = IntegratorManager()
+            self._initialized = True
     
     def create_analysis(self, name: str, analysis_type: str, constraint_handler: ConstraintHandler, 
                      numberer: Numberer, system: System, algorithm: Algorithm, 
