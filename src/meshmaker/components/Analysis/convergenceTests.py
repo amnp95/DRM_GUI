@@ -519,6 +519,7 @@ class TestManager:
 
     def create_test(self, test_type: str, **kwargs) -> Test:
         """Create a new test"""
+        test_type = test_type.lower()
         return Test.create_test(test_type, **kwargs)
 
     def get_test(self, tag: int) -> Test:
