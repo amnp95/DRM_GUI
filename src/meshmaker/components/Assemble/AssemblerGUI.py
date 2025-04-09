@@ -454,9 +454,25 @@ class AssembledMeshViewOptionsDialog(QDialog):
         """Update the scalars for the assembled mesh"""
         scalars_name = self.scalar_combobox.currentText()
         self.assembler.AssembeledMesh.active_scalars_name = scalars_name
+        
+        # Determine if the selected scalar is point data or cell data
+        is_point_data = scalars_name in self.assembler.AssembeledMesh.point_data.keys()
+        
+        # Update the mapper with the correct scalar data type
+        mapper = self.assembler.AssembeledActor.GetMapper()
+        if is_point_data:
+            mapper.SetScalarModeToUsePointData()
+        else:
+            mapper.SetScalarModeToUseCellData()
+        
+        # Set the array name and range
         self.assembler.AssembeledActor.mapper.array_name = scalars_name
         self.assembler.AssembeledActor.mapper.scalar_range = self.assembler.AssembeledMesh.get_data_range(scalars_name)
-
+        
+        # Update the scalar bar title
+        if self.plotter.scalar_bar is not None:
+            self.plotter.scalar_bar.SetTitle(scalars_name)
+        
         self.plotter.update_scalar_bar_range(self.assembler.AssembeledMesh.get_data_range(scalars_name))
         self.plotter.update()
         self.plotter.render()
