@@ -13,8 +13,7 @@ from meshmaker.components.Pattern.patternGUI import PatternManagerTab
 from meshmaker.components.Recorder.recorderGUI import RecorderManagerTab
 from meshmaker.components.Analysis.analysisGUI import AnalysisManagerTab
 from meshmaker.components.Process.processGUI import ProcessGUI
-from meshmaker.components.DRM.drmPatternGUI import DRMGUI
-from meshmaker.components.DRM.drmAbsorbingGUI import AbsorbingGUI
+from meshmaker.components.DRM.combinedDRMGUI import CombinedDRMGUI
 
 class LeftPanel(QFrame):
     '''
@@ -58,17 +57,13 @@ class LeftPanel(QFrame):
         self.mesh_tab = QWidget()
         self.Assemble_tab = QWidget()
         self.drm_tab = QWidget()
-        self.absorbing_tab = QWidget()
         self.manage_tab = QWidget()
-        self.analysis_tab = QWidget()
 
         # Add tabs to the tab widget
         self.tabs.addTab(self.material_tab, "Material")
         self.tabs.addTab(self.mesh_tab, "Mesh")
         self.tabs.addTab(self.Assemble_tab, "Assemble")
-        self.tabs.addTab(self.drm_tab, "DRM")
-        self.tabs.addTab(self.absorbing_tab, "Absorbing")
-        self.tabs.addTab(self.analysis_tab, "Process")
+        self.tabs.addTab(self.drm_tab, "DRM Analysis")
         self.tabs.addTab(self.manage_tab, "Manage")
 
 
@@ -94,18 +89,14 @@ class LeftPanel(QFrame):
 
         # DRM tab
         self.drm_tab.layout = QVBoxLayout()
-        self.drm_tab.layout.addWidget(DRMGUI())
+        self.drm_tab.layout.addWidget(CombinedDRMGUI())
         self.drm_tab.setLayout(self.drm_tab.layout)
 
-        # Absorbing tab
-        self.absorbing_tab.layout = QVBoxLayout()
-        self.absorbing_tab.layout.addWidget(AbsorbingGUI())
-        self.absorbing_tab.setLayout(self.absorbing_tab.layout)
 
-        # Process tab
-        self.analysis_tab.layout = QVBoxLayout()
-        self.analysis_tab.layout.addWidget(ProcessGUI())
-        self.analysis_tab.setLayout(self.analysis_tab.layout)
+        # # Process tab
+        # self.analysis_tab.layout = QVBoxLayout()
+        # self.analysis_tab.layout.addWidget(ProcessGUI())
+        # self.analysis_tab.setLayout(self.analysis_tab.layout)
 
         # Manage Tab
         self.manage_tab.layout = QVBoxLayout()
@@ -126,7 +117,7 @@ class LeftPanel(QFrame):
         add_manage_button("Manage Patterns", lambda: PatternManagerTab(parent=self).exec_())
         add_manage_button("Manage Recorders", lambda: RecorderManagerTab(parent=self).exec_())
         add_manage_button("Manage Analysis", lambda: AnalysisManagerTab(parent=self).exec_())
-
+        add_manage_button("Manage Process", lambda: ProcessGUI(parent=self).exec_())
         self.manage_tab.setLayout(self.manage_tab.layout)
         
 
