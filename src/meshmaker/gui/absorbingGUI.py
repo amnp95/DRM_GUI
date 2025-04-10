@@ -264,7 +264,7 @@ class AbsorbingGUI(QWidget):
 
         try:
             # Start the mesh operation
-            self.meshmaker.addAbsorbingLayer(
+            self.meshmaker.drm.addAbsorbingLayer(
                 num_layers,
                 num_partitions,
                 partition_algorithm,
