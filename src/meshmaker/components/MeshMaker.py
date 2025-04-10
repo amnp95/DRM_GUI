@@ -309,6 +309,32 @@ class MeshMaker:
                     if progress_callback:
                         progress = 65 + (core_idx + 1) / len(num_cores) * 15
                         progress_callback(min(progress, 80), "writing constraints")
+                
+                # write sp constraints
+                f.write("\n# spConstraints ======================================\n")
+                size = len(self.constraint.sp)
+                indx = 1
+                for constraint in self.constraint.sp:
+                    f.write(f"{constraint.to_tcl()}\n")
+                    if progress_callback:
+                        progress_callback(80 + indx / size * 10, "writing sp constraints")
+                    indx += 1
+
+                # write process
+                f.write("\n# Process ======================================\n")
+                indx = 1
+                size = len(self.process)
+                f.write(f"{self.process.to_tcl()}\n")
+                # for process in self.process:
+                #     print(process["component"])
+                #     f.write(f"{process['component'].to_tcl()}\n")
+                #     if progress_callback:
+                #         progress_callback(90 + indx / size * 10, "writing process")
+                #     indx += 1
+
+
+                
+                    
 
                 if progress_callback:
                     progress_callback(100,"finished writing")
