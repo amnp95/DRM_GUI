@@ -4,5 +4,7 @@ pyvistaqt
 qtconsole
 ipykernel
 setuptools
+tapipy
+pykdtree
 
 
