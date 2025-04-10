@@ -598,3 +598,9 @@ class SPConstraintManager:
                 tcl_commands.append(constraint.to_tcl())
         
         return "\n".join(tcl_commands)
+    
+    def clear_all(self):
+        """
+        Clear all constraints.
+        """
+        SPConstraint._constraints.clear()
