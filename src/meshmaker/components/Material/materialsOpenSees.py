@@ -116,6 +116,36 @@ class J2CyclicBoundingSurfaceMaterial(Material):
                 'Integration variable (0 = explicit, 1 = implicit, 0.5 = midpoint rule)']
     
 
+class DruckerPragerMaterial(Material):
+    def __init__(self, user_name: str = "Unnamed", **kwargs):
+        super().__init__('nDMaterial', 'DruckerPrager', user_name)
+        self.params = kwargs if kwargs else {}
+
+    def __str__(self):
+        param_order = self.get_parameters()
+        params_str = " ".join(str(self.params[param]) for param in param_order if param in self.params)
+        return f"{self.material_type} DruckerPrager {self.tag} {params_str}; # {self.user_name}"
+
+    @classmethod 
+    def get_parameters(cls) -> List[str]:
+        return ['k', 'G', 'sigmaY', 'rho', 'rhoBar', 'Kinf', 'Ko', 'delta1', 'delta2', 'H', 'theta', 'density', 'atmPressure']
+    
+    @classmethod
+    def get_description(cls) -> List[str]:
+        return ['Bulk modulus', 
+                'Shear modulus',
+                'Yield stress',
+                'Frictional strength parameter',
+                'Controls evolution of plastic volume change: 0 ≤ rhoBar ≤ rho',
+                'Nonlinear isotropic strain hardening parameter: Kinf ≥ 0',
+                'Nonlinear isotropic strain hardening parameter: Ko ≥ 0',
+                'Nonlinear isotropic strain hardening parameter: delta1 ≥ 0',
+                'Tension softening parameter: delta2 ≥ 0',
+                'Linear strain hardening parameter: H ≥ 0',
+                'Controls relative proportions of isotropic and kinematic hardening: 0 ≤ theta ≤ 1',
+                'Mass density of the material',
+                'Optional atmospheric pressure for update of elastic bulk and shear moduli (default = 101 kPa)']
+
 
 
 
@@ -125,3 +155,4 @@ MaterialRegistry.register_material_type('nDMaterial', 'ElasticIsotropic', Elasti
 MaterialRegistry.register_material_type('nDMaterial', 'ManzariDafalias', ManzariDafaliasMaterial)
 MaterialRegistry.register_material_type('uniaxialMaterial', 'Elastic', ElasticUniaxialMaterial)
 MaterialRegistry.register_material_type('nDMaterial', 'J2CyclicBoundingSurface', J2CyclicBoundingSurfaceMaterial)
+MaterialRegistry.register_material_type('nDMaterial', 'DruckerPrager', DruckerPragerMaterial)
