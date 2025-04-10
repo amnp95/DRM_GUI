@@ -52,8 +52,8 @@ class ProcessManager:
             int: Index of the added step
         """
         # Store a weak reference to the component
-        # component_ref = weakref.ref(component)
-        component_ref = component
+        component_ref = weakref.ref(component)
+        # component_ref = component
         
         step = {
             "component": component_ref,
@@ -141,6 +141,7 @@ class ProcessManager:
         tcl_script = ""
         for step in self.steps:
             component = step["component"]
+            component = component() if component else None
             description = step["description"]
             tcl_script += f"# {description} ======================================\n\n"
             tcl_script += f"{component.to_tcl()}\n\n\n"
