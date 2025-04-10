@@ -6,6 +6,7 @@ from qtpy.QtWidgets import (
 from qtpy.QtCore import Qt
 from meshmaker.components.MeshMaker import MeshMaker
 from qtpy.QtWidgets import QSizePolicy
+from meshmaker.components.Process.processGUI import ProcessGUI
 
 class DRMProcessGUI(QWidget):
     def __init__(self, parent=None):
@@ -98,7 +99,7 @@ class DRMProcessGUI(QWidget):
             QMessageBox.critical(self, "Error", f"Failed to create DRM process: {str(e)}", QMessageBox.Ok)
     
     def view_process_steps(self):
-        """Display the current process steps in a message box"""
+        """Open the process GUI to display and manage process steps"""
         if not hasattr(self.meshmaker, 'process') or not hasattr(self.meshmaker.process, 'steps'):
             QMessageBox.warning(self, "No Process", "No process steps defined yet.", QMessageBox.Ok)
             return
@@ -107,13 +108,10 @@ class DRMProcessGUI(QWidget):
         if not steps:
             QMessageBox.warning(self, "Empty Process", "The process contains no steps.", QMessageBox.Ok)
             return
-            
-        # Build steps information
-        steps_info = "Current Process Steps:\n\n"
-        for i, step in enumerate(steps, 1):
-            steps_info += f"{i}. {step.description}\n"
-            
-        QMessageBox.information(self, "Process Steps", steps_info, QMessageBox.Ok)
+        
+        # Open the process GUI dialog
+        process_dialog = ProcessGUI(self)
+        process_dialog.show()
 
 
 if __name__ == '__main__':
