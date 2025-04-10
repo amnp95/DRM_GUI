@@ -14,6 +14,7 @@ import os
 import csv
 import tempfile
 from meshmaker.gui.tapis_integration import TapisWorker, TACCFileBrowserDialog
+from meshmaker.components.DRM.DRM import DRM
 
 class DRMGUI(QWidget):
     def __init__(self, parent=None):
@@ -578,6 +579,8 @@ class DRMGUI(QWidget):
             # Show DRM points if checkbox is checked
             if self.showPointsCheckbox.isChecked():
                 self.show_drm_points()
+
+            DRM().set_pattern(pattern)
             
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to create H5DRM pattern: {str(e)}")
