@@ -812,10 +812,20 @@ class MeshMaker:
             4 create the gravity analysis
             5 create dynamic analysis
         '''
+        # first clear all the previous process
+        self.process.clear_steps()
+        self.analysis.clear_all()
+        self.recorder.clear_all()
+        self.constraint.sp.clear_all()
+        # self.analysis.numberer.clear_all()
+        self.analysis.system.clear_all()
+        self.analysis.algorithm.clear_all()
+        self.analysis.test.clear_all()
+        self.analysis.integrator.clear_all()
 
 
         # create the fixities
-        dofsVals = [1,1,1,1,1,1]
+        dofsVals = [1,1,1,1,1,1,1,1,1]
         c1 = self.constraint.sp.fixMacroXmax(dofs=dofsVals)
         c2 = self.constraint.sp.fixMacroXmin(dofs=dofsVals)
         c3 = self.constraint.sp.fixMacroYmax(dofs=dofsVals)
@@ -869,14 +879,14 @@ class MeshMaker:
                                     )
         
 
-        self.process.add_step(c1)
-        self.process.add_step(c2)   
-        self.process.add_step(c3)
-        self.process.add_step(c4)
-        self.process.add_step(c5)
-        self.process.add_step(GravityElastic)
-        self.process.add_step(GravityPlastic)
-        self.process.add_step(vtkRecordr)
-        self.process.add_step(DynamicAnalysis)
+        self.process.add_step(component=c1, description="Fixing Xmax")
+        self.process.add_step(component=c2, description="Fixing Xmin")   
+        self.process.add_step(component=c3, description="Fixing Ymax")
+        self.process.add_step(component=c4, description="Fixing Ymin")
+        self.process.add_step(component=c5, description="Fixing Zmin")
+        self.process.add_step(component=GravityElastic, description="Analysis Gravity Elastic (Transient)")
+        self.process.add_step(component=GravityPlastic, description="Analysis Gravity Plastic (Transient)")
+        self.process.add_step(component=vtkRecordr, description="Recorder vtkhdf")
+        self.process.add_step(component=DynamicAnalysis, description="Analysis Dynamic (Transient)")
 
         
