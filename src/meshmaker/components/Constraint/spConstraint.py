@@ -328,6 +328,15 @@ class SPConstraintManager:
         if not self._initialized:
             self._initialized = True
 
+    def __len__(self) -> int:
+        """
+        Get the number of constraints managed by the manager.
+        
+        Returns:
+            int: The total number of constraints.
+        """
+        return len(SPConstraint._constraints)
+
     def fix(self, node_tag: int, dofs: List[int]) -> FixConstraint:
         """
         Create a fix constraint.
