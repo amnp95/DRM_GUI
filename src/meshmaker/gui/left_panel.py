@@ -13,8 +13,8 @@ from meshmaker.components.Pattern.patternGUI import PatternManagerTab
 from meshmaker.components.Recorder.recorderGUI import RecorderManagerTab
 from meshmaker.components.Analysis.analysisGUI import AnalysisManagerTab
 from meshmaker.components.Process.processGUI import ProcessGUI
-from meshmaker.components.DRM import DRMGUI
-from meshmaker.components.DRM import AbsorbingGUI
+from meshmaker.components.DRM.drmGUI import DRMGUI
+from meshmaker.components.DRM.absorbingGUI import AbsorbingGUI
 
 class LeftPanel(QFrame):
     '''
