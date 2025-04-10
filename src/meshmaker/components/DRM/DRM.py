@@ -3,6 +3,7 @@ from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones
 from pyvista import Cube, MultiBlock, StructuredGrid
 import tqdm
 from pykdtree.kdtree import KDTree as pykdtree
+from meshmaker.components.Pattern.patternBase import H5DRMPattern
 
 class DRM:
     """
@@ -35,6 +36,7 @@ class DRM:
             
         self._initialized = True
         self.meshmaker = meshmaker
+        self.h5drmpattern = None
     
     def set_meshmaker(self, meshmaker):
         """
@@ -44,6 +46,15 @@ class DRM:
             meshmaker: Reference to the MeshMaker instance
         """
         self.meshmaker = meshmaker
+
+    def set_pattern(self, pattern: H5DRMPattern):
+        """
+        Set the pattern for the DRM
+        
+        Args:
+            pattern: The pattern to set
+        """
+        self.h5drmpattern = pattern
 
     def createDefaultProcess(self, dT, finalTime):
         '''
@@ -55,6 +66,15 @@ class DRM:
             4 create the gravity analysis
             5 create dynamic analysis
         '''
+        # check if the pattern is set
+        if self.h5drmpattern is None:
+            raise ValueError("The pattern is not set\n Please set the pattern first")
+        else:
+            if not isinstance(self.h5drmpattern, H5DRMPattern):
+                raise ValueError("The pattern should be of type H5DRMPattern")
+        
+
+
         # first clear all the previous process
         self.meshmaker.process.clear_steps()
         self.meshmaker.analysis.clear_all()
@@ -122,14 +142,18 @@ class DRM:
                                     )
         
 
-        self.meshmaker.process.add_step(component=c1, description="Fixing Xmax")
-        self.meshmaker.process.add_step(component=c2, description="Fixing Xmin")   
-        self.meshmaker.process.add_step(component=c3, description="Fixing Ymax")
-        self.meshmaker.process.add_step(component=c4, description="Fixing Ymin")
-        self.meshmaker.process.add_step(component=c5, description="Fixing Zmin")
+        # self.meshmaker.process.add_step(component=c1, description="Fixing Xmax")
+        # self.meshmaker.process.add_step(component=c2, description="Fixing Xmin")   
+        # self.meshmaker.process.add_step(component=c3, description="Fixing Ymax")
+        # self.meshmaker.process.add_step(component=c4, description="Fixing Ymin")
+        # self.meshmaker.process.add_step(component=c5, description="Fixing Zmin")
         self.meshmaker.process.add_step(component=GravityElastic, description="Analysis Gravity Elastic (Transient)")
         self.meshmaker.process.add_step(component=GravityPlastic, description="Analysis Gravity Plastic (Transient)")
+        
         self.meshmaker.process.add_step(component=vtkRecordr, description="Recorder vtkhdf")
+
+        self.meshmaker.process.add_step(component=self.h5drmpattern, description="Pattern H5DRM")
+
         self.meshmaker.process.add_step(component=DynamicAnalysis, description="Analysis Dynamic (Transient)")
 
     def addAbsorbingLayer(self, numLayers: int, numPartitions: int, partitionAlgo: str, geometry:str, 
