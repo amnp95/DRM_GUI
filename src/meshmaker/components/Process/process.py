@@ -32,6 +32,14 @@ class ProcessManager:
             self.current_step = -1
             self._initialized = True
 
+
+    def __iter__(self):
+        return iter(self.steps)
+    
+
+    def __len__(self):
+        return len(self.steps)
+
     def add_step(self, component: ProcessComponent, description: str = "") -> int:
         """
         Add a step to the process
@@ -44,7 +52,8 @@ class ProcessManager:
             int: Index of the added step
         """
         # Store a weak reference to the component
-        component_ref = weakref.ref(component)
+        # component_ref = weakref.ref(component)
+        component_ref = component
         
         step = {
             "component": component_ref,
@@ -126,3 +135,13 @@ class ProcessManager:
         if 0 <= index < len(self.steps):
             return self.steps[index]
         return None
+    
+    def to_tcl(self):
+        """Convert the process to a TCL script"""
+        tcl_script = ""
+        for step in self.steps:
+            component = step["component"]
+            description = step["description"]
+            tcl_script += f"# {description} ======================================\n\n"
+            tcl_script += f"{component.to_tcl()}\n\n\n"
+        return tcl_script
