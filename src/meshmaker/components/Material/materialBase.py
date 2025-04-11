@@ -165,8 +165,7 @@ class Material(ABC):
         Raises:
             KeyError: If no material with the given name exists
         """
-        tag = cls._names[name]
-        return cls._materials[tag]
+        return cls._names[name]
     
     @classmethod  
     @abstractmethod
@@ -392,8 +391,8 @@ class MaterialManager:
             **material_params
         )
 
-
-    def get_material(self, identifier: Any) -> Material:
+    @staticmethod
+    def get_material(identifier: Any) -> Material:
         """
         Get material by either tag or name
         
