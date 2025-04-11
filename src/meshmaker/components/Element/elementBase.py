@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Type, Optional, Union
-from meshmaker.components.Material.materialBase import Material
+from meshmaker.components.Material.materialBase import Material, MaterialManager
 
 
 class Element(ABC):
@@ -320,14 +320,14 @@ class ElementRegistry:
         return list(cls._element_types.keys())
 
     @classmethod
-    def create_element(cls, element_type: str, ndof: int, material: Material, **kwargs) -> Element:
+    def create_element(cls, element_type: str, ndof: int, material: Union[str, int, Material], **kwargs) -> Element:
         """
         Create a new element of a specific type.
 
         Args:
             element_type (str): Type of element to create
             ndof (int): Number of degrees of freedom for the element
-            material (Material): Material to assign to the element
+            material (Union[str, int, Material]): Name, tag, or object of the material
             **kwargs: Parameters for element initialization
 
         Returns:
@@ -335,11 +335,20 @@ class ElementRegistry:
 
         Raises:
             KeyError: If the element type is not registered
+            ValueError: If the material is invalid
         """
-
         if element_type not in cls._element_types:
             raise KeyError(f"Element type {element_type} not registered")
-        
+
+        # Resolve material if it's a string or integer
+        if isinstance(material, (str, int)):
+            material = MaterialManager.get_material(material)
+            if material is None:
+                raise ValueError(f"Material {material} not found")
+
+        if not isinstance(material, Material):
+            raise ValueError("Material must be a valid Material instance, name, or tag")
+
         return cls._element_types[element_type](ndof, material, **kwargs)
     
     @staticmethod
