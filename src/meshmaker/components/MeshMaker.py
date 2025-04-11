@@ -84,6 +84,40 @@ class MeshMaker:
         if cls._instance is None:
             cls._instance = cls(**kwargs)
         return cls._instance
+    
+
+    def gui(self):
+        """
+        Launch the GUI application
+        
+        This method creates and shows the GUI window for interacting with the MeshMaker.
+        It ensures that a Qt application is running and initializes the main window.
+        
+        Returns:
+            MainWindow: The main window instance
+        """
+        try:
+            # Import required modules
+            from qtpy.QtWidgets import QApplication
+            from meshmaker.gui.main_window import MainWindow
+            
+            # Ensure a QApplication instance exists
+            app = QApplication.instance()
+            if app is None:
+                app = QApplication([])
+                
+            # Initialize and show the main window
+            main_window = MainWindow()
+            
+            # Only start event loop if not already running
+            if not app.startingUp():
+                app.exec_()
+                
+            return main_window
+        except ImportError as e:
+            print(f"Error: Unable to load GUI components. {str(e)}")
+            print("Please ensure qtpy, pyvista, and other GUI dependencies are installed.")
+            return None
 
     def export_to_tcl(self, filename=None, progress_callback=None):
         """
