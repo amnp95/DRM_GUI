@@ -6,50 +6,9 @@ from qtpy.QtWidgets import QApplication
 from meshmaker.gui.main_window import MainWindow
 
 
-DEBUG = True
+DEBUG = False
 
 def main():
-    # # ========================================
-    # if DEBUG:
-    #     from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial, J2CyclicBoundingSurfaceMaterial
-    #     from meshmaker.components.Element.elementsOpenSees import stdBrickElement
-    #     from meshmaker.components.Mesh.meshPartInstance import StructuredRectangular3D
-    #     from meshmaker.components.Assemble.Assembler import AssemblySection, Assembler
-    #     # elastic2  = ElasticIsotropicMaterial(user_name="Steel2", E=200e3, ν=0.3,  ρ=7.85e-9)
-    #     # elsatic3  = ElasticIsotropicMaterial(user_name="Steel3", E=400e3, ν=0.25, ρ=7.85e-9)
-    #     # stdbrik2 = stdBrickElement(ndof=3, material=elastic2, b1=0, b2=0, b3=-10)
-    #     # stdbrik3 = stdBrickElement(ndof=3, material=elastic2, b1=0, b2=0, b3=-10)
-
-    #     elastic1  = ElasticIsotropicMaterial(user_name="Elastic", E=6812817120.00, ν=0.2616328,  ρ=2400)
-    #     elastic2  = ElasticIsotropicMaterial(user_name="Steel", E=200e9, ν=0.3,  ρ=7.85e-9)
-    #     J2plastic = J2CyclicBoundingSurfaceMaterial(user_name="J2Plastic", G=270e6, K=500e6, Su=30e3, Den=2000, h=54e6, m=0.5, h0=0.2, chi=0.0, beta=0)
-    #     stdbrik1  = stdBrickElement(ndof=3, material=elastic1, b1=0, b2=0, b3=-9.81)
-    #     stdbrik2  = stdBrickElement(ndof=3, material=elastic2, b1=0, b2=0, b3=-9.81)
-    #     stdbrik3  = stdBrickElement(ndof=3, material=J2plastic, b1=0, b2=0, b3=-9.81)
-
-
-    #     # inner region
-    #     StructuredRectangular3D(user_name="layer1",   element=stdbrik1, **{'X Min': -60, 'X Max': 60, 'Y Min': -60, 'Y Max': 60, 'Z Min': -35, 'Z Max': -20, 'Nx Cells': int(120/2.5), 'Ny Cells': int(120/2.5), 'Nz Cells': int(15/2.5)})
-    #     StructuredRectangular3D(user_name="layer2",   element=stdbrik2, **{'X Min': -60, 'X Max': 60, 'Y Min': -60, 'Y Max': 60, 'Z Min': -20, 'Z Max': -10, 'Nx Cells': int(120/2.5), 'Ny Cells': int(120/2.5), 'Nz Cells': int(10/2.5)})
-    #     StructuredRectangular3D(user_name="layer3",   element=stdbrik3, **{'X Min': -60, 'X Max': 60, 'Y Min': -60, 'Y Max': 60, 'Z Min': -10, 'Z Max':  0, 'Nx Cells': int(120/2.5), 'Ny Cells': int(120/2.5), 'Nz Cells': int(10/2.5)})
-     
-
-    #     AssemblySection(['layer1', 'layer2', 'layer3'], num_partitions=4)
-    #     Assembler = Assembler.get_instance()
-    #     Assembler.Assemble()
-
-
-
-
-
-    #     import qtpy
-    #     print(f"Using Qt bindings: {qtpy.API_NAME}")
-
-
-    # app = QApplication(sys.argv)
-    # window = MainWindow()
-    # window.show()
-    # sys.exit(app.exec())
 
     if DEBUG:
         from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial, J2CyclicBoundingSurfaceMaterial
@@ -170,6 +129,8 @@ def main():
         # AssemblySection(["outer_base", "outer_right1", "outer_right2", "outer_left1", "outer_left2", "outer_front1", "outer_front2", "outer_back1", "outer_back2"], num_partitions=4)
         # ========================================
         Assembler().Assemble()
+
+        # mk.drm.createDefaultProcess(dT=0.01, finalTime=10.0)
 
         #      'modal': ModalDamping,
         # 'uniform': UniformDamping,
