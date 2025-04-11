@@ -149,7 +149,7 @@ class MeshMaker:
                 # Write the materials
                 f.write("\n# Materials ======================================\n")
                 for tag,mat in self.material.get_all_materials().items():
-                    f.write(f"{mat}\n")
+                    f.write(f"{mat.to_tcl()}\n")
 
                 if progress_callback:
                     progress_callback(5,"writing nodes and elements")
