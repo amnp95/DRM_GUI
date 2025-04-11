@@ -190,13 +190,42 @@ class Material(ABC):
         """
         pass
 
-    @abstractmethod
     def __str__(self) -> str:
         """
-        String representation of the material for OpenSees or other purposes.
+        String representation of the material.
         
         Returns:
             str: Formatted material definition string
+        """
+        str = f"Material :"
+        str += f"\tname:{self.material_name}\n"
+        str += f"\ttype:{self.material_type}\n"
+        str += f"\ttag:{self.tag}\n"
+        str += f"\tuser_name:{self.user_name}\n"
+        str += f"\tparameters:"
+        for key in self.get_parameters():
+            str += f"\t\t{str(key)}: {self.params[key]}"
+
+    @staticmethod
+    def validate(params: Dict[str, Any]) -> None:
+        """
+        Validate the material parameters for all instances.
+        
+        Args:
+            params (Dict[str, Any]): Dictionary of parameter names and values to validate
+        
+        Raises:
+            ValueError: If any parameter is invalid
+        """
+        pass
+    
+    @abstractmethod
+    def to_tcl(self) -> str:
+        """
+        Convert the material to a TCL string for OpenSees.
+        
+        Returns:
+            str: TCL representation of the material
         """
         pass
 
@@ -213,7 +242,7 @@ class Material(ABC):
         return {key: self.params.get(key) for key in keys}
     
 
-    def update_values(self, values: Dict[str, float]) -> None:
+    def update_values(self,**kwargs) -> None:
         """
         Default implementation to update material parameters.
         
@@ -221,8 +250,9 @@ class Material(ABC):
             values (Dict[str, float]): Dictionary of parameter names and values to update
         """
         self.params.clear()
-        self.params.update(values)
-        print(f"Updated parameters: {self.params}")
+        params = self.validate(**kwargs)
+        self.params = params if params else {}
+        
 
     def get_param(self, key: str)-> Any:
         """
@@ -305,6 +335,15 @@ class MaterialRegistry:
         
         return cls._material_types[material_category][material_type](user_name=user_name, **kwargs)
     
+    
+    def updateMaterialStage(self, state: str)-> str:
+        """
+        Update the material stage.
+        
+        Args:
+            state (str): The new state of the material
+        """
+        return ""
 
 from meshmaker.components.Material.materialsOpenSees import *
 class MaterialManager:

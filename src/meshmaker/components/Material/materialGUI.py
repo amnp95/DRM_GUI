@@ -5,9 +5,9 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
+from meshmaker.components.Material.materialBase import Material, MaterialRegistry
+from meshmaker.components.Material.materialsOpenSees import *
 
-from .materialBase import Material, MaterialRegistry
-from .materialsOpenSees import *
 
 
 class MaterialManagerTab(QWidget):
@@ -301,14 +301,14 @@ class MaterialEditDialog(QDialog):
             for param, input_field in self.param_inputs.items():
                 value = input_field.text().strip()
                 if value:
-                    new_values[param] = float(value)
+                    new_values[param] = value
 
             if not new_values:
                 QMessageBox.warning(self, "Input Error",
                                     "Please enter at least one material parameter.")
                 return
 
-            self.material.update_values(new_values)
+            self.material.update_values(**new_values)
             self.accept()
 
         except ValueError as e:
@@ -316,3 +316,13 @@ class MaterialEditDialog(QDialog):
                                 f"Invalid input: {str(e)}\nPlease enter numeric values.")
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
+
+
+if __name__ == "__main__":
+    from qtpy.QtWidgets import QApplication
+    import sys
+
+    app = QApplication(sys.argv)
+    window = MaterialManagerTab()
+    window.show()
+    sys.exit(app.exec_())
