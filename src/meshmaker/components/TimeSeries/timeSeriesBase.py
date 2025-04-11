@@ -1201,36 +1201,149 @@ class TimeSeriesRegistry:
 
 class TimeSeriesManager:
     """
-    Singleton class for managing time series
+    Singleton class for managing time series objects in the application.
+    
+    This manager provides a centralized way to create, retrieve, and manage 
+    time series objects. It maintains a singleton instance to ensure consistent 
+    access to time series throughout the application.
+    
+    Methods:
+        create_time_series: Creates a new time series of the specified type
+        get_time_series: Retrieves a time series by its tag
+        remove_time_series: Removes a time series by its tag
+        get_all_time_series: Returns all registered time series
+        get_available_types: Returns a list of available time series types
+        clear_all: Removes all time series objects
+    
+    Usage:
+        manager = TimeSeriesManager()
+        ts = manager.create_time_series('constant', factor=2.0)
+        all_series = manager.get_all_time_series()
     """
     _instance = None
 
     def __new__(cls):
+        """
+        Create a new instance of TimeSeriesManager if one doesn't exist.
+        
+        This implements the singleton pattern, ensuring only one instance 
+        of TimeSeriesManager exists across the application.
+        
+        Returns:
+            TimeSeriesManager: The singleton instance of TimeSeriesManager
+        """
         if cls._instance is None:
             cls._instance = super(TimeSeriesManager, cls).__new__(cls)
         return cls._instance
 
     def create_time_series(self, series_type: str, **kwargs) -> TimeSeries:
-        """Create a new time series"""
+        """
+        Create a new time series of the specified type.
+        
+        This method delegates to the TimeSeriesRegistry to create a new time
+        series object with the provided parameters.
+        
+        Args:
+            series_type (str): The type of time series to create (e.g., 'constant', 'linear')
+            **kwargs: Parameters specific to the time series type initialization
+        
+        Returns:
+            TimeSeries: A new time series instance
+        
+        Raises:
+            KeyError: If the requested time series type is not registered
+            ValueError: If validation of parameters fails
+            
+        Example:
+            manager = TimeSeriesManager()
+            # Create a constant time series with factor 2.0
+            ts = manager.create_time_series('constant', factor=2.0)
+            # Create a sinusoidal time series
+            ts = manager.create_time_series('trig', tStart=0.0, tEnd=10.0, period=1.0)
+        """
         return TimeSeriesRegistry.create_time_series(series_type, **kwargs)
 
     def get_time_series(self, tag: int) -> TimeSeries:
-        """Get time series by tag"""
+        """
+        Retrieve a specific time series by its tag.
+        
+        Args:
+            tag (int): The unique identifier tag of the time series
+        
+        Returns:
+            TimeSeries: The time series object with the specified tag
+        
+        Raises:
+            KeyError: If no time series with the given tag exists
+            
+        Example:
+            manager = TimeSeriesManager()
+            try:
+                ts = manager.get_time_series(3)  # Get time series with tag 3
+            except KeyError:
+                print("Time series not found")
+        """
         return TimeSeries.get_time_series(tag)
 
     def remove_time_series(self, tag: int) -> None:
-        """Remove time series by tag"""
+        """
+        Remove a time series by its tag.
+        
+        This method removes the time series with the given tag and 
+        reassigns sequential tags to all remaining time series objects.
+        
+        Args:
+            tag (int): The tag of the time series to remove
+            
+        Example:
+            manager = TimeSeriesManager()
+            manager.remove_time_series(2)  # Remove time series with tag 2
+        """
         TimeSeries.remove_time_series(tag)
 
     def get_all_time_series(self) -> Dict[int, TimeSeries]:
-        """Get all time series"""
+        """
+        Retrieve all registered time series objects.
+        
+        Returns:
+            Dict[int, TimeSeries]: A dictionary of all time series objects, 
+            where keys are the tags and values are the TimeSeries objects
+            
+        Example:
+            manager = TimeSeriesManager()
+            all_series = manager.get_all_time_series()
+            for tag, series in all_series.items():
+                print(f"TimeSeries {tag}: {series.series_type}")
+        """
         return TimeSeries.get_all_time_series()
 
     def get_available_types(self) -> List[str]:
-        """Get list of available time series types"""
+        """
+        Get a list of all available time series types that can be created.
+        
+        Returns:
+            List[str]: A list of strings representing available time series types
+            
+        Example:
+            manager = TimeSeriesManager()
+            types = manager.get_available_types()
+            print("Available time series types:", types)
+        """
         return TimeSeriesRegistry.get_time_series_types()
     
     def clear_all(self):
-        """Clear all time series"""  
+        """
+        Remove all time series objects from the registry.
+        
+        This method clears all registered time series objects, effectively
+        resetting the state of the time series management system.
+        
+        Example:
+            manager = TimeSeriesManager()
+            # Create some time series
+            # ...
+            # Clear all time series when starting a new model
+            manager.clear_all()
+        """  
         TimeSeries._time_series.clear()
 
