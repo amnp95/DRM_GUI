@@ -41,11 +41,25 @@ class AssemblyManagerTab(QWidget):
         
         layout.addWidget(self.assembly_sections_table)
         
+        # Button layout for actions
+        button_layout = QHBoxLayout()
+        
         # Refresh assembly sections button
         refresh_btn = QPushButton("Refresh Assembly Sections List")
         refresh_btn.clicked.connect(self.refresh_assembly_sections_list)
-        layout.addWidget(refresh_btn)
-
+        button_layout.addWidget(refresh_btn)
+        
+        # Plot all assembly parts button
+        plot_all_btn = QPushButton("Plot All Assembly Parts")
+        plot_all_btn.clicked.connect(self.plot_all_assembly_parts)
+        button_layout.addWidget(plot_all_btn)
+        
+        # Clear all assembly parts button
+        clear_all_btn = QPushButton("Clear All Assembly Parts")
+        clear_all_btn.clicked.connect(self.clear_all_assembly_parts)
+        button_layout.addWidget(clear_all_btn)
+        
+        layout.addLayout(button_layout)
 
         # Group Box for Assembling the whole model
         groupBox = QGroupBox("Assemble the whole model")
@@ -259,6 +273,55 @@ class AssemblyManagerTab(QWidget):
         # Refresh the list if a new section was created
         if dialog.exec() == QDialog.Accepted:
             self.refresh_assembly_sections_list()
+
+    def plot_all_assembly_parts(self):
+        """
+        Plot all assembly parts in the plotter
+        """
+        assembler = Assembler.get_instance()
+        plotter = PlotterManager.get_plotter()
+        plotter.clear()
+        for section in assembler.get_sections().values():
+            actor = plotter.add_mesh(section.mesh,
+                                     opacity=1.0,
+                                     scalars=None,
+                                     style='surface',
+                                     color="royalblue")
+            section.assign_actor(actor)
+        plotter.update()
+        plotter.render()
+
+    def clear_all_assembly_parts(self):
+        """
+        Delete all assembly sections from the system
+        """
+        # Confirm deletion
+        reply = QMessageBox.question(
+            self, 
+            'Clear All Assembly Parts', 
+            "Are you sure you want to delete all assembly sections?",
+            QMessageBox.Yes | QMessageBox.No, 
+            QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            assembler = Assembler.get_instance()
+            plotter = PlotterManager.get_plotter()
+            
+            # Remove all actors from the plotter
+            for section in assembler.get_sections().values():
+                if section.actor is not None:
+                    plotter.remove_actor(section.actor)
+            
+            # Clear all assembly sections from the Assembler
+            assembler.clear_assembly_sections()
+            
+            # Refresh the table to reflect the changes
+            self.refresh_assembly_sections_list()
+            
+            # Update the plotter
+            plotter.update()
+            plotter.render()
 
 class AssemblySectionViewOptionsDialog(QDialog):
     """
@@ -680,7 +743,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     
     # Create some test materials and elements
-    elastic = ElasticIsotropicMaterial(user_name="Steel", E=200e3, ν=0.3, ρ=7.85e-9)
+    elastic = ElasticIsotropicMaterial(user_name="Steel", E=200e3, nu=0.3, rho=7.85e-9)
     stdbrik1 = stdBrickElement(ndof=3, material=elastic, b1=0, b2=0, b3=-10)
     
     # Create some test mesh parts
