@@ -257,7 +257,7 @@ class mpConstraintManager:
         
         import pyvista as pv
         # attach the nodeTags to the points at the first column
-        z = points[:, direction]
+        z = points[:, direction-1]
         z_rounded = np.round(z / tolerance) * tolerance
 
         # Use np.unique with return_inverse to group fast

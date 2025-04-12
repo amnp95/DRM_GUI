@@ -3,7 +3,7 @@ from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
     QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout, QMenu,
-    QSizePolicy, QProgressDialog, QApplication, QSpinBox
+    QSizePolicy, QProgressDialog, QApplication, QSpinBox, QDoubleSpinBox
 )
 from meshmaker.components.Constraint.mpConstraint import (
     mpConstraint, equalDOF, rigidLink, rigidDiaphragm, mpConstraintManager
@@ -28,7 +28,7 @@ class MPConstraintManagerTab(QDialog):
         
         # Constraint type dropdown
         self.constraint_type_combo = QComboBox()
-        self.constraint_type_combo.addItems(["equalDOF", "rigidLink", "rigidDiaphragm"])
+        self.constraint_type_combo.addItems(["equalDOF", "rigidLink", "rigidDiaphragm", "laminarBoundary"])
         
         create_constraint_btn = QPushButton("Create New Constraint")
         create_constraint_btn.clicked.connect(self.open_constraint_creation_dialog)
@@ -128,7 +128,11 @@ class MPConstraintManagerTab(QDialog):
     def open_constraint_creation_dialog(self):
         """Open dialog to create new constraint"""
         constraint_type = self.constraint_type_combo.currentText()
-        dialog = MPConstraintCreationDialog(constraint_type, self)
+        
+        if constraint_type == "laminarBoundary":
+            dialog = MPLaminarBoundaryDialog(self)
+        else:
+            dialog = MPConstraintCreationDialog(constraint_type, self)
         
         if dialog.exec() == QDialog.Accepted:
             self.refresh_constraints_list()
@@ -303,6 +307,91 @@ class MPConstraintManagerTab(QDialog):
         if reply == QMessageBox.Yes:
             mpConstraintManager().remove_constraint(tag)
             self.refresh_constraints_list()
+
+
+# New Laminar Boundary Dialog
+class MPLaminarBoundaryDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Create Laminar Boundary Constraint")
+        self.manager = mpConstraintManager()
+        
+        layout = QVBoxLayout(self)
+        form_layout = QFormLayout()
+        
+        # DOFs (degrees of freedom)
+        self.dofs_input = QLineEdit("1 2")
+        self.dofs_input.setPlaceholderText("Enter DOFs (e.g., 1 2 3)")
+        form_layout.addRow("DOFs (space separated):", self.dofs_input)
+        
+        # Direction
+        self.direction_combo = QComboBox()
+        self.direction_combo.addItems(["1 (X)", "2 (Y)", "3 (Z)"])
+        self.direction_combo.setCurrentIndex(2)  # Default to Z direction (3)
+        form_layout.addRow("Perpendicular Direction:", self.direction_combo)
+        
+        # Tolerance
+        self.tolerance_spin = QDoubleSpinBox()
+        self.tolerance_spin.setRange(1e-6, 1.0)
+        self.tolerance_spin.setValue(0.01)
+        self.tolerance_spin.setSingleStep(0.001)
+        self.tolerance_spin.setDecimals(4)
+        form_layout.addRow("Tolerance:", self.tolerance_spin)
+        
+        # Description
+        description = QLabel(
+            "Laminar boundary will connect nodes on the boundary of the mesh that have\n"
+            "the same coordinate in the specified direction within the given tolerance.\n"
+            "This creates Equal DOF constraints along planar boundaries."
+        )
+        description.setWordWrap(True)
+        form_layout.addRow(description)
+        
+        layout.addLayout(form_layout)
+        
+        # Buttons
+        btn_layout = QHBoxLayout()
+        create_btn = QPushButton("Create")
+        create_btn.clicked.connect(self.create_laminar_boundary)
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.clicked.connect(self.reject)
+        
+        btn_layout.addWidget(create_btn)
+        btn_layout.addWidget(cancel_btn)
+        layout.addLayout(btn_layout)
+    
+    def create_laminar_boundary(self):
+        try:
+            # Get direction (1, 2, or 3)
+            direction_text = self.direction_combo.currentText()
+            direction = int(direction_text[0])  # Extract the first character and convert to int
+            
+            # Get DOFs
+            dofs = list(map(int, self.dofs_input.text().split()))
+            
+            # Get tolerance
+            tolerance = self.tolerance_spin.value()
+            
+            # Show progress dialog since this operation can be time-consuming
+            progress = QProgressDialog("Creating laminar boundary constraints...", "Cancel", 0, 100, self)
+            progress.setWindowModality(Qt.WindowModal)
+            progress.show()
+            QApplication.processEvents()
+            
+            # Create laminar boundary constraints
+            try:
+                # Create the constraints
+                self.manager.create_laminar_boundary(dofs=dofs, direction=direction, tol=tolerance)
+                progress.setValue(100)
+                QMessageBox.information(self, "Success", "Laminar boundary constraints created successfully.")
+                self.accept()
+            except Exception as e:
+                progress.close()
+                QMessageBox.critical(self, "Error", f"Error creating laminar boundary: {str(e)}")
+                return
+        
+        except ValueError as e:
+            QMessageBox.warning(self, "Input Error", f"Invalid input: {str(e)}")
 
 
 # Keep the original dialog classes without changes
