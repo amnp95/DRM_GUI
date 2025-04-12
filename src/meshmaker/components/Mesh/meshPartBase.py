@@ -97,6 +97,16 @@ class MeshPart(ABC):
             del cls._mesh_parts[user_name]
 
     @classmethod
+    def clear_all_mesh_parts(cls) -> None:
+        """
+        Delete all mesh parts from the registry
+        """
+        # Create a copy of the keys to avoid modifying dictionary during iteration
+        mesh_part_names = list(cls._mesh_parts.keys())
+        for user_name in mesh_part_names:
+            cls.delete_mesh_part(user_name)
+
+    @classmethod
     @abstractmethod
     def get_parameters(cls) -> List[Tuple[str, str]]:
         """

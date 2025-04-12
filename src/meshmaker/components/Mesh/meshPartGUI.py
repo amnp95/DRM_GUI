@@ -27,7 +27,8 @@ from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
     QDialog, QGroupBox, QMessageBox, QHeaderView, QGridLayout, 
-    QCheckBox, QDialogButtonBox, QColorDialog, QSlider, QTabWidget, QTextEdit
+    QCheckBox, QDialogButtonBox, QColorDialog, QSlider, QTabWidget, QTextEdit,
+    QMenu
 )
 from qtpy.QtCore import Qt
 
@@ -71,20 +72,40 @@ class MeshPartManagerTab(QWidget):
         
         # Mesh parts table
         self.mesh_parts_table = QTableWidget()
-        self.mesh_parts_table.setColumnCount(6)  # Name, Category, Type, View, Edit, Delete
-        self.mesh_parts_table.setHorizontalHeaderLabels(["Name", "Category", 
-                                                         "Type", "View", 
-                                                         "Edit", "Delete"])
+        self.mesh_parts_table.setColumnCount(3)  # Name, Category, Type
+        self.mesh_parts_table.setHorizontalHeaderLabels(["Name", "Category", "Type"])
         header = self.mesh_parts_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Stretch all columns
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Except for the first one
+        
+        # Enable context menu (right-click menu)
+        self.mesh_parts_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.mesh_parts_table.customContextMenuRequested.connect(self.show_context_menu)
+        
+        # Select full rows when clicking
+        self.mesh_parts_table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.mesh_parts_table.setSelectionMode(QTableWidget.SingleSelection)
         
         layout.addWidget(self.mesh_parts_table)
+        
+        # Button layout for actions
+        button_layout = QHBoxLayout()
         
         # Refresh mesh parts button
         refresh_btn = QPushButton("Refresh Mesh Parts List")
         refresh_btn.clicked.connect(self.refresh_mesh_parts_list)
-        layout.addWidget(refresh_btn)
+        button_layout.addWidget(refresh_btn)
+        
+        # Plot all mesh parts button
+        plot_all_btn = QPushButton("Plot All Mesh Parts")
+        plot_all_btn.clicked.connect(self.plot_all_mesh_parts)
+        button_layout.addWidget(plot_all_btn)
+        
+        # Clear all mesh parts button
+        clear_all_btn = QPushButton("Clear All Mesh Parts")
+        clear_all_btn.clicked.connect(self.clear_all_mesh_parts)
+        button_layout.addWidget(clear_all_btn)
+        
+        layout.addLayout(button_layout)
         
         # Initial refresh
         self.refresh_mesh_parts_list()
@@ -143,22 +164,65 @@ class MeshPartManagerTab(QWidget):
             type_item = QTableWidgetItem(mesh_part.mesh_type)
             type_item.setFlags(type_item.flags() & ~Qt.ItemIsEditable)
             self.mesh_parts_table.setItem(row, 2, type_item)
-            
-            # View button
-            view_btn = QPushButton("View")
-            view_btn.clicked.connect(lambda checked, mp=mesh_part: self.open_mesh_part_view_dialog(mp))
-            self.mesh_parts_table.setCellWidget(row, 3, view_btn)
 
-            # Edit button
-            edit_btn = QPushButton("Edit")
-            edit_btn.clicked.connect(lambda checked, mp=mesh_part: self.open_mesh_part_edit_dialog(mp))
-            self.mesh_parts_table.setCellWidget(row, 4, edit_btn)
+    def show_context_menu(self, position):
+        """
+        Show context menu for mesh parts table
+        """
+        menu = QMenu(self)
+        
+        view_action = menu.addAction("View")
+        edit_action = menu.addAction("Edit")
+        delete_action = menu.addAction("Delete")
+        
+        action = menu.exec(self.mesh_parts_table.viewport().mapToGlobal(position))
+        
+        if action == view_action:
+            self.handle_view_action()
+        elif action == edit_action:
+            self.handle_edit_action()
+        elif action == delete_action:
+            self.handle_delete_action()
 
-            # Delete button
-            delete_btn = QPushButton("Delete")
-            delete_btn.clicked.connect(lambda checked, un=user_name: self.delete_mesh_part(un))
-            self.mesh_parts_table.setCellWidget(row, 5, delete_btn)
+    def handle_view_action(self):
+        """
+        Handle the view action from the context menu
+        """
+        selected_row = self.mesh_parts_table.currentRow()
+        if selected_row >= 0:
+            user_name = self.mesh_parts_table.item(selected_row, 0).text()
+            mesh_part = MeshPart.get_mesh_parts().get(user_name)
+            if mesh_part:
+                # Check if mesh part is plotted (has an actor)
+                if mesh_part.actor is None:
+                    QMessageBox.warning(
+                        self, 
+                        "Mesh Part Not Plotted", 
+                        f"The mesh part '{user_name}' is not currently plotted in the viewer. "
+                        f"Please use 'Plot All Mesh Parts' first to visualize it."
+                    )
+                else:
+                    self.open_mesh_part_view_dialog(mesh_part)
 
+    def handle_edit_action(self):
+        """
+        Handle the edit action from the context menu
+        """
+        selected_row = self.mesh_parts_table.currentRow()
+        if selected_row >= 0:
+            user_name = self.mesh_parts_table.item(selected_row, 0).text()
+            mesh_part = MeshPart.get_mesh_parts().get(user_name)
+            if mesh_part:
+                self.open_mesh_part_edit_dialog(mesh_part)
+
+    def handle_delete_action(self):
+        """
+        Handle the delete action from the context menu
+        """
+        selected_row = self.mesh_parts_table.currentRow()
+        if selected_row >= 0:
+            user_name = self.mesh_parts_table.item(selected_row, 0).text()
+            self.delete_mesh_part(user_name)
 
     def open_mesh_part_edit_dialog(self, mesh_part):
         """
@@ -183,6 +247,40 @@ class MeshPartManagerTab(QWidget):
             MeshPart.delete_mesh_part(user_name)
             self.refresh_mesh_parts_list()
 
+    def plot_all_mesh_parts(self):
+        """
+        Plot all mesh parts in the plotter
+        """
+        plotter = PlotterManager.get_plotter()
+        
+        # Clear the plotter first
+        plotter.clear()
+        
+        # Add all mesh parts to the plotter
+        for mesh_part in MeshPart.get_mesh_parts().values():
+            mesh_part.generate_mesh()
+            mesh_part.actor = plotter.add_mesh(mesh_part.mesh, 
+                                              style="surface",
+                                              opacity=1.0,
+                                              show_edges=True)
+        
+        # Reset camera to show all mesh parts
+        plotter.reset_camera()
+
+    def clear_all_mesh_parts(self):
+        """
+        Clear all mesh parts from the system
+        """
+        # Confirm clearing all mesh parts
+        reply = QMessageBox.question(self, 'Clear All Mesh Parts', 
+                                     "Are you sure you want to clear all mesh parts?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            plotter = PlotterManager.get_plotter()
+            plotter.clear()
+            MeshPart.clear_all_mesh_parts()
+            self.refresh_mesh_parts_list()
 
 
 class MeshPartViewOptionsDialog(QDialog):
@@ -763,9 +861,9 @@ if __name__ == "__main__":
     # Create the Qt Application
     app = QApplication(sys.argv)
     
-    ElasticIsotropicMaterial(user_name="Steel",    E=200e3, ν=0.3,  ρ=7.85e-9)
-    ElasticIsotropicMaterial(user_name="Concrete", E=30e3,  ν=0.2,  ρ=24e-9)
-    ElasticIsotropicMaterial(user_name="Aluminum", E=70e3,  ν=0.33, ρ=2.7e-9)
+    ElasticIsotropicMaterial(user_name="Steel",    E=200e3, nu=0.3,  rho=7.85e-9)
+    ElasticIsotropicMaterial(user_name="Concrete", E=30e3,  nu=0.2,  rho=24e-9)
+    ElasticIsotropicMaterial(user_name="Aluminum", E=70e3,  nu=0.33, rho=2.7e-9)
     ElasticUniaxialMaterial(user_name="Steel2",    E=200e3, eta=0.1)
 
 
