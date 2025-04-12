@@ -10,10 +10,10 @@ LooseOttawaEle = mk.element.create_element(element_type="stdBrick", ndof=3, mate
 MontreyEle = mk.element.create_element(element_type="stdBrick", ndof=3, material="Dense Montrey", b1=0.0, b2=0.0, b3=-9.81 * 2.018)
 
 
-Xmin = -60
-Xmax = 60
-Ymin = -60
-Ymax = 60
+Xmin = 0
+Xmax = 1.
+Ymin = 0
+Ymax = 1.
 Zmin = -13
 thick1 = 2.6
 thick2 = 2.4
@@ -85,6 +85,10 @@ mk.meshPart.create_mesh_part(category="Volume mesh",
 mk.assembler.create_section(meshparts=["DensOttawa1", "DensOttawa2", "DensOttawa3"], num_partitions=2)
 mk.assembler.create_section(["LooseOttawa"], num_partitions=2)
 mk.assembler.create_section(["Montrey"], num_partitions=2)
+mk.assembler.Assemble()
 timeseries = mk.timeSeries.create_time_series(series_type="path",filePath="kobe.acc",fileTime="kobe.time")
 mk.pattern.create_pattern(pattern_type="uniformexcitation",dof=1, time_series=timeseries)
+
+mk.constraint.mp.create_laminar_boundary(dofs=[1,2], direction=3)
+# mk.export_to_tcl("mesh.tcl")
 mk.gui()
