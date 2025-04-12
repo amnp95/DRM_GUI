@@ -98,10 +98,19 @@ class MPConstraintManagerTab(QDialog):
         
         layout.addLayout(pagination_layout)
         
+        button_layout = QVBoxLayout()
         # Refresh button
         refresh_btn = QPushButton("Refresh Constraints List")
         refresh_btn.clicked.connect(self.refresh_constraints_list)
-        layout.addWidget(refresh_btn)
+        
+        # Add Clear All button
+        button_layout.addWidget(refresh_btn)
+        # Clear All button with warning color styling
+        clear_all_btn = QPushButton("Clear All Constraints")
+        clear_all_btn.clicked.connect(self.clear_all_constraints)
+        button_layout.addWidget(clear_all_btn)
+        
+        layout.addLayout(button_layout)
         
         # Pagination state
         self.current_page = 1
@@ -307,6 +316,40 @@ class MPConstraintManagerTab(QDialog):
         if reply == QMessageBox.Yes:
             mpConstraintManager().remove_constraint(tag)
             self.refresh_constraints_list()
+            
+    def clear_all_constraints(self):
+        """Delete all constraints from the system"""
+        count = len(mpConstraint._constraints)
+        
+        if count == 0:
+            QMessageBox.information(self, "No Constraints", "There are no constraints to clear.")
+            return
+            
+        reply = QMessageBox.question(
+            self, 'Clear All Constraints',
+            f"Delete all {count} constraints? This action cannot be undone.",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            # Show progress dialog for large numbers of constraints
+            if count > 100:
+                progress = QProgressDialog("Deleting all constraints...", "Cancel", 0, 100, self)
+                progress.setWindowModality(Qt.WindowModal)
+                progress.setValue(0)
+                progress.show()
+                QApplication.processEvents()
+            
+            # Clear the constraints dictionary directly
+            mpConstraint._constraints.clear()
+            
+            # Close progress dialog if it was shown
+            if count > 100:
+                progress.setValue(100)
+                progress.close()
+                
+            self.refresh_constraints_list()
+            QMessageBox.information(self, "Success", f"Successfully cleared {count} constraints.")
 
 
 # New Laminar Boundary Dialog
