@@ -230,6 +230,27 @@ class Analysis(AnalysisComponent):
         # Add analysis command
         commands.append(f"analysis {self.analysis_type}")
         
+        # add analyze command with parameters
+        if self.analysis_type == "Static":
+            commands.append(f"analyze {self.num_steps}")
+        elif self.analysis_type in ["Transient", "VariableTransient"]:
+            if self.final_time is not None:
+                commands.append("while {[getTime] < %f} {" % self.final_time)
+                commands.append(f"\tset Ok [analyze 1 {self.dt}]\n")
+                commands.append("}")
+            else:
+                commands.append(f"set AnalysisStep 0")
+                commands.append("while {"+f" $AnalysisStep < {self.num_steps}"+"} {")
+                commands.append(f"\tset Ok [analyze  {self.dt}]")   
+                commands.append(f"\tincr $AnalysisStep 1")
+                commands.append("}")
+
+        # wipe analysis command
+        commands.append("wipeAnalysis")
+
+                
+                                
+        
         return "\n".join(commands)
     
     def get_values(self) -> Dict[str, Any]:
