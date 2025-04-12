@@ -270,9 +270,13 @@ class mpConstraintManager:
 
 
         # now add mp constraints
+        print(f"Number of groups: {len(Taggroups)}")
+        print(f"Number of groups: {len(groups)}")
         for i, group in enumerate(Taggroups):
             if len(group) > 1:
-                self.create_equal_dof(master_node=group[0], slave_nodes=group[1:], dofs=dofs)
+                # self.create_equal_dof(master_node=group[0], slave_nodes=group[1:], dofs=dofs)
+                for slave in group[1:]:
+                    self.create_equal_dof(master_node=group[0], slave_nodes=[slave], dofs=dofs)
     
 
 
