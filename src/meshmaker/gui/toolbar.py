@@ -55,7 +55,7 @@ class ToolbarManager:
                 progress.setAutoReset(True)
                 progress.show()  # Explicitly show the dialog
                 def progress_callback(value, message):
-                    progress.setValue(value)
+                    progress.setValue(int(value))
                     progress.setLabelText(message)  # Update the message in the progress dialog
                     # Process events to ensure UI updates
                     QApplication.processEvents()

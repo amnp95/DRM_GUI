@@ -109,15 +109,15 @@ class LeftPanel(QFrame):
             self.manage_tab.layout.addWidget(button)
 
         # Add buttons for managing different components
-        add_manage_button("Manage Dampings", lambda: DampingManagerTab(parent=self).exec_())
-        add_manage_button("Manage Regions", lambda: RegionManagerTab(parent=self).exec_())
-        add_manage_button("Manage MP Constraints", lambda: MPConstraintManagerTab(parent=self).exec_())
-        add_manage_button("Manage SP Constraints", lambda: SPConstraintManagerTab(parent=self).exec_())
-        add_manage_button("Manage Time Series", lambda: TimeSeriesManagerTab(parent=self).exec_())
-        add_manage_button("Manage Patterns", lambda: PatternManagerTab(parent=self).exec_())
-        add_manage_button("Manage Recorders", lambda: RecorderManagerTab(parent=self).exec_())
-        add_manage_button("Manage Analysis", lambda: AnalysisManagerTab(parent=self).exec_())
-        add_manage_button("Manage Process", lambda: ProcessGUI(parent=self).exec_())
+        add_manage_button("Manage Dampings", lambda: DampingManagerTab(parent=self).show())
+        add_manage_button("Manage Regions", lambda: RegionManagerTab(parent=self).show())
+        add_manage_button("Manage MP Constraints", lambda: MPConstraintManagerTab(parent=self).show())
+        add_manage_button("Manage SP Constraints", lambda: SPConstraintManagerTab(parent=self).show())
+        add_manage_button("Manage Time Series", lambda: TimeSeriesManagerTab(parent=self).show())
+        add_manage_button("Manage Patterns", lambda: PatternManagerTab(parent=self).show())
+        add_manage_button("Manage Recorders", lambda: RecorderManagerTab(parent=self).show())
+        add_manage_button("Manage Analysis", lambda: AnalysisManagerTab(parent=self).show())
+        add_manage_button("Manage Process", lambda: ProcessGUI(parent=self).show())
         self.manage_tab.setLayout(self.manage_tab.layout)
         
 
