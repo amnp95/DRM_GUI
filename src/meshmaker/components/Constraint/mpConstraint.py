@@ -1,5 +1,8 @@
 from typing import List, Dict
 from abc import ABC, abstractmethod
+from meshmaker.components.Assemble.Assembler import Assembler
+from pykdtree.kdtree import KDTree
+import numpy as np
 
 class mpConstraint(ABC):
     """Base class for OpenSees multi-point constraints"""
@@ -192,6 +195,84 @@ class mpConstraintManager:
         rigidDiaphragm: An instance of the rigidDiaphragm class representing the created constraint.
         """
         return rigidDiaphragm(direction, master_node, slave_nodes)
+
+
+    def create_laminar_boundary(self, dofs: List[int], direction: int = 3, tol=1e-2) -> None:
+        """
+        Create a laminar boundary constraint.
+
+        Parameters:
+            dofs (List[int]): A list of degrees of freedom to be constrained.
+            direction (int): The direction of the perpendicular plane that will be used to create the laminar boundary.
+            tol (float): The tolerance value for the laminar  boundary condition.
+
+        Note : 
+            The direction must be 1, 2, or 3.
+            This function will if the mesh is 3D and the boundaries will be box shape or cylinder shape.
+        Returns:
+        
+        """
+        assembler = Assembler()
+        # check if the AssembeledMesh is not None
+        if assembler.AssembeledMesh is None:
+            raise ValueError("AssembeledMesh is not created yet")
+
+        mesh = assembler.AssembeledMesh.copy()
+        surface = mesh.extract_surface()
+        xmin, xmax, ymin, ymax, zmin, zmax = surface.bounds
+        eps = tol
+        if direction == 3:
+            xmin += eps
+            xmax -= eps
+            ymin += eps
+            ymax -= eps
+            zmin -= eps
+            zmax += eps
+        elif direction == 2:
+            xmin += eps
+            xmax -= eps
+            ymin -= eps
+            ymax += eps
+            zmin += eps
+            zmax -= eps
+        elif direction == 1:
+            xmin -= eps
+            xmax += eps
+            ymin += eps
+            ymax -= eps
+            zmin += eps
+            zmax -= eps
+        else:
+            raise ValueError("Direction must be 1, 2, or 3")
+        
+
+        ind = surface.find_cells_within_bounds((xmin, xmax, ymin, ymax, zmin, zmax))
+        surface = surface.extract_cells(ind,invert=True)
+        points = surface.points
+        tolerance = tol
+
+        kdtree = KDTree(mesh.points)
+        distances, indices = kdtree.query(points, k=1)
+        nodeTags = indices + 1
+        
+        import pyvista as pv
+        # attach the nodeTags to the points at the first column
+        z = points[:, direction]
+        z_rounded = np.round(z / tolerance) * tolerance
+
+        # Use np.unique with return_inverse to group fast
+        unique_z, group_ids = np.unique(z_rounded, return_inverse=True)
+    
+
+        # Build dictionary-like grouping in NumPy style
+        Taggroups = [nodeTags[group_ids == i] for i in range(len(unique_z))]
+        groups = [points[group_ids == i] for i in range(len(unique_z))]
+
+
+        # now add mp constraints
+        for i, group in enumerate(Taggroups):
+            if len(group) > 1:
+                self.create_equal_dof(master_node=group[0], slave_nodes=group[1:], dofs=dofs)
     
 
 
