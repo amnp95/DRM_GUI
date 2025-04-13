@@ -6,7 +6,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QGroupBox,
     QWidget, QDialog, QCheckBox, QLabel, QListWidget, QListWidgetItem, QSlider, QColorDialog,
-    QSpinBox, QComboBox, QMessageBox, QHeaderView, QTableWidget, QTableWidgetItem, QDialogButtonBox
+    QSpinBox, QComboBox, QMessageBox, QHeaderView, QTableWidget, QTableWidgetItem, QDialogButtonBox, QMenu
 )
 
 
@@ -29,15 +29,20 @@ class AssemblyManagerTab(QWidget):
         
         # Assembly sections table
         self.assembly_sections_table = QTableWidget()
-        self.assembly_sections_table.setColumnCount(6)  # Tag, Mesh Parts, Partitions, View, Solo, Delete
+        self.assembly_sections_table.setColumnCount(3)  # Tag, Mesh Parts, Partitions
         self.assembly_sections_table.setHorizontalHeaderLabels([
-            "Name", "Mesh Parts", "Partitions", "View", "Solo View", "Delete"
+            "Name", "Mesh Parts", "Partitions"
         ])
         header = self.assembly_sections_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        
+        # Enable context menu (right-click menu)
+        self.assembly_sections_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.assembly_sections_table.customContextMenuRequested.connect(self.show_context_menu)
+        
+        # Select full rows when clicking
+        self.assembly_sections_table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.assembly_sections_table.setSelectionMode(QTableWidget.SingleSelection)
         
         layout.addWidget(self.assembly_sections_table)
         
@@ -213,21 +218,87 @@ class AssemblyManagerTab(QWidget):
             partitions_item = QTableWidgetItem(str(section.num_partitions))
             partitions_item.setFlags(partitions_item.flags() & ~Qt.ItemIsEditable)
             self.assembly_sections_table.setItem(row, 2, partitions_item)
+    
+    def show_context_menu(self, position):
+        """
+        Show context menu for assembly sections table
+        """
+        menu = QMenu(self)
+        
+        view_action = menu.addAction("View")
+        solo_view_action = menu.addAction("Solo View")
+        delete_action = menu.addAction("Delete")
+        
+        action = menu.exec(self.assembly_sections_table.viewport().mapToGlobal(position))
+        
+        if action is None:
+            return
+        
+        # Get the selected row
+        selected_row = self.assembly_sections_table.currentRow()
+        if selected_row < 0:
+            return
             
-            # View button
-            view_btn = QPushButton("View")
-            view_btn.clicked.connect(lambda checked, s=section: self.open_section_view_dialog(s))
-            self.assembly_sections_table.setCellWidget(row, 3, view_btn)
+        # Get the tag from the first column (it's in format "Section{tag}")
+        name_item = self.assembly_sections_table.item(selected_row, 0)
+        if not name_item:
+            return
             
-            # Solo View button
-            solo_btn = QPushButton("Solo View")
-            solo_btn.clicked.connect(lambda checked, t=tag: self.solo_view_section(t))
-            self.assembly_sections_table.setCellWidget(row, 4, solo_btn)
+        # Extract the tag number from the section name
+        tag = int(name_item.text().replace("Section", ""))
+        
+        if action == view_action:
+            self.handle_view_action(tag)
+        elif action == solo_view_action:
+            self.handle_solo_view_action(tag)
+        elif action == delete_action:
+            self.handle_delete_action(tag)
+
+    def handle_view_action(self, tag):
+        """
+        Handle the view action from the context menu
+        """
+        try:
+            section = Assembler.get_instance().get_section(tag)
             
-            # Delete button
-            delete_btn = QPushButton("Delete")
-            delete_btn.clicked.connect(lambda checked, t=tag: self.delete_assembly_section(t))
-            self.assembly_sections_table.setCellWidget(row, 5, delete_btn)
+            # Check if section is plotted (has an actor)
+            if section.actor is None:
+                QMessageBox.warning(
+                    self, 
+                    "Assembly Section Not Plotted", 
+                    f"The assembly section '{tag}' is not currently plotted in the viewer. "
+                    f"Please use 'Plot All Assembly Parts' first to visualize it."
+                )
+            else:
+                self.open_section_view_dialog(section)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+    def handle_solo_view_action(self, tag):
+        """
+        Handle the solo view action from the context menu
+        """
+        try:
+            section = Assembler.get_instance().get_section(tag)
+            
+            # Check if section is plotted (has an actor)
+            if section.actor is None:
+                QMessageBox.warning(
+                    self, 
+                    "Assembly Section Not Plotted", 
+                    f"The assembly section '{tag}' is not currently plotted in the viewer. "
+                    f"Please use 'Plot All Assembly Parts' first to visualize it."
+                )
+            else:
+                self.solo_view_section(tag)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+    def handle_delete_action(self, tag):
+        """
+        Handle the delete action from the context menu
+        """
+        self.delete_assembly_section(tag)
     
     def open_section_view_dialog(self, section):
         """
@@ -283,6 +354,7 @@ class AssemblyManagerTab(QWidget):
         plotter.clear()
         for section in assembler.get_sections().values():
             actor = plotter.add_mesh(section.mesh,
+                                        show_edges=True,
                                      opacity=1.0,
                                      scalars=None,
                                      style='surface',
@@ -717,6 +789,7 @@ class AssemblySectionCreationDialog(QDialog):
                                         opacity=1.0,
                                         scalars = None,
                                         style='surface',
+                                        show_edges=True,
                                         color="royalblue",)
         self.section.assign_actor(actor)
         
