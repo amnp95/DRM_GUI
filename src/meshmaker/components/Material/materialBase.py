@@ -265,6 +265,13 @@ class Material(ABC):
         """
         return self.params[key]
 
+    @classmethod
+    def clear_all_materials(cls):
+        """
+        Clear all materials and reset tags to starting value
+        """
+        cls.clear_all()
+
 
 class MaterialRegistry:
     """

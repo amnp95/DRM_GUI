@@ -1,7 +1,7 @@
 from qtpy.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
-    QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout
+    QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout, QMenu
 )
 from qtpy.QtCore import Qt
 
@@ -44,18 +44,35 @@ class MaterialManagerTab(QWidget):
         
         # Materials table
         self.materials_table = QTableWidget()
-        self.materials_table.setColumnCount(6)  # Tag, Category, Type, Name, Edit, Delete
-        self.materials_table.setHorizontalHeaderLabels(["Tag", "Category", "Type", "Name", "Edit", "Delete"])
+        self.materials_table.setColumnCount(4)  # Tag, Category, Type, Name
+        self.materials_table.setHorizontalHeaderLabels(["Tag", "Category", "Type", "Name"])
         header = self.materials_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)  # Stretch all columns
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Except for the first one
+        
+        # Enable context menu (right-click menu)
+        self.materials_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.materials_table.customContextMenuRequested.connect(self.show_context_menu)
+        
+        # Select full rows when clicking
+        self.materials_table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.materials_table.setSelectionMode(QTableWidget.SingleSelection)
         
         layout.addWidget(self.materials_table)
+        
+        # Button layout for actions
+        button_layout = QHBoxLayout()
         
         # Refresh materials button
         refresh_btn = QPushButton("Refresh Materials List")
         refresh_btn.clicked.connect(self.refresh_materials_list)
-        layout.addWidget(refresh_btn)
+        button_layout.addWidget(refresh_btn)
+        
+        # Clear all materials button
+        clear_all_btn = QPushButton("Clear All Materials")
+        clear_all_btn.clicked.connect(self.clear_all_materials)
+        button_layout.addWidget(clear_all_btn)
+        
+        layout.addLayout(button_layout)
         
         # Initial refresh
         self.refresh_materials_list()
@@ -112,16 +129,39 @@ class MaterialManagerTab(QWidget):
             name_item = QTableWidgetItem(material.user_name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
             self.materials_table.setItem(row, 3, name_item)
-            
-            # Edit button
-            edit_btn = QPushButton("Edit")
-            edit_btn.clicked.connect(lambda checked, mat=material: self.open_material_edit_dialog(mat))
-            self.materials_table.setCellWidget(row, 4, edit_btn)
 
-            # Delete button
-            delete_btn = QPushButton("Delete")
-            delete_btn.clicked.connect(lambda checked, tag=tag: self.delete_material(tag))
-            self.materials_table.setCellWidget(row, 5, delete_btn)
+    def show_context_menu(self, position):
+        """
+        Show context menu for materials table
+        """
+        menu = QMenu()
+        edit_action = menu.addAction("Edit Material")
+        delete_action = menu.addAction("Delete Material")
+        action = menu.exec_(self.materials_table.viewport().mapToGlobal(position))
+        
+        if action == edit_action:
+            selected_row = self.materials_table.currentRow()
+            if selected_row != -1:
+                tag = int(self.materials_table.item(selected_row, 0).text())
+                material = Material.get_material_by_tag(tag)
+                self.open_material_edit_dialog(material)
+        elif action == delete_action:
+            selected_row = self.materials_table.currentRow()
+            if selected_row != -1:
+                tag = int(self.materials_table.item(selected_row, 0).text())
+                self.delete_material(tag)
+
+    def clear_all_materials(self):
+        """
+        Clear all materials from the system
+        """
+        reply = QMessageBox.question(self, 'Clear All Materials', 
+                                     "Are you sure you want to delete all materials?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            Material.clear_all_materials()
+            self.refresh_materials_list()
 
     def open_material_edit_dialog(self, material):
         """
