@@ -185,6 +185,14 @@ class NumbererManager:
             
         return NumbererManager._numberer_instances[numberer_type]
     
+
+    def create_numberer(self, numberer_type: str) -> Numberer:
+        """
+        Create a new numberer instance of the specified type
+        """
+        return self.get_numberer(numberer_type)  # Ensure the numberer is created if not already
+        
+    
     def get_all_numberers(self) -> Dict[str, Numberer]:
         """
         Return all available numberer instances
