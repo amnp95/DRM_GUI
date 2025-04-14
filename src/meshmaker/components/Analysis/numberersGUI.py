@@ -125,6 +125,25 @@ class NumbererManagerTab(QDialog):
             return numberers[0]
         return None
 
+    def select_numberer(self, numberer_type):
+        """Select the numberer with the given type"""
+        if numberer_type is None:
+            return
+            
+        # Handle case when passed an actual numberer object
+        if hasattr(numberer_type, "__class__"):
+            # Get the class name and extract the type from it
+            class_name = numberer_type.__class__.__name__
+            # Remove "Numberer" from the end and convert to lowercase
+            if class_name.endswith("Numberer"):
+                numberer_type = class_name[:-8].lower()
+            
+        for row, checkbox in enumerate(self.checkboxes):
+            type_item = self.numberers_table.item(row, 1)
+            if type_item and type_item.text().lower() == numberer_type.lower():
+                checkbox.setChecked(True)
+                return
+
     def get_numberer_description(self, numberer_type):
         """Return description text for each numberer type"""
         descriptions = {

@@ -221,6 +221,22 @@ class ConstraintHandlerManagerTab(QDialog):
         if reply == QMessageBox.Yes:
             self.handler_manager.remove_handler(tag)
             self.refresh_handlers_list()
+            
+    def select_handler(self, tag):
+        """Select the constraint handler with the given tag"""
+        # Refresh the list to ensure we have the latest handlers
+        self.refresh_handlers_list()
+        
+        # Find and check the checkbox for the handler with the specified tag
+        for row in range(self.handlers_table.rowCount()):
+            tag_item = self.handlers_table.item(row, 1)
+            if tag_item and int(tag_item.text()) == tag:
+                # Check the checkbox for this handler
+                if row < len(self.checkboxes):
+                    self.checkboxes[row].setChecked(True)
+                return True
+        
+        return False
 
 
 class PlainConstraintHandlerDialog(QDialog):

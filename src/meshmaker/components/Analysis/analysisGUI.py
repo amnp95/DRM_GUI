@@ -327,8 +327,22 @@ class AnalysisWizard(QDialog):
         """Create constraint handler tab"""
         self.constraint_handler_tab = ConstraintHandlerManagerTab()
         
+        # Pre-select constraint handler if editing an existing analysis
         if self.analysis and self.analysis.constraint_handler:
-            self.constraint_handler_tab.select_handler(self.analysis.constraint_handler.tag)
+            # Find the constraint handler in the table and check its checkbox
+            try:
+                # Refresh the handlers list to ensure it's up-to-date
+                self.constraint_handler_tab.refresh_handlers_list()
+                
+                # Look for the handler with matching tag
+                target_tag = self.analysis.constraint_handler.tag
+                for row, checkbox in enumerate(self.constraint_handler_tab.checkboxes):
+                    tag_item = self.constraint_handler_tab.handlers_table.item(row, 1)
+                    if tag_item and int(tag_item.text()) == target_tag:
+                        checkbox.setChecked(True)
+                        break
+            except Exception as e:
+                print(f"Error selecting constraint handler: {e}")
             
         return self.constraint_handler_tab
     
@@ -336,8 +350,25 @@ class AnalysisWizard(QDialog):
         """Create numberer tab"""
         self.numberer_tab = NumbererManagerTab()
         
+        # Pre-select numberer if editing an existing analysis
         if self.analysis and self.analysis.numberer:
-            self.numberer_tab.select_numberer(self.analysis.numberer.numberer_type)
+            try:
+                # Initialize the table to ensure it's populated
+                self.numberer_tab.initialize_numberers_table()
+                
+                # Extract type from numberer class name
+                numberer_class = self.analysis.numberer.__class__.__name__
+                if numberer_class.endswith("Numberer"):
+                    numberer_type = numberer_class[:-8].lower()
+                    
+                    # Look for matching numberer type in the table
+                    for row, checkbox in enumerate(self.numberer_tab.checkboxes):
+                        type_item = self.numberer_tab.numberers_table.item(row, 1)
+                        if type_item and type_item.text().lower() == numberer_type:
+                            checkbox.setChecked(True)
+                            break
+            except Exception as e:
+                print(f"Error selecting numberer: {e}")
             
         return self.numberer_tab
     
@@ -345,8 +376,21 @@ class AnalysisWizard(QDialog):
         """Create system tab"""
         self.system_tab = SystemManagerTab()
         
+        # Pre-select system if editing an existing analysis
         if self.analysis and self.analysis.system:
-            self.system_tab.select_system(self.analysis.system.tag)
+            try:
+                # Refresh the systems list to ensure it's up-to-date
+                self.system_tab.refresh_systems_list()
+                
+                # Look for the system with matching tag
+                target_tag = self.analysis.system.tag
+                for row, checkbox in enumerate(self.system_tab.checkboxes):
+                    tag_item = self.system_tab.systems_table.item(row, 1)
+                    if tag_item and int(tag_item.text()) == target_tag:
+                        checkbox.setChecked(True)
+                        break
+            except Exception as e:
+                print(f"Error selecting system: {e}")
             
         return self.system_tab
     
@@ -354,8 +398,21 @@ class AnalysisWizard(QDialog):
         """Create algorithm tab"""
         self.algorithm_tab = AlgorithmManagerTab()
         
+        # Pre-select algorithm if editing an existing analysis
         if self.analysis and self.analysis.algorithm:
-            self.algorithm_tab.select_algorithm(self.analysis.algorithm.tag)
+            try:
+                # Refresh the algorithms list to ensure it's up-to-date
+                self.algorithm_tab.refresh_algorithms_list()
+                
+                # Look for the algorithm with matching tag
+                target_tag = self.analysis.algorithm.tag
+                for row, checkbox in enumerate(self.algorithm_tab.checkboxes):
+                    tag_item = self.algorithm_tab.algorithms_table.item(row, 1)
+                    if tag_item and int(tag_item.text()) == target_tag:
+                        checkbox.setChecked(True)
+                        break
+            except Exception as e:
+                print(f"Error selecting algorithm: {e}")
             
         return self.algorithm_tab
     
@@ -363,8 +420,21 @@ class AnalysisWizard(QDialog):
         """Create convergence test tab"""
         self.test_tab = TestManagerTab()
         
+        # Pre-select test if editing an existing analysis
         if self.analysis and self.analysis.test:
-            self.test_tab.select_test(self.analysis.test.tag)
+            try:
+                # Refresh the tests list to ensure it's up-to-date
+                self.test_tab.refresh_tests_list()
+                
+                # Look for the test with matching tag
+                target_tag = self.analysis.test.tag
+                for row, checkbox in enumerate(self.test_tab.checkboxes):
+                    tag_item = self.test_tab.tests_table.item(row, 1)
+                    if tag_item and int(tag_item.text()) == target_tag:
+                        checkbox.setChecked(True)
+                        break
+            except Exception as e:
+                print(f"Error selecting convergence test: {e}")
             
         return self.test_tab
     
@@ -372,8 +442,21 @@ class AnalysisWizard(QDialog):
         """Create integrator tab"""
         self.integrator_tab = IntegratorManagerTab()
         
+        # Pre-select integrator if editing an existing analysis
         if self.analysis and self.analysis.integrator:
-            self.integrator_tab.select_integrator(self.analysis.integrator.tag)
+            try:
+                # Refresh the integrators list to ensure it's up-to-date
+                self.integrator_tab.refresh_integrators_list()
+                
+                # Look for the integrator with matching tag
+                target_tag = self.analysis.integrator.tag
+                for row, checkbox in enumerate(self.integrator_tab.checkboxes):
+                    tag_item = self.integrator_tab.integrators_table.item(row, 1)
+                    if tag_item and int(tag_item.text()) == target_tag:
+                        checkbox.setChecked(True)
+                        break
+            except Exception as e:
+                print(f"Error selecting integrator: {e}")
             
         return self.integrator_tab
     
