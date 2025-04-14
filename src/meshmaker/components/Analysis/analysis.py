@@ -346,6 +346,59 @@ class AnalysisManager:
             self.integrator = IntegratorManager()
             self._initialized = True
     
+    def create_default_transient_analysis(self, username: str, dt: float, num_steps: int = None, 
+                                         final_time: float = None) -> Analysis:
+        """
+        Create a default transient analysis with predefined components:
+        - ParallelRCM numberer
+        - Newmark integrator with gamma=0.5 and beta=0.25
+        - Mumps system with ICNTL14=100 and ICNTL7=7
+        - EnergyIncr test with tol=1e-3, max_iter=20, print_flag=2
+        - ModifiedNewton algorithm with factoronce
+        - Transformation constraint handler
+        
+        Args:
+            username (str): Username for the analysis name
+            dt (float): Time step increment
+            num_steps (int, optional): Number of analysis steps (either this or final_time must be provided)
+            final_time (float, optional): Final time for analysis (either this or num_steps must be provided)
+            
+        Returns:
+            Analysis: The created transient analysis
+            
+        Raises:
+            ValueError: If neither num_steps nor final_time is provided or if both are provided
+        """
+        # Validate inputs
+        if (num_steps is None and final_time is None) or (num_steps is not None and final_time is not None):
+            raise ValueError("Exactly one of num_steps or final_time must be provided")
+            
+        # Create analysis name
+        analysis_name = f"defualtTransient_{username}"
+        
+        # Create components
+        numberer = self.numberer.create_numberer("parallelrcm")
+        integrator = self.integrator.create_integrator("newmark", gamma=0.5, beta=0.25)
+        system = self.system.create_system("mumps", icntl14=100, icntl7=7)
+        test = self.test.create_test("energyincr", tol=1e-3, max_iter=20, print_flag=2)
+        algorithm = self.algorithm.create_algorithm("modifiednewton", factor_once=True)
+        constraint_handler = self.constraint.create_handler("transformation")
+        
+        # Create and return the analysis
+        return self.create_analysis(
+            name=analysis_name,
+            analysis_type="Transient",
+            constraint_handler=constraint_handler,
+            numberer=numberer,
+            system=system,
+            algorithm=algorithm,
+            test=test,
+            integrator=integrator,
+            num_steps=num_steps,
+            final_time=final_time,
+            dt=dt
+        )
+    
     def create_analysis(self, name: str, analysis_type: str, constraint_handler: ConstraintHandler, 
                      numberer: Numberer, system: System, algorithm: Algorithm, 
                      test: Test, integrator: Integrator, num_steps: Optional[int] = None, 
