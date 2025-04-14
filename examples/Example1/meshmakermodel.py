@@ -1,6 +1,8 @@
 from meshmaker.components.MeshMaker import MeshMaker 
 
 mk = MeshMaker()
+
+# defining the materials
 mk.material.create_material(material_category="nDMaterial", material_type="ElasticIsotropic", user_name="Dense Ottawa", E=2.0e7, nu=0.3, rho=2.02)
 mk.material.create_material(material_category="nDMaterial", material_type="ElasticIsotropic", user_name="Loose Ottawa", E=2.0e7, nu=0.3, rho=1.94)
 mk.material.create_material(material_category="nDMaterial", material_type="ElasticIsotropic", user_name="Dense Montrey", E=2.0e7, nu=0.3, rho=2.018)
@@ -9,12 +11,12 @@ DensOttawaEle = mk.element.create_element(element_type="stdBrick", ndof=3, mater
 LooseOttawaEle = mk.element.create_element(element_type="stdBrick", ndof=3, material="Loose Ottawa", b1=0.0, b2=0.0, b3=-9.81 * 1.94)
 MontreyEle = mk.element.create_element(element_type="stdBrick", ndof=3, material="Dense Montrey", b1=0.0, b2=0.0, b3=-9.81 * 2.018)
 
-
-Xmin = 0
-Xmax = 1.
-Ymin = 0
-Ymax = 1.
-Zmin = -13
+# defining the mesh parts
+Xmin = -10.0
+Xmax = 10.
+Ymin = -10.0
+Ymax = 10.
+Zmin = -18.0
 thick1 = 2.6
 thick2 = 2.4
 thick3 = 5.0 
@@ -82,13 +84,40 @@ mk.meshPart.create_mesh_part(category="Volume mesh",
                                 'Nx Cells': Nx, 'Ny Cells': Ny, 'Nz Cells': int(thick5/dz5)})
 
 
+
+#  Create assembly Sections
 mk.assembler.create_section(meshparts=["DensOttawa1", "DensOttawa2", "DensOttawa3"], num_partitions=2)
 mk.assembler.create_section(["LooseOttawa"], num_partitions=2)
 mk.assembler.create_section(["Montrey"], num_partitions=2)
-mk.assembler.Assemble()
-timeseries = mk.timeSeries.create_time_series(series_type="path",filePath="kobe.acc",fileTime="kobe.time")
-mk.pattern.create_pattern(pattern_type="uniformexcitation",dof=1, time_series=timeseries)
 
+# Assemble the mesh parts
+mk.assembler.Assemble()
+
+
+# Create a TimeSeries for the uniform excitation
+timeseries = mk.timeSeries.create_time_series(series_type="path",filePath="kobe.acc",fileTime="kobe.time")
+
+# Create a pattern for the uniform excitation
+kobe = mk.pattern.create_pattern(pattern_type="uniformexcitation",dof=1, time_series=timeseries)
+
+
+# boundary conditions
 mk.constraint.mp.create_laminar_boundary(dofs=[1,2], direction=3)
-# mk.export_to_tcl("mesh.tcl")
+mk.constraint.sp.fixMacroZmin(dofs=[1,2,3])
+
+
+# Create a recorder for the whole model
+recorder = mk.recorder.create_recorder("vtkhdf", file_base_name="result.vtkhdf",resp_types=["disp", "vel", "accel", "stress3D6", "strain3D6", "stress2D3", "strain2D3"], delta_t=0.02)
+
+# Create a gravity analysis step
+gravity = mk.analysis.create_default_transient_analysis(username="gravity", dt=0.01, num_steps=50)
+
+
+# Add the recorder and gravity analysis step to the process
+mk.process.add_step(kobe, description="Uniform Excitation (Kobe record)")
+mk.process.add_step(recorder, description="Recorder of the whole model")
+mk.process.add_step(gravity, description="Gravity Analysis Step")
+
+
+mk.export_to_tcl("mesh.tcl")
 mk.gui()
