@@ -69,6 +69,32 @@ class MeshMaker:
         # Initialize DRMHelper with a reference to this MeshMaker instance
         self.drm = DRM()
         self.drm.set_meshmaker(self)
+        
+    def _progress_callback(self, value, message):
+        """
+        Default progress callback using tqdm when no callback is provided
+        
+        Args:
+            value (float): Progress value (0-100)
+            message (str): Progress message
+        """
+        if not hasattr(self, '_tqdm_progress'):
+            # Initialize tqdm progress bar on first call
+            self._tqdm_progress = tqdm.tqdm(total=100, desc="Exporting to TCL", bar_format="{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}] {postfix}")
+            self._tqdm_progress.set_postfix_str(message)
+            self._tqdm_progress.update(value)
+        else:
+            # Update existing progress bar
+            current = self._tqdm_progress.n
+            increment = int(value) - current
+            if increment > 0:
+                self._tqdm_progress.set_postfix_str(message)
+                self._tqdm_progress.update(increment)
+            
+        # Close the progress bar if we're finished
+        if value >= 100:
+            self._tqdm_progress.close()
+            delattr(self, '_tqdm_progress')
 
     @classmethod
     def get_instance(cls, **kwargs):
@@ -125,7 +151,9 @@ class MeshMaker:
         
         Args:
             filename (str, optional): The filename to export to. If None, 
-                                    uses model_name in model_path
+                                     uses model_name in model_path
+            progress_callback (callable, optional): Callback function to report progress.
+                                                  If None, uses tqdm progress bar.
         
         Returns:
             bool: True if export was successful, False otherwise
@@ -133,6 +161,10 @@ class MeshMaker:
         Raises:
             ValueError: If no filename is provided and model_name/model_path are not set
         """
+        # Use the default tqdm progress callback if none is provided
+        if progress_callback is None:
+            progress_callback = self._progress_callback
+            
         if True:
             # Determine the full file path
             if filename is None:
@@ -169,13 +201,6 @@ class MeshMaker:
                 f.write(f"set Z_MIN {bounds[4]}\n")
                 f.write(f"set Z_MAX {bounds[5]}\n")
 
-                # # initilize regions list
-                # regions = unique(self.assembler.AssembeledMesh.cell_data["Region"])
-                # f.write("\n# Regions lists ======================================\n")
-                # num_regions = regions.shape[0]
-                # for i in range(num_regions):
-                #     f.write(f"set region_{i} {}\n")
-
                 if progress_callback:
                     progress_callback(0, "writing materials")
                     
@@ -192,8 +217,6 @@ class MeshMaker:
                 f.write("\n# Nodes & Elements ======================================\n")
                 cores = self.assembler.AssembeledMesh.cell_data["Core"]
                 num_cores = unique(cores)
-                # elements  = self.assembler.AssembeledMesh.cells
-                # offset    = self.assembler.AssembeledMesh.offset
                 nodes     = self.assembler.AssembeledMesh.points
                 ndfs      = self.assembler.AssembeledMesh.point_data["ndf"]
                 num_nodes = self.assembler.AssembeledMesh.n_points
@@ -262,16 +285,28 @@ class MeshMaker:
                 core_to_idx = {core: idx for idx, core in enumerate(num_cores)}
                 master_nodes = zeros(num_nodes, dtype=bool)
                 slave_nodes = zeros(num_nodes, dtype=bool)
-                constraint_map = {}; # map master node to constraint
-                constraint_map_rev = {}; # map slave node to master node
+                
+                # Modified data structures to handle multiple constraints per node
+                constraint_map = {}  # map master node to list of constraints
+                constraint_map_rev = {}  # map slave node to list of (master_id, constraint) tuples
+                
                 for constraint in self.constraint.mp:
                     master_id = constraint.master_node - 1
                     master_nodes[master_id] = True
-                    constraint_map[master_id] = constraint
+                    
+                    # Add constraint to master's list
+                    if master_id not in constraint_map:
+                        constraint_map[master_id] = []
+                    constraint_map[master_id].append(constraint)
+                    
+                    # For each slave, record the master and constraint
                     for slave_id in constraint.slave_nodes:
                         slave_id = slave_id - 1
                         slave_nodes[slave_id] = True
-                        constraint_map_rev[slave_id] = master_id
+                        
+                        if slave_id not in constraint_map_rev:
+                            constraint_map_rev[slave_id] = []
+                        constraint_map_rev[slave_id].append((master_id, constraint))
 
                 # Get mesh data
                 cells = self.assembler.AssembeledMesh.cell_connectivity
@@ -293,50 +328,55 @@ class MeshMaker:
                     active_masters = where(master_nodes & in_core)[0]
                     active_slaves = where(slave_nodes & in_core)[0]
 
-                    # add the master nodes that are not in the core
+                    # Add the master nodes that are not in the core but needed for constraints
+                    masters_to_add = []
                     for slave_id in active_slaves:
-                        active_masters = concatenate([active_masters, [constraint_map_rev[slave_id]]])
-                    active_masters = unique(active_masters)
+                        if slave_id in constraint_map_rev:
+                            for master_id, _ in constraint_map_rev[slave_id]:
+                                masters_to_add.append(master_id)
+                    
+                    # Add unique masters
+                    if masters_to_add:
+                        active_masters = concatenate([active_masters, array(masters_to_add)])
+                        active_masters = unique(active_masters)
 
                     if not active_masters.size:
                         continue
 
                     f.write(f"if {{$pid == {core}}} {{\n")
                     
-                    # Process all slaves first to maintain node ordering
-                    # Get all slave nodes from active master nodes in a vectorized way
-                    all_slaves = concatenate([constraint_map[master_id].slave_nodes for master_id in active_masters])
-                    # Convert to 0-based indexing as slave nodes are stored with 1-based indexing
-                    all_slaves = array(all_slaves) - 1
-
-                    # Filter out slave nodes that are not in the curent core 
-                    valid_mask = (all_slaves < num_nodes) & (all_slaves >= 0) & ~in_core[all_slaves]
-                    valid_slaves = all_slaves[valid_mask]
-
-                    # Filter out master nodes that are not in the current core
+                    # Process all master nodes that are not in the current core
                     valid_mask = ~in_core[active_masters]
                     valid_masters = active_masters[valid_mask]
-
-                    # Write unique master nodes
                     if valid_masters.size > 0:
-                        f.write("\t# Master nodes\n")
+                        f.write("\t# Master nodes not defined in this core\n")
                         for master_id in valid_masters:
                             node = nodes[master_id]
                             f.write(f"\tnode {master_id+1} {node[0]} {node[1]} {node[2]} -ndf {ndfs[master_id]}\n")
 
-
-                    # Write unique slave nodes
+                    # Process all slave nodes that are not in the current core
+                    # Collect all unique slave nodes from active master nodes' constraints
+                    all_slaves = []
+                    for master_id in active_masters:
+                        for constraint in constraint_map[master_id]:
+                            all_slaves.extend([sid - 1 for sid in constraint.slave_nodes])
+                    
+                    # Filter out slave nodes that are not in the current core
+                    valid_slaves = array([sid for sid in all_slaves if 0 <= sid < num_nodes and not in_core[sid]])
+                    
                     if valid_slaves.size > 0:
-                        f.write("\t# Slave nodes\n")
+                        f.write("\t# Slave nodes not defined in this core\n")
                         for slave_id in unique(valid_slaves):
                             node = nodes[slave_id]
                             f.write(f"\tnode {slave_id+1} {node[0]} {node[1]} {node[2]} -ndf {ndfs[slave_id]}\n")
 
-
-
                     # Write constraints after nodes
+                    f.write("\t# Constraints\n")
+                    
+                    # Process constraints where master is in this core
                     for master_id in active_masters:
-                        f.write(f"\t{constraint_map[master_id].to_tcl()}\n")
+                        for constraint in constraint_map[master_id]:
+                            f.write(f"\t{constraint.to_tcl()}\n")
                     
                     f.write("}\n")
 
