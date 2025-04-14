@@ -109,6 +109,26 @@ class AMDNumberer(Numberer):
         return "numberer AMD"
 
 
+class ParallelRCMNumberer(Numberer):
+    """
+    Parallel Reverse Cuthill-McKee numberer, a parallelized version of the RCM algorithm
+    for improved performance on large systems while still reducing bandwidth
+    Implemented as a singleton
+    """
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(ParallelRCMNumberer, cls).__new__(cls)
+        return cls._instance
+    
+    def __init__(self):
+        pass
+    
+    def to_tcl(self) -> str:
+        return "numberer ParallelRCM"
+
+
 class NumbererManager:
     """
     Manager class for handling numberer instances and operations
@@ -129,11 +149,12 @@ class NumbererManager:
     
     def _initialize_default_numberers(self):
         """
-        Automatically create instances of the three default numberer types
+        Automatically create instances of the default numberer types
         """
         self.get_numberer('plain')
         self.get_numberer('rcm')
         self.get_numberer('amd')
+        self.get_numberer('parallelrcm')
     
     @classmethod
     def get_instance(cls) -> 'NumbererManager':
@@ -184,3 +205,4 @@ class NumbererManager:
 Numberer.register_numberer('plain', PlainNumberer)
 Numberer.register_numberer('rcm', RCMNumberer)
 Numberer.register_numberer('amd', AMDNumberer)
+Numberer.register_numberer('parallelrcm', ParallelRCMNumberer)
