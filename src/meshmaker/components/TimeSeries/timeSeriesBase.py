@@ -1235,6 +1235,24 @@ class TimeSeriesManager:
         if cls._instance is None:
             cls._instance = super(TimeSeriesManager, cls).__new__(cls)
         return cls._instance
+    
+    def __len__(self):
+        """
+        Get the number of time series objects managed by this instance.
+        
+        Returns:
+            int: The number of time series objects
+        """
+        return len(TimeSeries._time_series)
+    
+    def __iter__(self):
+        """
+        Iterate over the time series objects managed by this instance.
+        
+        Returns:
+            Iterator[TimeSeries]: An iterator over the time series objects
+        """
+        return iter(TimeSeries._time_series.values())
 
     def create_time_series(self, series_type: str, **kwargs) -> TimeSeries:
         """
