@@ -2,3 +2,7 @@
 *.egg*
 *env/
 tmp/
+*.h5drm
+*.tcl
+*.bash
+*.vtkhdf
