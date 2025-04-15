@@ -241,7 +241,7 @@ class Analysis(AnalysisComponent):
             else:
                 commands.append(f"set AnalysisStep 0")
                 commands.append("while {"+f" $AnalysisStep < {self.num_steps}"+"} {")
-                commands.append(f"\tset Ok [analyze  {self.dt}]")   
+                commands.append(f"\tset Ok [analyze 1 {self.dt}]")   
                 commands.append(f"\tincr $AnalysisStep 1")
                 commands.append("}")
 
