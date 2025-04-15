@@ -367,7 +367,7 @@ class VTKHDFRecorder(Recorder):
         name = name+"$pid"
         file_base_name = name+"." + fileformat
 
-        cmd = f"recorder vtkhdf {self.file_base_name}"
+        cmd = f"recorder vtkhdf {file_base_name}"
         
         # Add optional parameters
         if self.delta_t is not None:
