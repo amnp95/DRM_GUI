@@ -359,18 +359,28 @@ class VTKHDFRecorder(Recorder):
         Returns:
             str: The TCL command string
         """
+
+        # separete name and format of the file
+        name = self.file_base_name.split(".")
+        fileformat = name[-1]
+        name = name[0]
+        name = name+"$pid"
+        file_base_name = name+"." + fileformat
+
         cmd = f"recorder vtkhdf {self.file_base_name}"
-        
-        # Add response types
-        for resp_type in self.resp_types:
-            cmd += f" {resp_type}"
         
         # Add optional parameters
         if self.delta_t is not None:
             cmd += f" -dT {self.delta_t}"
-        
+
         if self.r_tol_dt is not None:
             cmd += f" -rTolDt {self.r_tol_dt}"
+
+        # Add response types
+        for resp_type in self.resp_types:
+            cmd += f" {resp_type}"
+        
+        
         
         return cmd
 
