@@ -391,7 +391,18 @@ class MeshMaker:
                 for constraint in self.constraint.sp:
                     f.write(f"{constraint.to_tcl()}\n")
                     if progress_callback:
-                        progress_callback(80 + indx / size * 10, "writing sp constraints")
+                        progress_callback(80 + indx / size * 5, "writing sp constraints")
+                    indx += 1
+
+
+                # write time series
+                f.write("\n# Time Series ======================================\n")
+                size = len(self.timeSeries)
+                indx = 1
+                for timeSeries in self.timeSeries:
+                    f.write(f"{timeSeries.to_tcl()}\n")
+                    if progress_callback:
+                        progress_callback(85 + indx / size * 5, "writing time series")
                     indx += 1
 
                 # write process
