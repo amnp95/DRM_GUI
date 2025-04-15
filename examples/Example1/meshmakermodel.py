@@ -1,4 +1,7 @@
+import os
 from meshmaker.components.MeshMaker import MeshMaker 
+
+os.chdir(os.path.dirname(__file__))
 
 mk = MeshMaker()
 
