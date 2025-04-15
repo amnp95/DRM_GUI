@@ -231,7 +231,7 @@ class ModifiedNewtonAlgorithm(Algorithm):
         if self.initial:
             cmd += " -initial"
         if self.factor_once:
-            cmd += " -factorOnce"
+            cmd += " -factoronce"
         return cmd
     
     def get_values(self) -> Dict[str, Union[str, int, float, bool]]:
