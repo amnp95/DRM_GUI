@@ -1,10 +1,10 @@
 J2CyclicBoundingSurfaceMaterial
--------------------------------
+"""""""""""""""""""""""""""""""""
 
 A material model that implements the J2 Cyclic Bounding Surface plasticity model, useful for modeling cyclical response in soil and other materials with complex hardening behavior.
 
 Parameters:
-~~~~~~~~~~~
+
 .. list-table:: 
     :header-rows: 1
 

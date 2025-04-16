@@ -1,8 +1,10 @@
+Technical Documentation
+========================
+
 This section provides detailed technical documentation for all components of the MeshMaker software.
 
 .. toctree::
-   :maxdepth: 4
-   :caption: Components:
+   :maxdepth: 1
 
    materials
 

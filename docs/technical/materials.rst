@@ -1,15 +1,15 @@
-Material Components
-===================
+Material 
+---------------------------------
 
 Understanding the MaterialManager
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``MaterialManager`` is a core component of the MeshMaker library that serves as a centralized system for creating, retrieving, tracking, and managing material objects throughout the mesh generation process. It implements the Singleton pattern to ensure a single, consistent point of material management across the entire application.
 
 Materials defined in MeshMaker are automatically tracked, tagged, and organized by the MaterialManager, simplifying the process of creating complex models with multiple material definitions.
 
 Accessing the MaterialManager
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are two ways to access the MaterialManager in your code:
 
@@ -40,7 +40,7 @@ There are two ways to access the MaterialManager in your code:
 The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
 
 How MaterialManager Works
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The MaterialManager provides several key capabilities:
 
@@ -61,7 +61,7 @@ When a material is created, the MaterialManager:
    exists, the MaterialManager will raise an error.
 
 Material Tagging System
-^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The MaterialManager implements an intelligent tagging system that:
 
@@ -77,12 +77,12 @@ The MaterialManager implements an intelligent tagging system that:
    material_manager.set_material_tag_start(1000)  # All new materials will start from tag 1000
 
 MaterialManager API Reference
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: meshmaker.components.Material.materialBase.MaterialManager
 
 Material Creation
------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Creating materials is one of the primary functions of the MaterialManager. There are two recommended approaches for material creation.
 When creating a material, you need to specify several key parameters:
@@ -90,24 +90,23 @@ When creating a material, you need to specify several key parameters:
 1. **material_category**: Defines the broad category of the material. Common categories include:
    - ``nDMaterial``: For multi-dimensional materials (1D, 2D, or 3D)
    - ``uniaxialMaterial``: For materials defined along a single axis
-   - ``section``: For composite sections made up of different materials
+
 
 2. **material_type**: Specifies the specific material model within the category. For example:
    - For ``nDMaterial``: ElasticIsotropic, J2Plasticity, etc.
    - For ``uniaxialMaterial``: Elastic, Steel01, Concrete01, etc.
 
-3. **user_name**: A unique identifier you assign to the material for later retrieval
+3. **user_name**: A unique identifier you assign to the material for later retrieval or working with it. This name must be unique across all materials in the model.
 
 4. **Material-specific parameters**: Each material type requires specific parameters (like E, nu, rho for ElasticIsotropic materials)
 
 The MaterialManager handles all the details of creating the appropriate material object based on these parameters, ensuring type safety and parameter validation.
 
 Available Material Types
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. toctree::
    :maxdepth: 2
-   :caption: Material Categories
 
    materials/nd/index
    materials/uniaxial/index

@@ -220,6 +220,6 @@ Next Steps
 Now that you've created your first model with MeshMaker, you can:
 
 * Explore more complex geometries
-* Try different materials (see :ref:`elastic-isotropic-material` for more options)
+* Try different materials 
 * Learn about advanced meshing techniques
 * Check out the :doc:`examples` for more inspiration

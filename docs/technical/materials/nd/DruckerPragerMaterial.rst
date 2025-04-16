@@ -1,10 +1,10 @@
 DruckerPragerMaterial
----------------------
+""""""""""""""""""""""""""""
 
 A multi-dimensional material model for Drucker-Prager plasticity defined by:
 
 Parameters:
-~~~~~~~~~~~
+
 .. list-table:: 
     :header-rows: 1
 

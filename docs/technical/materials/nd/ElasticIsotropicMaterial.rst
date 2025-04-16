@@ -1,10 +1,10 @@
 ElasticIsotropicMaterial
-------------------------
+""""""""""""""""""""""""""""
 
 A 3D isotropic elastic material defined by:
 
 Parameters:
-~~~~~~~~~~~
+
 .. list-table:: 
     :header-rows: 1
 
