@@ -236,6 +236,7 @@ class Analysis(AnalysisComponent):
         elif self.analysis_type in ["Transient", "VariableTransient"]:
             if self.final_time is not None:
                 commands.append("while {[getTime] < %f} {" % self.final_time)
+                commands.append('\tif {$pid == 0} {puts "Time : [getTime]"}\n')
                 commands.append(f"\tset Ok [analyze 1 {self.dt}]\n")
                 commands.append("}")
             else:
