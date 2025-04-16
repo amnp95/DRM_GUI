@@ -1,40 +1,39 @@
-.. _elastic-isotropic-material:
-
 ElasticIsotropicMaterial
-========================
+------------------------
 
 A 3D isotropic elastic material defined by:
 
-- **E**: Young's modulus (required)
-- **nu**: Poisson's ratio (required)
-- **rho**: Mass density (default = 0.0)
+Parameters:
+~~~~~~~~~~~
+.. list-table:: 
+    :header-rows: 1
 
-.. admonition:: Usage Examples
-   :class: note
+    * - Parameter
+      - Description
+      - Type
+    * - **E**
+      - Young's modulus (required)
+      - float
+    * - **nu**
+      - Poisson's ratio (required)
+      - float
+    * - **rho**
+      - Mass density (default = 0.0)
+      - float
 
-   **Direct Creation:**
 
-   .. code-block:: python
+.. admonition:: Example
+    :class: note
 
-      # Create material directly
-      elastic_material = ElasticIsotropicMaterial(
-          user_name="Concrete",
-          E=30e6,  # Young's modulus (Pa)
-          nu=0.2,  # Poisson's ratio
-          rho=2400  # Mass density (kg/m³)
-      )
+    .. code-block:: python
 
-   **Via MeshMaker:**
+        # Direct creation
+        from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial
+        elastic_material = ElasticIsotropicMaterial("Concrete", E=30e6, nu=0.2, rho=2400)
 
-   .. code-block:: python
+        or 
 
-      from meshmaker.components.MeshMaker import MeshMaker
-      
-      mk = MeshMaker()
-      mk.material.create_material(
-          material_category="nDMaterial",
-          material_type="ElasticIsotropic", 
-          user_name="Concrete", 
-          E=30e6, nu=0.2, rho=2400
-      )
-
+        # Via MeshMaker
+        from meshmaker.components.MeshMaker import MeshMaker
+        mk = MeshMaker()
+        mk.material.create_material("nDMaterial", "ElasticIsotropic", "Concrete", E=30e6, nu=0.2, rho=2400)

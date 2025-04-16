@@ -84,59 +84,7 @@ MaterialManager API Reference
 Material Creation
 -----------------
 
-Creating materials is one of the primary functions of the MaterialManager. There are two recommended approaches for material creation:
-
-Approach 1: Using MeshMaker (Recommended)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The recommended way to create materials is through the ``MeshMaker`` class. When you instantiate the ``MeshMaker`` class, it automatically creates a reference to the ``MaterialManager`` that you can access through the ``.material`` property:
-
-.. code-block:: python
-
-   from meshmaker.components.MeshMaker import MeshMaker 
-   
-   # Create a MeshMaker instance
-   mk = MeshMaker()
-   
-   # Access the MaterialManager through the .material property
-   # No need to create or get a MaterialManager instance separately
-   mk.material.create_material(
-       material_category="nDMaterial", 
-       material_type="ElasticIsotropic", 
-       user_name="Dense Ottawa", 
-       E=2.0e7, 
-       nu=0.3, 
-       rho=2.02
-   )
-   
-   # Access the material later using the same .material reference
-   material = mk.material.get_material("Dense Ottawa")
-
-Approach 2: Direct MaterialManager Usage
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can also work directly with the ``MaterialManager`` singleton:
-
-.. code-block:: python
-
-   from meshmaker.components.Material.materialBase import MaterialManager
-   
-   # Create a MaterialManager instance (or get the singleton instance)
-   material_manager = MaterialManager.get_instance()
-
-   # Create a material
-   material_manager.create_material(
-       material_category="nDMaterial", 
-       material_type="ElasticIsotropic",
-       user_name="Dense Ottawa", 
-       E=2.0e7, 
-       nu=0.3, 
-       rho=2.02
-   )
-
-Material Parameters
-~~~~~~~~~~~~~~~~~~~
-
+Creating materials is one of the primary functions of the MaterialManager. There are two recommended approaches for material creation.
 When creating a material, you need to specify several key parameters:
 
 1. **material_category**: Defines the broad category of the material. Common categories include:
@@ -157,23 +105,16 @@ The MaterialManager handles all the details of creating the appropriate material
 Available Material Types
 ------------------------
 
-nDMaterial 
-~~~~~~~~~~
-materials/nd/elastic_isotropic
-materials/nd/j2_cyclic_bounding_surface
-materials/nd/drucker_prager
+.. toctree::
+   :maxdepth: 2
+   :caption: Material Categories
 
+   materials/nd/index
+   materials/uniaxial/index
 
-uniaxialMaterial
-~~~~~~~~~~~~~~~~
+The material types available in MeshMaker are organized by category. Follow the links above to explore the various material models available in each category.
 
+* **nDMaterial**: Multi-dimensional materials for 2D and 3D analysis
+* **uniaxialMaterial**: One-dimensional materials for truss, beam, and spring elements
 
-
-
-
-
-
-
-
-
-
+Each material type has its own documentation page with detailed parameter descriptions and usage examples.

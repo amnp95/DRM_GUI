@@ -7,7 +7,7 @@ Welcome to MeshMaker Documentation
 ===================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 6
    :caption: Introduction:
 
    introduction/getting_started
@@ -16,13 +16,13 @@ Welcome to MeshMaker Documentation
    introduction/examples
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
    :caption: Technical Guide:
 
    technical/index
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 6
    :caption: Developer Documentation:
    
    developer/index
