@@ -8,11 +8,24 @@ Welcome to MeshMaker Documentation
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Introduction:
 
-   introduction
-   usage
-   api
+   introduction/getting_started
+   introduction/installation
+   introduction/quick_start
+   introduction/examples
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Technical Guide:
+
+   technical/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Developer Documentation:
+   
+   developer/index
 
 Indices and tables
 ==================
