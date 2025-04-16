@@ -486,26 +486,89 @@ class NodeRegion(RegionBase):
                              valid components are node and nodeRange""")
 
 class RegionManager:
+    """
+    A centralized manager for all region instances in MeshMaker.
+    
+    The RegionManager implements the Singleton pattern to ensure a single, consistent
+    point of region management across the entire application. It provides methods for
+    creating, retrieving, and managing region objects used to define specific parts
+    of structural models for analysis and damping assignments.
+    
+    All region objects created through this manager are automatically tracked and tagged,
+    simplifying the process of defining and managing model regions. A special GlobalRegion
+    with tag 0 is automatically created when the RegionManager is initialized.
+    
+    """
     _instance = None
     def __new__(cls):
+        """
+        Create a new RegionManager instance or return the existing one if already created.
+        
+        Returns:
+            RegionManager: The singleton instance of the RegionManager
+        """
         if cls._instance is None:
             cls._instance = super(RegionManager, cls).__new__(cls)
             cls._instance._initialized = False
         return cls._instance
 
     def __init__(self):
+        """
+        Initialize the RegionManager and create the GlobalRegion.
+        
+        This method ensures that the global region (tag 0) is automatically created
+        when the RegionManager is initialized. The initialization only happens once
+        due to the singleton pattern.
+        """
         if not self._initialized:
             self._initialized = True
             initialize_region_base()
 
     @property
     def regions(self):
+        """
+        Get all regions as a dictionary mapping tags to region instances.
+        
+        Returns:
+            Dict[int, RegionBase]: A dictionary mapping tags to region instances
+        """
         return RegionBase.get_all_regions()
 
     def get_region(self, tag):
+        """
+        Get a region by its tag.
+        
+        Args:
+            tag (int): The unique identifier of the region instance
+            
+        Returns:
+            RegionBase: The region instance with the specified tag, or None if not found
+        """
         return RegionBase.get_region(tag)
     
     def create_region(self, regionType: str, damping=None, **kwargs):
+        """
+        Create a new region instance of the specified type.
+        
+        This method creates and returns a new region object based on the provided type
+        and parameters. The region is automatically registered and tracked.
+        
+        Args:
+            regionType (str): The type of region to create. Available types include:
+                'ElementRegion': A region defined by a set of elements or element range
+                'NodeRegion': A region defined by a set of nodes or node range
+                'GlobalRegion': The global region representing the entire model
+            damping: Optional damping instance to associate with the region
+            **kwargs: Specific parameters for the region type being created
+                (e.g., elements, element_range for ElementRegion,
+                nodes, node_range for NodeRegion)
+        
+        Returns:
+            RegionBase: A new instance of the requested region type
+            
+        Raises:
+            ValueError: If the region type is unknown or if required parameters are missing or invalid
+        """
         if regionType.lower() == "elementregion":
             return ElementRegion(damping=damping, **kwargs)
         elif regionType.lower() == "noderegion":
@@ -517,13 +580,38 @@ class RegionManager:
                              valid region types are ElementRegion, NodeRegion, GlobalRegion""")
 
     def remove_region(self, tag):
+        """
+        Remove a region by its tag.
+        
+        This method removes the specified region instance and automatically
+        updates the tags of the remaining region instances to maintain sequential numbering.
+        The GlobalRegion (tag 0) cannot be removed.
+        
+        Args:
+            tag (int): The unique identifier of the region instance to remove
+            
+        Raises:
+            ValueError: If attempting to remove the GlobalRegion (tag 0)
+        """
         RegionBase.remove_region(tag)
 
     def clear_regions(self):
+        """
+        Remove all regions and reinitialize the GlobalRegion.
+        
+        This method clears all region instances, including the GlobalRegion,
+        and then recreates the GlobalRegion with tag 0.
+        """
         RegionBase.clear()
         initialize_region_base()
 
     def print_regions(self):
+        """
+        Print information about all regions.
+        
+        This method prints detailed information about all region instances
+        including their tags, types, elements/nodes, and damping assignments.
+        """
         RegionBase.print_regions()
 
 if __name__ == "__main__":
