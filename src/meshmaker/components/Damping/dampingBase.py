@@ -653,39 +653,132 @@ class SecantStiffnessProportional (DampingBase):
 
 
 class DampingManager:
+    """
+    A centralized manager for all damping instances in MeshMaker.
+    
+    The DampingManager implements the Singleton pattern to ensure a single, consistent
+    point of damping management across the entire application. It provides methods for
+    creating, retrieving, and managing damping objects used in dynamic structural analysis.
+    
+    All damping objects created through this manager are automatically tracked and tagged,
+    simplifying the process of creating models with appropriate energy dissipation mechanisms.
+    
+    Usage:
+        # Direct access
+        from meshmaker.components.Damping import DampingManager
+        damping_manager = DampingManager()
+        
+        # Through MeshMaker (recommended)
+        from meshmaker.components.MeshMaker import MeshMaker
+        mk = MeshMaker()
+        damping_manager = mk.damping
+        
+        # Creating a damping instance
+        rayleigh_damping = damping_manager.create_damping('rayleigh', alphaM=0.05, betaK=0.001)
+    """
     _instance = None
     
     def __new__(cls):
+        """
+        Create a new DampingManager instance or return the existing one if already created.
+        
+        Returns:
+            DampingManager: The singleton instance of the DampingManager
+        """
         if cls._instance is None:
             cls._instance = super(DampingManager, cls).__new__(cls)
         return cls._instance
 
     @classmethod
     def get_instance(cls):
+        """
+        Get the singleton instance of the DampingManager.
+        
+        This method ensures that only one instance of DampingManager exists throughout
+        the application, following the Singleton design pattern.
+        
+        Returns:
+            DampingManager: The singleton instance of the DampingManager
+        """
         return cls._instance
 
     def create_damping(self, damping_type: str, **kwargs) -> DampingBase:
-        """Create a new damping instance"""
+        """
+        Create a new damping instance of the specified type.
+        
+        This method delegates the damping creation to the DampingRegistry, which
+        maintains a dictionary of available damping types and their corresponding classes.
+        
+        Args:
+            damping_type (str): The type of damping to create. Available types include:
+                - 'rayleigh': Classical Rayleigh damping
+                - 'modal': Modal damping for specific modes
+                - 'frequency rayleigh': Rayleigh damping specified by target frequencies
+                - 'uniform': Uniform damping across a frequency range
+                - 'secant stiffness proportional': Damping proportional to secant stiffness
+            **kwargs: Specific parameters for the damping type being created
+                      (see documentation for each damping type for details)
+        
+        Returns:
+            DampingBase: A new instance of the requested damping type
+            
+        Raises:
+            ValueError: If the damping type is unknown or if required parameters are missing or invalid
+        """
         return DampingRegistry.create_damping(damping_type, **kwargs)
 
     def get_damping(self, tag: int) -> DampingBase:
-        """Get damping by tag"""
+        """
+        Get a damping instance by its tag.
+        
+        Args:
+            tag (int): The unique identifier of the damping instance
+            
+        Returns:
+            DampingBase: The damping instance with the specified tag
+            
+        Raises:
+            KeyError: If no damping with the given tag exists
+        """
         return DampingBase.get_damping(tag)
 
     def remove_damping(self, tag: int) -> None:
-        """Remove damping by tag"""
+        """
+        Remove a damping instance by its tag.
+        
+        This method removes the specified damping instance and automatically
+        updates the tags of the remaining damping instances to maintain sequential numbering.
+        
+        Args:
+            tag (int): The unique identifier of the damping instance to remove
+        """
         DampingBase.remove_damping(tag)
 
     def get_all_dampings(self) -> Dict[int, DampingBase]:
-        """Get all dampings"""
+        """
+        Get all damping instances currently managed by this DampingManager.
+        
+        Returns:
+            Dict[int, DampingBase]: A dictionary mapping tags to damping instances
+        """
         return DampingBase._dampings
 
     def clear_all_dampings(self) -> None:
-        """Remove all dampings"""
-        self._dampings.clear()
+        """
+        Remove all damping instances managed by this DampingManager.
+        
+        This method clears all damping instances from the manager, effectively
+        resetting the damping system.
+        """
+        DampingBase._dampings.clear()
 
     def get_available_types(self) -> List[str]:
-        """Get list of available damping types"""
+        """
+        Get a list of available damping types that can be created.
+        
+        Returns:
+            List[str]: A list of damping type names that can be used with create_damping()
+        """
         return DampingRegistry.get_available_types()
     
 
