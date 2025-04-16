@@ -1,13 +1,13 @@
 Examples and Tutorials
-====================
+======================
 
 This section provides practical examples and tutorials to help you understand how to use MeshMaker for various applications.
 
 Basic Examples
-------------
+--------------
 
 Simple Beam Analysis
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 Learn how to create and analyze a simple beam model:
 
@@ -71,7 +71,7 @@ Learn how to create and analyze a simple beam model:
    mk.visualize.plot_mesh()
 
 2D Plane Stress Analysis
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create a 2D plane stress model:
 
@@ -142,10 +142,10 @@ Create a 2D plane stress model:
    mk.visualize.plot_mesh()
 
 Advanced Examples
---------------
+-----------------
 
 Seismic Analysis Example
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 This example demonstrates how to perform a basic seismic analysis with MeshMaker:
 
@@ -191,7 +191,7 @@ This example demonstrates how to perform a basic seismic analysis with MeshMaker
    mk.export.to_opensees("seismic_analysis.tcl")
 
 Soil-Structure Interaction Model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Example of modeling soil-structure interaction:
 
@@ -201,20 +201,20 @@ Example of modeling soil-structure interaction:
    # ... (detailed code would be provided here)
 
 Real-World Project Examples
-------------------------
+---------------------------
 
 Building Foundation Design
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Example of using MeshMaker for foundation design.
 
 Bridge Analysis
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 Example of analyzing a bridge structure with MeshMaker.
 
 Tutorial Videos
--------------
+---------------
 
 For visual learners, we provide a series of tutorial videos:
 
@@ -224,7 +224,7 @@ For visual learners, we provide a series of tutorial videos:
 4. **Analysis and Visualization**: Running analyses and visualizing results
 
 Example Files
------------
+-------------
 
 You can download complete example files from our GitHub repository:
 

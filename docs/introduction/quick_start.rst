@@ -1,10 +1,10 @@
 Quick Start Guide
-================
+=================
 
 This quick start guide will help you create your first mesh model using MeshMaker. Follow these simple steps to get started.
 
 Setting Up Your Environment
---------------------------
+---------------------------
 
 Before you begin, make sure you have:
 
@@ -18,12 +18,12 @@ Before you begin, make sure you have:
    import numpy as np
 
 Creating Your First Model
-------------------------
+-------------------------
 
 Let's create a simple 2D mesh model:
 
 Step 1: Initialize MeshMaker
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -31,7 +31,7 @@ Step 1: Initialize MeshMaker
    mk = MeshMaker()
 
 Step 2: Define Materials
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -46,7 +46,7 @@ Step 2: Define Materials
    )
 
 Step 3: Create Geometry
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -66,7 +66,7 @@ Step 3: Create Geometry
    surface = Surface([l1, l2, l3, l4])
 
 Step 4: Create a Region
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -80,7 +80,7 @@ Step 4: Create a Region
    )
 
 Step 5: Apply Boundary Conditions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -93,7 +93,7 @@ Step 5: Apply Boundary Conditions
    )
 
 Step 6: Apply Loads
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -107,7 +107,7 @@ Step 6: Apply Loads
    )
 
 Step 7: Generate the Mesh
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -115,7 +115,7 @@ Step 7: Generate the Mesh
    mk.generate_mesh()
 
 Step 8: Visualize the Model
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -126,7 +126,7 @@ Step 8: Visualize the Model
    )
 
 Step 9: Export the Model
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -137,7 +137,7 @@ Step 9: Export the Model
    )
 
 Complete Example
---------------
+----------------
 
 Here's the complete code for this quick start example:
 
@@ -215,7 +215,7 @@ Here's the complete code for this quick start example:
    )
 
 Next Steps
----------
+----------
 
 Now that you've created your first model with MeshMaker, you can:
 

@@ -6,7 +6,7 @@ J2CyclicBoundingSurfaceMaterial
 A material model that implements the J2 Cyclic Bounding Surface plasticity model, useful for modeling cyclical response in soil and other materials with complex hardening behavior.
 
 Parameters
----------
+----------
 
 - **G**: Shear modulus (required)
 - **K**: Bulk modulus (required)
@@ -19,7 +19,7 @@ Parameters
 - **beta**: Integration variable (0 = explicit, 1 = implicit, 0.5 = midpoint rule) (default = 0.5)
 
 Material State Control
----------------------
+----------------------
 
 This material supports switching between elastic and plastic states using the ``updateMaterialStage`` method:
 

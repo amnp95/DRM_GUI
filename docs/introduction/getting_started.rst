@@ -1,13 +1,13 @@
 Getting Started with MeshMaker
-===========================
+==============================
 
 Introduction
------------
+------------
 
 MeshMaker is a powerful tool designed for creating and managing mesh models for structural analysis. This section provides an overview of MeshMaker's capabilities and how to use it effectively in your projects.
 
 What is MeshMaker?
------------------
+------------------
 
 MeshMaker is a Python library that simplifies the process of creating, modifying, and analyzing mesh models for structural engineering applications. It provides a high-level interface for working with various mesh components including:
 
@@ -19,7 +19,7 @@ MeshMaker is a Python library that simplifies the process of creating, modifying
 * Loads
 
 Why Choose MeshMaker?
--------------------
+---------------------
 
 * **Simplified Workflow**: Create complex mesh models with an intuitive API
 * **OpenSees Integration**: Seamless connection to OpenSees for advanced analysis
@@ -28,7 +28,7 @@ Why Choose MeshMaker?
 * **Python-Based**: Leverage the power and flexibility of Python for your modeling needs
 
 Who Should Use MeshMaker?
------------------------
+-------------------------
 
 MeshMaker is designed for:
 

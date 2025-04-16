@@ -1,5 +1,5 @@
 Technical Guide
-==============
+===============
 
 This section provides detailed technical documentation for all components of the MeshMaker software.
 

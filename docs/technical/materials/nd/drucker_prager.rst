@@ -6,10 +6,10 @@ DruckerPragerMaterial
 A material model implementing the Drucker-Prager plasticity model, which is widely used for modeling pressure-dependent materials such as soils, rock, and concrete.
 
 Parameters
----------
+----------
 
 Required Parameters:
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 - **k**: Bulk modulus (required)
 - **G**: Shear modulus (required)
@@ -17,7 +17,7 @@ Required Parameters:
 - **rho**: Frictional strength parameter (required)
 
 Optional Parameters:
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 - **rhoBar**: Controls evolution of plastic volume change: 0 ≤ rhoBar ≤ rho (default = rho)
 - **Kinf**: Nonlinear isotropic strain hardening parameter: Kinf ≥ 0 (default = 0.0)

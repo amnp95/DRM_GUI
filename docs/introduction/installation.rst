@@ -1,8 +1,8 @@
 Installation Guide
-=================
+==================
 
 System Requirements
-------------------
+-------------------
 
 Before installing MeshMaker, ensure your system meets the following requirements:
 
@@ -12,12 +12,12 @@ Before installing MeshMaker, ensure your system meets the following requirements
 * **Dependencies**: NumPy, SciPy, Matplotlib, PySide6
 
 Installation Methods
-------------------
+--------------------
 
 There are several ways to install MeshMaker:
 
 Using pip
-~~~~~~~~
+~~~~~~~~~
 
 The easiest way to install MeshMaker is using pip:
 
@@ -26,7 +26,7 @@ The easiest way to install MeshMaker is using pip:
    pip install meshmaker
 
 From Source
-~~~~~~~~~~
+~~~~~~~~~~~
 
 To install from source:
 
@@ -44,7 +44,7 @@ To install from source:
       pip install -e .
 
 Using Conda
-~~~~~~~~~~
+~~~~~~~~~~~
 
 MeshMaker can also be installed using conda:
 
@@ -54,7 +54,7 @@ MeshMaker can also be installed using conda:
    conda activate meshmaker
 
 Verifying Installation
---------------------
+----------------------
 
 To verify that MeshMaker has been installed correctly, run:
 
@@ -66,7 +66,7 @@ To verify that MeshMaker has been installed correctly, run:
 This should display the version number of your MeshMaker installation.
 
 Dependencies
-----------
+------------
 
 MeshMaker depends on several Python packages:
 
@@ -77,10 +77,10 @@ MeshMaker depends on several Python packages:
 * **OpenSees**: For structural analysis (optional)
 
 Troubleshooting
--------------
+---------------
 
 Common Installation Issues
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Missing Dependencies**:
    
@@ -109,7 +109,7 @@ Common Installation Issues
       pip install --user meshmaker
 
 Getting Help
-~~~~~~~~~~
+~~~~~~~~~~~~
 
 If you continue to experience installation issues, please:
 
