@@ -7,6 +7,7 @@ This section provides detailed technical documentation for all components of the
    :maxdepth: 1
 
    materials
+   elements
 
 
 Each section covers detailed information about specific components of the MeshMaker system, including:

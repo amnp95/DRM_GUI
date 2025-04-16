@@ -4,6 +4,7 @@ ElasticUniaxialMaterial
 A uniaxial elastic material with optional damping and different moduli in tension and compression.
 
 Parameters:
+
 .. list-table:: 
     :header-rows: 1
 

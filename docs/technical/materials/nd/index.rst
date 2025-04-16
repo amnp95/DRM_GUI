@@ -1,5 +1,5 @@
 nDMaterial Types
-================
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This section documents the multi-dimensional material models available in MeshMaker.
 nDMaterial models are used for elements that require a multi-dimensional constitutive relationship, such as continuum elements, plate/shell elements, and some specialized beam formulations.
