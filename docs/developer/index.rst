@@ -6,6 +6,3 @@ This section contains documentation for developers who want to contribute to or 
 .. toctree::
    :maxdepth: 2
    
-   architecture
-   contributing
-   testing
