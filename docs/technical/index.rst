@@ -8,6 +8,7 @@ This section provides detailed technical documentation for all components of the
 
    materials
    elements
+   meshparts
 
 
 Each section covers detailed information about specific components of the MeshMaker system, including:
