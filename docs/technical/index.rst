@@ -12,6 +12,7 @@ This section provides detailed technical documentation for all components of the
    region
    meshparts
    assembler
+   constraint
 
 
 Each section covers detailed information about specific components of the MeshMaker system, including:
@@ -21,6 +22,7 @@ Each section covers detailed information about specific components of the MeshMa
 * **Damping**: Damping models, properties, and configuration
 * **Regions**: Region types, configurations, and properties
 * **Mesh Parts**: Mesh generation and manipulation utilities
-
+* **Assembler**: Mesh assembly and partitioning functionality
+* **Constraints**: Boundary conditions and constraints for model nodes
 
 You can navigate to each section for detailed documentation on these components.
