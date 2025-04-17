@@ -13,16 +13,8 @@ This section provides detailed technical documentation for all components of the
    meshparts
    assembler
    constraint
+   timeseries
    pattern
-
-   assembler/index
-   constraint/index
-   damping/index
-   elements/index
-   materials/index
-   meshparts/index
-   pattern/index
-   region/index
 
 
 Each section covers detailed information about specific components of the MeshMaker system, including:
@@ -34,5 +26,6 @@ Each section covers detailed information about specific components of the MeshMa
 * **Mesh Parts**: Mesh generation and manipulation utilities
 * **Assembler**: Mesh assembly and partitioning functionality
 * **Constraints**: Boundary conditions and constraints for model nodes
+* **Patterns**: Pattern definitions and their application in mesh generation
 
 You can navigate to each section for detailed documentation on these components.
