@@ -13,6 +13,7 @@ This section provides detailed technical documentation for all components of the
    meshparts
    assembler
    constraint
+   pattern
 
 
 Each section covers detailed information about specific components of the MeshMaker system, including:
