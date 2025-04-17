@@ -301,20 +301,17 @@ class FixMacroZ_min(SPConstraint):
 
 class SPConstraintManager:
     """
-    Singleton class to manage SP constraints.
-    This class provides methods to create and manage different types of constraints
-    such as fix, fixX, fixY, and fixZ. It ensures that only one instance
-    of the class exists and provides a global point of access to it.
+    Singleton manager class for creating and managing single-point constraints in MeshMaker.
     
-    Methods:
-        fix(node_tag, dofs): Create a fix constraint for a specific node
-        fixX(xCoordinate, dofs, tol): Create a fixX constraint for nodes at specific X coordinate
-        fixY(yCoordinate, dofs, tol): Create a fixY constraint for nodes at specific Y coordinate
-        fixZ(zCoordinate, dofs, tol): Create a fixZ constraint for nodes at specific Z coordinate
-        create_constraint(constraint_type, *args): Create a constraint based on specified type
-        get_constraint(tag): Get a constraint by its tag
-        remove_constraint(tag): Remove a constraint by its tag
-        to_tcl(): Generate TCL commands for all constraints
+    The SPConstraintManager implements the Singleton pattern to ensure a single, consistent
+    point of constraint management across the entire application. It provides a comprehensive
+    set of methods for creating and applying different types of constraints to nodes
+    in the assembled mesh.
+    
+    Single-point constraints (SP Constraints) are constraints that define the behavior
+    of a single degree-of-freedom at a node or group of nodes. These constraints can
+    fix a DOF to a specific value (typically 0.0), or apply prescribed displacements,
+    velocities, or accelerations.
     """   
     _instance = None
     _initialized = False

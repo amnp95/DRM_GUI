@@ -204,13 +204,14 @@ class mpConstraintManager:
         Parameters:
             dofs (List[int]): A list of degrees of freedom to be constrained.
             direction (int): The direction of the perpendicular plane that will be used to create the laminar boundary.
-            tol (float): The tolerance value for the laminar  boundary condition.
+            tol (float): The tolerance value for the laminar boundary condition.
 
-        Note : 
+        Note:
             The direction must be 1, 2, or 3.
-            This function will if the mesh is 3D and the boundaries will be box shape or cylinder shape.
+            This function will check if the mesh is 3D, and the boundaries will be box-shaped or cylinder-shaped.
+
         Returns:
-        
+            None
         """
         assembler = Assembler()
         # check if the AssembeledMesh is not None
@@ -285,15 +286,14 @@ class mpConstraintManager:
         Create a constraint based on the specified type.
 
         Parameters:
-        constraint_type (str): The type of constraint to create. 
-                       Supported types are "equalDOF", "rigidLink", and "rigidDiaphragm".
-        *args: Additional arguments required for creating the specific type of constraint.
+            constraint_type (str): The type of constraint to create. Supported types are "equalDOF", "rigidLink", and "rigidDiaphragm".
+            *args: Additional arguments required for creating the specific type of constraint.
 
         Returns:
-        mpConstraint: An instance of the created constraint.
+            mpConstraint: An instance of the created constraint.
 
         Raises:
-        ValueError: If an unknown constraint type is provided.
+            ValueError: If an unknown constraint type is provided.
         """
         if constraint_type == "equalDOF":
             return self.create_equal_dof(*args)
