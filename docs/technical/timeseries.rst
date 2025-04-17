@@ -138,7 +138,7 @@ Creating time series is one of the primary functions of the TimeSeriesManager. W
 The TimeSeriesManager handles all the details of creating the appropriate time series object based on these parameters, ensuring type safety and parameter validation.
 
 Usage Example
--------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
