@@ -38,4 +38,4 @@ Usage Example
     mk = MeshMaker()
     
     # Create a Fixed Num Iter convergence test
-    mk.analysis.test.create("FixedNumIter", numIter=5) 
+    mk.analysis.test.create_test("FixedNumIter", numIter=5) 

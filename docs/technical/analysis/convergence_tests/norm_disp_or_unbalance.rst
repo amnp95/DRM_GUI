@@ -53,4 +53,4 @@ Usage Example
     mk = MeshMaker()
     
     # Create a Norm Disp Or Unbalance convergence test
-    mk.analysis.test.create("NormDispOrUnbalance", tolIncr=1.0e-6, tolR=1.0e-6, maxIter=10, printFlag=0, normType=2, maxIncr=-1) 
+    mk.analysis.test.create_test("NormDispOrUnbalance", tolIncr=1.0e-6, tolR=1.0e-6, maxIter=10, printFlag=0, normType=2, maxIncr=-1) 

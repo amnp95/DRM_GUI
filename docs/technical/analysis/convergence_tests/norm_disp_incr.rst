@@ -47,4 +47,4 @@ Usage Example
     mk = MeshMaker()
     
     # Create a Norm Disp Incr convergence test
-    mk.analysis.test.create("NormDispIncr", tol=1.0e-6, maxIter=10, printFlag=0, normType=2) 
+    mk.analysis.test.create_test("NormDispIncr", tol=1.0e-6, maxIter=10, printFlag=0, normType=2) 

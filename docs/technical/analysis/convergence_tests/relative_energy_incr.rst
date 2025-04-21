@@ -44,4 +44,4 @@ Usage Example
     mk = MeshMaker()
     
     # Create a Relative Energy Incr convergence test
-    mk.analysis.test.create("RelativeEnergyIncr", tol=1.0e-6, maxIter=10, printFlag=0) 
+    mk.analysis.test.create_test("RelativeEnergyIncr", tol=1.0e-6, maxIter=10, printFlag=0) 
