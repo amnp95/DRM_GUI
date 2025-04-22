@@ -16,6 +16,7 @@ This section provides detailed technical documentation for all components of the
    timeseries
    pattern
    analysis
+   process
 
 
 Each section covers detailed information about specific components of the MeshMaker system, including:
@@ -29,5 +30,6 @@ Each section covers detailed information about specific components of the MeshMa
 * **Constraints**: Boundary conditions and constraints for model nodes
 * **Patterns**: Pattern definitions and their application in mesh generation
 * **Analysis**: Analysis types, components, and configuration
+* **Process**: Management and sequencing of analysis steps
 
 You can navigate to each section for detailed documentation on these components.
