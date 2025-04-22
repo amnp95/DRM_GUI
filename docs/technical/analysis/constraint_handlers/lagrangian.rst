@@ -1,5 +1,5 @@
 Lagrangian constraint handler
-==========================
+=============================
 
 The Lagrangian constraint handler enforces constraints exactly by adding Lagrange multipliers as additional unknowns to the system.
 

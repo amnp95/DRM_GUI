@@ -1,5 +1,5 @@
 Penalty constraint handler
-========================
+==========================
 
 The Penalty constraint handler enforces constraints approximately by adding large stiffness terms to the system matrix for constrained degrees of freedom.
 

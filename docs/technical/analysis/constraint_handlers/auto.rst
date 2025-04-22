@@ -1,5 +1,5 @@
 Auto constraint handler
-====================
+=======================
 
 The Auto constraint handler automatically selects the most appropriate constraint handling method based on the problem characteristics and constraints present in the model.
 

@@ -1,5 +1,5 @@
 Distance constraint handler
-========================
+===========================
 
 The Distance constraint handler enforces distance constraints between pairs of nodes, maintaining fixed distances during deformation.
 

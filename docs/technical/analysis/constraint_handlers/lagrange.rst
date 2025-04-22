@@ -1,5 +1,5 @@
 Lagrange constraint handler
-========================
+===========================
 
 The Lagrange constraint handler enforces constraints exactly by introducing additional Lagrange multiplier degrees of freedom to the system.
 
