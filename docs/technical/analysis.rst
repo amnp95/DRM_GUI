@@ -184,7 +184,10 @@ Available Analysis Components
    analysis/systems/index
    analysis/algorithms/index
    analysis/integrators/index
+
+.. toctree::
    :maxdepth: 3
+
    analysis/convergence_tests/index
 
 
