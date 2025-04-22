@@ -137,7 +137,7 @@ Example of creating a DRM analysis:
    tcl_script = mk.process.to_tcl()
 
 Default Analysis Process Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When you call ``createDefaultProcess``, the DRM component sets up a complete analysis process with multiple steps:
 
@@ -208,7 +208,7 @@ For large models, the DRM component supports partitioning of the absorbing layer
 Partitioning helps distribute the computational load across multiple processors for more efficient analysis of large models.
 
 Technical Details of PML Implementation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The PML (Perfectly Matched Layer) implementation includes several sophisticated features:
 
