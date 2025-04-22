@@ -1,5 +1,5 @@
 Secant Newton Algorithm
-====================
+=======================
 
 The Secant Newton algorithm is a quasi-Newton method that uses the two-term update formula to approximate the inverse of the Jacobian matrix. It provides an alternative to the standard Newton method with potentially better performance for certain problem types.
 
@@ -13,7 +13,7 @@ The Secant Newton algorithm:
 - Can control the tangent matrix used for iterations and increments
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -33,7 +33,7 @@ Parameters
      - Maximum dimension for the Secant approximation (default: 3)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

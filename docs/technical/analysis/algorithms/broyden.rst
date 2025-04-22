@@ -1,5 +1,5 @@
 Broyden Algorithm
-===============
+=================
 
 The Broyden algorithm is a quasi-Newton method that builds an approximation to the inverse Jacobian matrix. It is a simpler alternative to the BFGS algorithm, using less memory but potentially with slower convergence.
 
@@ -13,7 +13,7 @@ The Broyden algorithm:
 - Uses a specified number of vectors to store the Jacobian approximation
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -27,7 +27,7 @@ Parameters
      - Number of vectors to store the Jacobian approximation
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

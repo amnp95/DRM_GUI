@@ -1,5 +1,5 @@
 Krylov Newton Algorithm
-=====================
+=======================
 
 The Krylov Newton algorithm is a memory-efficient variation of the Newton-Raphson method that uses a Krylov subspace to approximate the solution. It is particularly useful for large-scale problems where memory usage is a concern.
 
@@ -13,7 +13,7 @@ The Krylov Newton algorithm:
 - Can control the tangent matrix used for iterations and increments
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -33,7 +33,7 @@ Parameters
      - Maximum dimension of the Krylov subspace (default: 3)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

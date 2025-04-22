@@ -1,5 +1,5 @@
 Linear Algorithm
-===============
+================
 
 The Linear algorithm is a simple solution algorithm that performs just one iteration to solve the system of equations. It is suitable for linear problems or as a single-iteration approach in nonlinear problems.
 
@@ -13,7 +13,7 @@ The Linear algorithm:
 - Does not iterate to convergence, making it suitable only for linear or linearized problems
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -30,7 +30,7 @@ Parameters
      - If True, only sets up and factors the matrix once (default: False)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

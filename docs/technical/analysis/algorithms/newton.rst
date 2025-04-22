@@ -1,5 +1,5 @@
 Newton Algorithm
-===============
+================
 
 The Newton algorithm implements the Newton-Raphson method to solve the nonlinear residual equation. It is one of the most commonly used algorithms in structural analysis due to its quadratic convergence rate when close to the solution.
 
@@ -13,7 +13,7 @@ The Newton algorithm:
 - Can optionally use initial stiffness or switch between initial and current stiffness
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -30,7 +30,7 @@ Parameters
      - If True, uses initial stiffness on first step and then current stiffness (default: False)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

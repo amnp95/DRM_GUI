@@ -1,5 +1,5 @@
 Newton Line Search Algorithm
-=========================
+============================
 
 The Newton Line Search algorithm enhances the Newton-Raphson method by introducing a line search to determine the optimal step size. This can improve convergence when the standard Newton method struggles.
 
@@ -14,7 +14,7 @@ The Newton Line Search algorithm:
 - Offers multiple line search strategies to adapt to different problem characteristics
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -40,7 +40,7 @@ Parameters
      - Maximum η value (default: 10.0)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

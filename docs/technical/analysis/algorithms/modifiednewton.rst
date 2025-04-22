@@ -1,5 +1,5 @@
 Modified Newton Algorithm
-=======================
+=========================
 
 The Modified Newton algorithm is a variation of the Newton-Raphson method that uses the same tangent stiffness matrix for multiple iterations. This can be more efficient for problems where the tangent stiffness matrix is expensive to compute.
 
@@ -13,7 +13,7 @@ The Modified Newton algorithm:
 - Can optionally use initial stiffness or factor the matrix only once
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -30,7 +30,7 @@ Parameters
      - If True, factors the matrix only once and reuses it (default: False)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

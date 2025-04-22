@@ -1,5 +1,5 @@
 BFGS Algorithm
-============
+==============
 
 The BFGS (Broyden-Fletcher-Goldfarb-Shanno) algorithm is a quasi-Newton method that builds an approximation to the inverse Hessian matrix. It is particularly useful for problems where the tangent stiffness matrix is difficult to compute.
 
@@ -13,7 +13,7 @@ The BFGS algorithm:
 - Uses a specified number of vectors to store the Hessian approximation
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -27,7 +27,7 @@ Parameters
      - Number of vectors to store the Hessian approximation
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

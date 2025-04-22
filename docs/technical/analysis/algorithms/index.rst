@@ -1,5 +1,5 @@
 Solution Algorithms
-=================
+===================
 
 .. toctree::
    :maxdepth: 1
