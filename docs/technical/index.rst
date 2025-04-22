@@ -15,6 +15,7 @@ This section provides detailed technical documentation for all components of the
    constraint
    timeseries
    pattern
+   analysis
 
 
 Each section covers detailed information about specific components of the MeshMaker system, including:
@@ -27,5 +28,6 @@ Each section covers detailed information about specific components of the MeshMa
 * **Assembler**: Mesh assembly and partitioning functionality
 * **Constraints**: Boundary conditions and constraints for model nodes
 * **Patterns**: Pattern definitions and their application in mesh generation
+* **Analysis**: Analysis types, components, and configuration
 
 You can navigate to each section for detailed documentation on these components.
