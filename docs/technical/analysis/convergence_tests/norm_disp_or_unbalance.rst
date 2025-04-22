@@ -1,10 +1,10 @@
 Norm Disp Or Unbalance Convergence Test
-=====================================
+=======================================
 
 The Norm Disp Or Unbalance test checks convergence based on either the norm of the displacement increment vector or the norm of the unbalanced force vector. Only one criterion needs to be satisfied for convergence.
 
 Description
-----------
+-----------
 
 This test is particularly suitable for:
 
@@ -16,7 +16,7 @@ This test is particularly suitable for:
 The test calculates both the norm of the displacement increment vector and the norm of the unbalanced force vector, and requires only one to be within its specified tolerance.
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -45,7 +45,7 @@ Parameters
      - Maximum times error can increase (-1 for default behavior)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

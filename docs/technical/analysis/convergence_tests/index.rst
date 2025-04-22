@@ -1,5 +1,5 @@
 Convergence Tests
-================
+=================
 
 .. toctree::
    :maxdepth: 1

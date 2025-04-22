@@ -1,10 +1,10 @@
 Energy Incr Convergence Test
-=========================
+============================
 
 The Energy Incr test checks convergence based on the energy increment in the system.
 
 Description
-----------
+-----------
 
 This test is particularly suitable for:
 
@@ -16,7 +16,7 @@ This test is particularly suitable for:
 The test calculates the energy increment and compares it to a specified tolerance.
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -36,7 +36,7 @@ Parameters
      - Print flag for convergence information (default: 0)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

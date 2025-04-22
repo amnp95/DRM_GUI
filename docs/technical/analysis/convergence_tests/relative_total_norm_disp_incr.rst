@@ -1,10 +1,10 @@
 Relative Total Norm Disp Incr Convergence Test
-==========================================
+==============================================
 
 The Relative Total Norm Disp Incr test checks convergence based on the ratio of the norm of the displacement increment vector to the norm of the total displacement vector.
 
 Description
-----------
+-----------
 
 This test is particularly suitable for:
 
@@ -16,7 +16,7 @@ This test is particularly suitable for:
 The test calculates the ratio of the displacement increment norm to the total displacement norm and compares it to a specified tolerance.
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -39,7 +39,7 @@ Parameters
      - Norm type to use: 0 for max-norm, 1 for 1-norm, 2 for 2-norm (default: 2)
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 

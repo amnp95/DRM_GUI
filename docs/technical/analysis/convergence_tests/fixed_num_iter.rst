@@ -1,10 +1,10 @@
 Fixed Num Iter Convergence Test
-===========================
+===============================
 
 The Fixed Num Iter test performs a fixed number of iterations regardless of convergence status.
 
 Description
-----------
+-----------
 
 This test is particularly suitable for:
 
@@ -16,7 +16,7 @@ This test is particularly suitable for:
 The test simply performs the specified number of iterations without checking convergence criteria.
 
 Parameters
----------
+----------
 
 .. list-table::
    :widths: 25 10 65
@@ -30,7 +30,7 @@ Parameters
      - Fixed number of iterations to perform
 
 Usage Example
-------------
+-------------
 
 .. code-block:: python
 
