@@ -177,17 +177,19 @@ Available Analysis Components
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. toctree::
+   :maxdepth: 3
+
+   analysis/integrators/index
+
+
+
+.. toctree::
    :maxdepth: 2
 
    analysis/constraint_handlers/index
    analysis/numberers/index
    analysis/systems/index
    analysis/algorithms/index
-   analysis/integrators/index
-
-.. toctree::
-   :maxdepth: 3
-
    analysis/convergence_tests/index
 
 

@@ -5,7 +5,7 @@ Static Integrators
 ~~~~~~~~~~~~~~~~~~
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    loadcontrol
    displacementcontrol
@@ -17,7 +17,7 @@ Transient Integrators
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    newmark
    trbdf2
