@@ -57,15 +57,23 @@ class DRM:
         self.h5drmpattern = pattern
 
     def createDefaultProcess(self, dT, finalTime):
-        '''
-        Create the default process for doing Domain Reduction method analysis
-        details:
-            1 create fix the boundaries of the model using macros
-            2 create the vtkhdf recorder
-            3 create specfic recorders
-            4 create the gravity analysis
-            5 create dynamic analysis
-        '''
+        """
+        Create the default process for doing Domain Reduction method analysis.
+        
+        This method sets up a complete analysis process for DRM simulation, including:
+        1. Setting boundary conditions using macros
+        2. Creating the vtkhdf recorder
+        3. Creating specific recorders
+        4. Setting up gravity analysis
+        5. Configuring dynamic analysis
+        
+        Args:
+            dT (float): Time step for the analysis
+            finalTime (float): Final simulation time
+            
+        Raises:
+            ValueError: If pattern is not set or is not of type H5DRMPattern
+        """
         # check if the pattern is set
         if self.h5drmpattern is None:
             raise ValueError("The pattern is not set\n Please set the pattern first")

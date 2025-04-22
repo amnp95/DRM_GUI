@@ -17,6 +17,7 @@ This section provides detailed technical documentation for all components of the
    pattern
    analysis
    process
+   drm
 
 
 Each section covers detailed information about specific components of the MeshMaker system, including:
@@ -31,5 +32,6 @@ Each section covers detailed information about specific components of the MeshMa
 * **Patterns**: Pattern definitions and their application in mesh generation
 * **Analysis**: Analysis types, components, and configuration
 * **Process**: Management and sequencing of analysis steps
+* **DRM**: Domain Reduction Method for seismic wave propagation analysis
 
 You can navigate to each section for detailed documentation on these components.
