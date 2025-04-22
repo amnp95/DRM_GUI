@@ -1,5 +1,5 @@
 GeneralizedAlpha Integrator
-========================
+===========================
 
 The GeneralizedAlpha integrator is an advanced implicit time integration method for dynamic analysis with controllable numerical damping across frequency ranges.
 

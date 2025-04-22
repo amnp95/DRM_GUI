@@ -1,5 +1,5 @@
 ArcLength Integrator
-==================
+====================
 
 The ArcLength integrator is a static integration method that follows the equilibrium path using the arc length method.
 

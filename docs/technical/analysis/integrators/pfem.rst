@@ -1,5 +1,5 @@
 PFEM Integrator
-==============
+===============
 
 The PFEM integrator is a specialized integration method for fluid-structure interaction analysis using the Particle Finite Element Method.
 

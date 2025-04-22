@@ -1,5 +1,5 @@
 MinUnbalDispNorm Integrator
-=======================
+===========================
 
 The MinUnbalDispNorm integrator is a static integration method that uses a minimum unbalanced displacement norm criterion to determine step size.
 

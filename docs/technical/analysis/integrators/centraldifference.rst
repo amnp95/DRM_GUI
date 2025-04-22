@@ -1,5 +1,5 @@
 CentralDifference Integrator
-========================
+============================
 
 The CentralDifference integrator is an explicit time integration method for dynamic analysis.
 

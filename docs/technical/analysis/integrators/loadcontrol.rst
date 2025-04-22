@@ -1,5 +1,5 @@
 LoadControl Integrator
-====================
+======================
 
 The LoadControl integrator is a static integration method that controls the applied load increment during analysis.
 

@@ -1,5 +1,5 @@
 HHT Integrator
-=============
+==============
 
 The HHT (Hilber-Hughes-Taylor) integrator is an implicit time integration method for dynamic analysis with controllable numerical damping.
 

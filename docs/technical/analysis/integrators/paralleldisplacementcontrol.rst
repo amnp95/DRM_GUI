@@ -1,5 +1,5 @@
 ParallelDisplacementControl Integrator
-==================================
+======================================
 
 The ParallelDisplacementControl integrator is a static integration method that controls the displacement at a specific degree of freedom during analysis, optimized for parallel processing.
 

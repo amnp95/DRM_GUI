@@ -1,5 +1,5 @@
 ExplicitDifference Integrator
-=========================
+=============================
 
 The ExplicitDifference integrator is an explicit time integration method for dynamic analysis.
 
