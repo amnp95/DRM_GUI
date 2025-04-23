@@ -53,7 +53,7 @@ html_css_files = [
 ]
 
 # -- Logo configuration -----------------------------------------------------
-html_logo = 'images/Simcenter_Femora.png'
+html_logo = 'images/Simcenter_Femora2.png'
 html_theme_options = {
     'logo_only': True,
 }
