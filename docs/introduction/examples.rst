@@ -15,9 +15,7 @@ Learn how to create and analyze a simple beam model:
    
    import femora as fm
    
-   # Initialize MeshMaker
     
-   
    # Create material
    fm.material.create_material(
        material_category="nDMaterial",
@@ -82,9 +80,7 @@ Create a 2D plane stress model:
    from femora.components.Geometry.geometryBase import Point, Line, Surface
    import numpy as np
    
-   # Initialize MeshMaker
     
-   
    # Create material
    fm.material.create_material(
        material_category="nDMaterial",
@@ -154,9 +150,7 @@ This example demonstrates how to perform a basic seismic analysis with MeshMaker
    import femora as fm
    import numpy as np
    
-   # Initialize MeshMaker
     
-   
    # Define materials
    fm.material.create_material(
        material_category="nDMaterial",
