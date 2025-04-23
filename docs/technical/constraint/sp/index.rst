@@ -6,7 +6,7 @@ Single-point constraints fix or control degrees of freedom at specific nodes.
 Understanding the SP Constraint Manager
 ---------------------------------------
 
-The ``SPConstraintManager`` is a core component of MeshMaker that provides a centralized system for creating, managing, and applying single-point constraints to your model. It implements the Singleton pattern to ensure a single, consistent point of constraint management across the entire application.
+The ``SPConstraintManager`` is a core component of FEMORA that provides a centralized system for creating, managing, and applying single-point constraints to your model. It implements the Singleton pattern to ensure a single, consistent point of constraint management across the entire application.
 
 SP constraints should typically be created after assembling the whole mesh, as they are applied directly to nodes in the assembled mesh.
 
@@ -27,13 +27,13 @@ There are two ways to access the SP Constraint Manager:
       # Use SP manager directly
       sp_manager.fix(node_tag=1, dofs=[1, 1, 1, 0, 0, 0])
 
-2. **Through MeshMaker** (Recommended): Access via the MeshMaker class and the Constraint module
+2. **Through FEMORA** (Recommended): Access via the FEMORA class and the Constraint module
 
    .. code-block:: python
       
       import femora as fm
       
-      # Create a MeshMaker instance
+      # Create a FEMORA instance
        
       
       # Access the SPConstraintManager through the constraint property
@@ -42,7 +42,7 @@ There are two ways to access the SP Constraint Manager:
       # Add constraints using the manager
       sp_manager.fix(node_tag=1, dofs=[1, 1, 1, 0, 0, 0])
 
-The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 
 How SP Constraint Manager Works
 -------------------------------

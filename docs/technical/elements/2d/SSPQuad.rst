@@ -52,7 +52,7 @@ Parameters:
             b2=-9.81  # Gravity in y-direction
         )
 
-        # Via MeshMaker
+        # Via FEMORA
         import femora as fm
          
 

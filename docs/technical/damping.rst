@@ -4,9 +4,9 @@ Damping
 Understanding the DampingManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``DampingManager`` is a core component of the MeshMaker library that serves as a centralized system for creating, retrieving, tracking, and managing damping objects. It implements the Singleton pattern to ensure a single, consistent point of damping management across the entire application.
+The ``DampingManager`` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing damping objects. It implements the Singleton pattern to ensure a single, consistent point of damping management across the entire application.
 
-Damping models defined in MeshMaker are automatically tracked, tagged, and organized by the DampingManager, simplifying the process of creating models with appropriate energy dissipation mechanisms.
+Damping models defined in FEMORA are automatically tracked, tagged, and organized by the DampingManager, simplifying the process of creating models with appropriate energy dissipation mechanisms.
 
 Accessing the DampingManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,19 +25,19 @@ There are two ways to access the DampingManager in your code:
       # Use the damping manager directly
       damping_manager.create_damping(...)
 
-2. **Through MeshMaker** (Recommended): Access via the MeshMaker class's .damping property
+2. **Through FEMORA** (Recommended): Access via the FEMORA class's .damping property
    
    .. code-block:: python
       
       import femora as fm
       
-      # Create a MeshMaker instance
+      # Create a FEMORA instance
        
       
       # Access the DampingManager through the .damping property
       fm.damping.create_damping(...)
 
-The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 
 How DampingManager Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,6 +132,6 @@ Available Damping Types
    
    damping/index
 
-The damping models available in MeshMaker provide various approaches to energy dissipation in dynamic analysis. Follow the link above to explore the different damping models available.
+The damping models available in FEMORA provide various approaches to energy dissipation in dynamic analysis. Follow the link above to explore the different damping models available.
 
 Each damping type has its own documentation page with detailed parameter descriptions and usage examples.

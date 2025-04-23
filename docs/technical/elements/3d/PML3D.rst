@@ -81,7 +81,7 @@ Parameters:
             R=1e-8
         )
 
-        # Via MeshMaker
+        # Via FEMORA
         import femora as fm
          
 

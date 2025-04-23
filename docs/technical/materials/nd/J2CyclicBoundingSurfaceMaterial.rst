@@ -61,7 +61,7 @@ Parameters:
 
         or 
 
-        # Via MeshMaker
+        # Via FEMORA
         import femora as fm
          
         fm.material.create_material(

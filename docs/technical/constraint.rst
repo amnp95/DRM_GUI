@@ -1,7 +1,7 @@
 Constraints
 ===========
 
-MeshMaker provides a comprehensive constraint system to apply boundary conditions and enforce specific behaviors in your model. This documentation covers the different types of constraints available in MeshMaker.
+FEMORA provides a comprehensive constraint system to apply boundary conditions and enforce specific behaviors in your model. This documentation covers the different types of constraints available in FEMORA.
 
 The constraint system includes two main categories:
 

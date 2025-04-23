@@ -4,7 +4,7 @@ Assembler
 Introduction
 ------------
 
-The ``Assembler`` component in MeshMaker is responsible for combining multiple mesh parts into a unified model, partitioning the model for parallel computing, and managing the combined mesh. It provides a centralized system for creating and managing assembly sections, which are groups of mesh parts that are combined into a single mesh.
+The ``Assembler`` component in FEMORA is responsible for combining multiple mesh parts into a unified model, partitioning the model for parallel computing, and managing the combined mesh. It provides a centralized system for creating and managing assembly sections, which are groups of mesh parts that are combined into a single mesh.
 
 The Assembler system consists of two main classes:
 
@@ -33,7 +33,7 @@ There are two ways to access the Assembler:
       # Or use the class method
       assembler = Assembler.get_instance()
 
-2. **Through MeshMaker** (recommended):
+2. **Through FEMORA** (recommended):
 
    .. code-block:: python
       
@@ -42,7 +42,7 @@ There are two ways to access the Assembler:
       # Create a FEMORA instance
        
       
-      # Access the Assembler through MeshMaker
+      # Access the Assembler through FEMORA
       assembler = fm.assembler
 
 The second approach is recommended as it ensures proper initialization of dependencies.

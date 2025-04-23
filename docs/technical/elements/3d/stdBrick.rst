@@ -48,7 +48,7 @@ Parameters:
             b3=0.0
         )
 
-        # Via MeshMaker
+        # Via FEMORA
         import femora as fm
          
 

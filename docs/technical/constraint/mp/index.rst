@@ -6,7 +6,7 @@ Multi-point constraints create relationships between multiple nodes in your mesh
 Understanding the MP Constraint Manager
 ---------------------------------------
 
-The ``MPConstraintManager`` is a core component of MeshMaker that provides a centralized system for creating, managing, and applying multi-point constraints to your model. It implements the Singleton pattern to ensure a single, consistent point of constraint management across the entire application.
+The ``MPConstraintManager`` is a core component of FEMORA that provides a centralized system for creating, managing, and applying multi-point constraints to your model. It implements the Singleton pattern to ensure a single, consistent point of constraint management across the entire application.
 
 MP constraints define relationships between multiple nodes in your mesh, allowing you to:
 
@@ -34,13 +34,13 @@ There are two ways to access the MP Constraint Manager:
       # Use MP manager directly
       mp_manager.create_equal_dof(...)
 
-2. **Through MeshMaker** (Recommended): Access via the MeshMaker class and the Constraint module
+2. **Through FEMORA** (Recommended): Access via the FEMORA class and the Constraint module
 
    .. code-block:: python
       
       import femora as fm
       
-      # Create a MeshMaker instance
+      # Create a FEMORA instance
        
       
       # Access the MPConstraintManager through the constraint property
@@ -49,7 +49,7 @@ There are two ways to access the MP Constraint Manager:
       # Add constraints using the manager
       mp_manager.create_equal_dof(...)
 
-The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 
 
 Managing MP Constraints
@@ -92,7 +92,7 @@ Below is the complete API reference for the MPConstraintManager class:
 Available MP Constraint Types
 -----------------------------
 
-MeshMaker provides several types of MP constraints:
+FEMORA provides several types of MP constraints:
 
 .. toctree::
    :maxdepth: 1

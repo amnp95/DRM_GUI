@@ -1,14 +1,14 @@
 Quick Start Guide
 =================
 
-This quick start guide will help you create your first mesh model using MeshMaker. Follow these simple steps to get started.
+This quick start guide will help you create your first mesh model using FEMORA. Follow these simple steps to get started.
 
 Setting Up Your Environment
 ---------------------------
 
 Before you begin, make sure you have:
 
-1. Installed MeshMaker (see :doc:`installation` for details)
+1. Installed FEMORA (see :doc:`installation` for details)
 2. Imported the necessary components:
 
 .. code-block:: python
@@ -22,7 +22,7 @@ Creating Your First Model
 
 Let's create a simple 2D mesh model:
 
-Step 1: Initialize MeshMaker
+Step 1: Initialize FEMORA
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
@@ -217,7 +217,7 @@ Here's the complete code for this quick start example:
 Next Steps
 ----------
 
-Now that you've created your first model with MeshMaker, you can:
+Now that you've created your first model with FEMORA, you can:
 
 * Explore more complex geometries
 * Try different materials 

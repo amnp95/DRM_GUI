@@ -1,7 +1,7 @@
 3D Elements 
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This section documents the three-dimensional solid elements available in MeshMaker.
+This section documents the three-dimensional solid elements available in FEMORA.
 Solid elements are used for full 3D continuum modeling of structures and materials.
 
 .. toctree::

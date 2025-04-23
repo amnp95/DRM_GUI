@@ -1,7 +1,7 @@
 2D Elements
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This section documents the two-dimensional elements available in MeshMaker.
+This section documents the two-dimensional elements available in FEMORA.
 2D elements are used for plane stress/strain problems, shells, and other 2D applications.
 
 .. toctree::

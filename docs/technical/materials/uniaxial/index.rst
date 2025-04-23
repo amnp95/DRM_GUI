@@ -1,7 +1,7 @@
 uniaxialMaterial Types
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This section will document the uniaxial material models available in MeshMaker.
+This section will document the uniaxial material models available in FEMORA.
 
 uniaxialMaterial models are used for one-dimensional elements such as truss elements, some beam formulations, and zero-length spring elements.
 

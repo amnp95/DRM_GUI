@@ -4,7 +4,7 @@ DRM
 Understanding the DRM Component
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``DRM`` (Domain Reduction Method) component is a specialized part of the MeshMaker library designed for seismic wave propagation analysis. It provides functionality for implementing the Domain Reduction Method, which is used to efficiently model seismic wave propagation in large domains by reducing the computational domain size.
+The ``DRM`` (Domain Reduction Method) component is a specialized part of the FEMORA library designed for seismic wave propagation analysis. It provides functionality for implementing the Domain Reduction Method, which is used to efficiently model seismic wave propagation in large domains by reducing the computational domain size.
 
 The DRM component provides functionality to:
 - Create default analysis processes for DRM simulations
@@ -22,13 +22,13 @@ Domain Reduction Method is particularly useful for:
 Accessing the DRM Component
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The DRM component can only be accessed through the MeshMaker class's analysis.drm property:
+The DRM component can only be accessed through the FEMORA class's analysis.drm property:
 
 .. code-block:: python
    
    import femora as fm
    
-   # Create a MeshMaker instance
+   # Create a FEMORA instance
     
    
    # Access the DRM component through the analysis.drm property
@@ -44,7 +44,7 @@ The Domain Reduction Method allows efficient modeling of seismic wave propagatio
 3. **Absorbing Boundaries**: Preventing artificial wave reflections at domain boundaries
 4. **Efficient Analysis**: Enabling more detailed analysis of the region of interest
 
-The DRM component in MeshMaker provides tools to set up:
+The DRM component in FEMORA provides tools to set up:
 
 1. **Absorbing Layers**: Add PML (Perfectly Matched Layer) or Rayleigh-damped absorbing boundaries
 2. **Analysis Process**: Create preconfigured analysis processes for DRM simulations
@@ -54,7 +54,7 @@ The DRM component in MeshMaker provides tools to set up:
 Technical Implementation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The DRM component is implemented as a singleton class to ensure consistent state throughout an analysis. This means that only one instance of the DRM class exists at any time, accessible through the MeshMaker's analysis property.
+The DRM component is implemented as a singleton class to ensure consistent state throughout an analysis. This means that only one instance of the DRM class exists at any time, accessible through the FEMORA's analysis property.
 
 The implementation includes several key aspects:
 
@@ -109,7 +109,7 @@ Example of creating a DRM analysis:
 
    import femora as fm
    
-   # Create a MeshMaker instance
+   # Create a FEMORA instance
     
    
    # Assume a model has been set up already...

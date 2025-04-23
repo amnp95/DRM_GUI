@@ -4,7 +4,7 @@ Installation Guide
 System Requirements
 -------------------
 
-Before installing MeshMaker, ensure your system meets the following requirements:
+Before installing FEMORA, ensure your system meets the following requirements:
 
 * **Operating System**: Windows, macOS, or Linux
 * **Python**: Version 3.8 or higher
@@ -14,12 +14,12 @@ Before installing MeshMaker, ensure your system meets the following requirements
 Installation Methods
 --------------------
 
-There are several ways to install MeshMaker:
+There are several ways to install FEMORA:
 
 Using pip
 ~~~~~~~~~
 
-The easiest way to install MeshMaker is using pip:
+The easiest way to install FEMORA is using pip:
 
 .. code-block:: bash
 
@@ -46,7 +46,7 @@ To install from source:
 Using Conda
 ~~~~~~~~~~~
 
-MeshMaker can also be installed using conda:
+FEMORA can also be installed using conda:
 
 .. code-block:: bash
 
@@ -56,19 +56,19 @@ MeshMaker can also be installed using conda:
 Verifying Installation
 ----------------------
 
-To verify that MeshMaker has been installed correctly, run:
+To verify that FEMORA has been installed correctly, run:
 
 .. code-block:: python
 
    import femora
    print(femora.__version__)
 
-This should display the version number of your MeshMaker installation.
+This should display the version number of your FEMORA installation.
 
 Dependencies
 ------------
 
-MeshMaker depends on several Python packages:
+FEMORA depends on several Python packages:
 
 * **NumPy**: For numerical operations
 * **SciPy**: For scientific computing

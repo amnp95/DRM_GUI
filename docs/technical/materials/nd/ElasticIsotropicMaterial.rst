@@ -33,7 +33,7 @@ Parameters:
 
         or 
 
-        # Via MeshMaker
+        # Via FEMORA
         import femora as fm
          
         fm.material.create_material("nDMaterial", "ElasticIsotropic", "Concrete", E=30e6, nu=0.2, rho=2400)

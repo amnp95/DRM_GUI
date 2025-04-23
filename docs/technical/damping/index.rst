@@ -1,7 +1,7 @@
 Damping Models
 ==============
 
-This section provides detailed documentation for the different damping models available in MeshMaker.
+This section provides detailed documentation for the different damping models available in FEMORA.
 
 .. toctree::
    :maxdepth: 1

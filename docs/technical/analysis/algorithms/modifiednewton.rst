@@ -34,7 +34,7 @@ Usage Example
 
 .. code-block:: python
 
-   # Create a MeshMaker instance
+   # Create a FEMORA instance
     
 
    # Create a Modified Newton algorithm with default settings

@@ -1,7 +1,7 @@
 Examples and Tutorials
 ======================
 
-This section provides practical examples and tutorials to help you understand how to use MeshMaker for various applications.
+This section provides practical examples and tutorials to help you understand how to use FEMORA for various applications.
 
 Basic Examples
 --------------
@@ -143,7 +143,7 @@ Advanced Examples
 Seismic Analysis Example
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-This example demonstrates how to perform a basic seismic analysis with MeshMaker:
+This example demonstrates how to perform a basic seismic analysis with FEMORA:
 
 .. code-block:: python
    
@@ -200,19 +200,19 @@ Real-World Project Examples
 Building Foundation Design
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example of using MeshMaker for foundation design.
+Example of using FEMORA for foundation design.
 
 Bridge Analysis
 ~~~~~~~~~~~~~~~
 
-Example of analyzing a bridge structure with MeshMaker.
+Example of analyzing a bridge structure with FEMORA.
 
 Tutorial Videos
 ---------------
 
 For visual learners, we provide a series of tutorial videos:
 
-1. **Getting Started with MeshMaker**: Basic setup and first model
+1. **Getting Started with FEMORA**: Basic setup and first model
 2. **Advanced Meshing Techniques**: How to create complex mesh configurations
 3. **Material Modeling in Depth**: Working with various material models
 4. **Analysis and Visualization**: Running analyses and visualizing results
@@ -226,7 +226,7 @@ You can download complete example files from our GitHub repository:
 
    git clone https://github.com/username/femora-examples.git
 
-Alternatively, browse the examples included with your MeshMaker installation in the 'examples' directory:
+Alternatively, browse the examples included with your FEMORA installation in the 'examples' directory:
 
 .. code-block:: bash
 

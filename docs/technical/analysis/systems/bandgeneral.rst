@@ -31,7 +31,7 @@ Usage Example
 
 .. code-block:: python
 
-   # Create a MeshMaker instance
+   # Create a FEMORA instance
     
 
    # Create a Band General system solver

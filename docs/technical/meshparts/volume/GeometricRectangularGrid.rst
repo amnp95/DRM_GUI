@@ -61,7 +61,7 @@ The following example demonstrates how to create a 3D rectangular domain with ge
 
    import femora as fm
    
-   # Create a MeshMaker instance
+   # Create a FEMORA instance
     
    
    # Create a material
