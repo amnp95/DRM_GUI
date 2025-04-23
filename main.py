@@ -3,7 +3,7 @@ import os
 os.environ["QT_API"] = "pyside6"
 import sys
 from qtpy.QtWidgets import QApplication
-from meshmaker.gui.main_window import MainWindow
+from femora.gui.main_window import MainWindow
 
 
 DEBUG = False
@@ -11,11 +11,11 @@ DEBUG = False
 def main():
 
     if DEBUG:
-        from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial, J2CyclicBoundingSurfaceMaterial
-        from meshmaker.components.Element.elementsOpenSees import stdBrickElement
-        from meshmaker.components.Mesh.meshPartInstance import StructuredRectangular3D
-        from meshmaker.components.Assemble.Assembler import AssemblySection, Assembler
-        from meshmaker.components.MeshMaker import MeshMaker
+        from femora.components.Material.materialsOpenSees import ElasticIsotropicMaterial, J2CyclicBoundingSurfaceMaterial
+        from femora.components.Element.elementsOpenSees import stdBrickElement
+        from femora.components.Mesh.meshPartInstance import StructuredRectangular3D
+        from femora.components.Assemble.Assembler import AssemblySection, Assembler
+        from femora.components.MeshMaker import MeshMaker
         
         # elastic2  = ElasticIsotropicMaterial(user_name="Steel2", E=200e3, ν=0.3,  ρ=7.85e-9)
         # elsatic3  = ElasticIsotropicMaterial(user_name="Steel3", E=400e3, ν=0.25, ρ=7.85e-9)

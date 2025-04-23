@@ -1,5 +1,5 @@
 import os
-from meshmaker.components.MeshMaker import MeshMaker 
+from femora.components.MeshMaker import MeshMaker 
 
 os.chdir(os.path.dirname(__file__))
 

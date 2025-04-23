@@ -4,7 +4,7 @@ from qtpy.QtWidgets import (
     QComboBox, QPushButton, QTableWidget, QTableWidgetItem, 
     QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout, 
     QStackedWidget, QRadioButton, QButtonGroup, QGroupBox, QCheckBox, QMenu,
-    QScrollArea
+    QScrollArea, QSlider
 )
 from femora.components.Constraint.spConstraint import (
     SPConstraint, FixConstraint, FixXConstraint, FixYConstraint, FixZConstraint, SPConstraintManager,
@@ -13,6 +13,7 @@ from femora.components.Constraint.spConstraint import (
 from femora.utils.validator import DoubleValidator, IntValidator
 from femora.gui.plotter import PlotterManager
 from femora.components.MeshMaker import MeshMaker
+import pyvista as pv
 
 
 class SPConstraintManagerTab(QDialog):

@@ -1,4 +1,4 @@
-from meshmaker.components.MeshMaker import MeshMaker
+from femora.components.MeshMaker import MeshMaker
 import os 
 
 # change the direcotto the current file
