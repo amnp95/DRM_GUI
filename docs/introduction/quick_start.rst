@@ -13,7 +13,7 @@ Before you begin, make sure you have:
 
 .. code-block:: python
 
-   from femora.components.FEMORA import FEMORA
+   import femora as fm
    from femora.components.Geometry.geometryBase import Point, Line, Surface
    import numpy as np
 
@@ -143,7 +143,7 @@ Here's the complete code for this quick start example:
 
 .. code-block:: python
 
-   from femora.components.FEMORA import FEMORA
+   import femora as fm
    from femora.components.Geometry.geometryBase import Point, Line, Surface
    import numpy as np
    

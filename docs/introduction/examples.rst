@@ -13,7 +13,7 @@ Learn how to create and analyze a simple beam model:
 
 .. code-block:: python
    
-   from femora.components.FEMORA import FEMORA
+   import femora as fm
    
    # Initialize MeshMaker
    mk = FEMORA()
@@ -78,7 +78,7 @@ Create a 2D plane stress model:
 .. code-block:: python
    
    # Import required libraries
-   from femora.components.FEMORA import FEMORA
+   import femora as fm
    from femora.components.Geometry.geometryBase import Point, Line, Surface
    import numpy as np
    
@@ -151,7 +151,7 @@ This example demonstrates how to perform a basic seismic analysis with MeshMaker
 
 .. code-block:: python
    
-   from femora.components.FEMORA import FEMORA
+   import femora as fm
    import numpy as np
    
    # Initialize MeshMaker

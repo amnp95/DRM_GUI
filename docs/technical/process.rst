@@ -36,7 +36,7 @@ There are two ways to access the Process component in your code:
    
    .. code-block:: python
       
-      from femora.components.FEMORA import FEMORA
+      import femora as fm
       
       # Create a FEMORA instance
       mk = FEMORA()
@@ -107,7 +107,7 @@ Example of creating and managing a process:
 
 .. code-block:: python
 
-   from femora.components.FEMORA import FEMORA
+   import femora as fm
    
    # Create a FEMORA instance
    mk = FEMORA()

@@ -26,7 +26,7 @@ The DRM component can only be accessed through the MeshMaker class's analysis.dr
 
 .. code-block:: python
    
-   from femora.components.FEMORA import FEMORA
+   import femora as fm
    
    # Create a MeshMaker instance
    mk = FEMORA()
@@ -107,7 +107,7 @@ Example of creating a DRM analysis:
 
 .. code-block:: python
 
-   from femora.components.FEMORA import FEMORA
+   import femora as fm
    
    # Create a MeshMaker instance
    mk = FEMORA()

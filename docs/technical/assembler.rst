@@ -37,7 +37,7 @@ There are two ways to access the Assembler:
 
    .. code-block:: python
       
-      from femora.components.FEMORA import FEMORA
+      import femora as fm
       
       # Create a FEMORA instance
       mk = FEMORA()

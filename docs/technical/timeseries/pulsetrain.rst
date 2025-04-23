@@ -51,7 +51,7 @@ Parameters:
         )
 
         # Via FEMORA
-        from femora.components.FEMORA import FEMORA
+        import femora as fm
         
         mk = FEMORA()
         pulse_ts = fm.timeSeries.create_time_series(
