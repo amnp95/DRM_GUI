@@ -45,7 +45,7 @@ Parameters:
     .. code-block:: python
 
         # Direct creation
-        from meshmaker.components.Material.materialsOpenSees import J2CyclicBoundingSurfaceMaterial
+        from femora.components.Material.materialsOpenSees import J2CyclicBoundingSurfaceMaterial
         j2_material = J2CyclicBoundingSurfaceMaterial(
             user_name="Clay",
             G=1.3e6,       # Shear modulus (Pa)
@@ -62,7 +62,7 @@ Parameters:
         or 
 
         # Via MeshMaker
-        from meshmaker.components.MeshMaker import MeshMaker
+        from femora.components.MeshMaker import MeshMaker
         mk = MeshMaker()
         mk.material.create_material(
             material_category="nDMaterial",

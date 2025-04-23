@@ -17,7 +17,7 @@ There are two ways to access the DampingManager in your code:
    
    .. code-block:: python
       
-      from meshmaker.components.Damping import DampingManager
+      from femora.components.Damping import DampingManager
       
       # Get the singleton instance
       damping_manager = DampingManager()
@@ -29,7 +29,7 @@ There are two ways to access the DampingManager in your code:
    
    .. code-block:: python
       
-      from meshmaker.components.MeshMaker import MeshMaker
+      from femora.components.MeshMaker import MeshMaker
       
       # Create a MeshMaker instance
       mk = MeshMaker()
@@ -67,7 +67,7 @@ The DampingManager implements an intelligent tagging system that:
 DampingManager API Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: meshmaker.components.Damping.dampingBase.DampingManager
+.. autoclass:: femora.components.Damping.dampingBase.DampingManager
    :members:
    :undoc-members:
    :show-inheritance:
@@ -93,7 +93,7 @@ Usage Example
 
 .. code-block:: python
 
-   from meshmaker.components.Damping import DampingManager
+   from femora.components.Damping import DampingManager
    
    # Get the damping manager instance
    damping_manager = DampingManager()

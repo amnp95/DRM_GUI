@@ -17,7 +17,7 @@ There are two ways to access the ElementRegistry in your code:
    
    .. code-block:: python
       
-      from meshmaker.components.Element.elementBase import ElementRegistry
+      from femora.components.Element.elementBase import ElementRegistry
       
       # Access the registry directly
       element_types = ElementRegistry.get_element_types()
@@ -29,7 +29,7 @@ There are two ways to access the ElementRegistry in your code:
    
    .. code-block:: python
       
-      from meshmaker.components.MeshMaker import MeshMaker
+      from femora.components.MeshMaker import MeshMaker
       
       # Create a MeshMaker instance
       mk = MeshMaker()
@@ -73,12 +73,12 @@ The Element class implements an intelligent tagging system that:
 .. code-block:: python
 
    # Example of setting a custom tag starting point
-   from meshmaker.components.Element.elementBase import Element
+   from femora.components.Element.elementBase import Element
 
 ElementRegistry API Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: meshmaker.components.Element.elementBase.ElementRegistry
+.. autoclass:: femora.components.Element.elementBase.ElementRegistry
 
 Element Creation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

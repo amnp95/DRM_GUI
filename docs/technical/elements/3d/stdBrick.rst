@@ -33,8 +33,8 @@ Parameters:
     .. code-block:: python
 
         # Direct creation
-        from meshmaker.components.Element.elementsOpenSees import stdBrickElement
-        from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial
+        from femora.components.Element.elementsOpenSees import stdBrickElement
+        from femora.components.Material.materialsOpenSees import ElasticIsotropicMaterial
 
         # Create a material first
         material = ElasticIsotropicMaterial(user_name="Concrete", E=30e9, nu=0.2, rho=2400)
@@ -49,7 +49,7 @@ Parameters:
         )
 
         # Via MeshMaker
-        from meshmaker.components.MeshMaker import MeshMaker
+        from femora.components.MeshMaker import MeshMaker
         mk = MeshMaker()
 
         # Create material

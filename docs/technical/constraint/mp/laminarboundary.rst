@@ -25,7 +25,7 @@ Usage
 
 .. code-block:: python
 
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.MeshMaker import MeshMaker
    
    # Create MeshMaker instance
    mk = MeshMaker()
@@ -100,5 +100,5 @@ A common application is creating a soil box model for dynamic analysis:
 Function Reference
 ------------------
 
-.. autofunction:: meshmaker.components.Constraint.mpConstraint.mpConstraintManager.create_laminar_boundary
+.. autofunction:: femora.components.Constraint.mpConstraint.mpConstraintManager.create_laminar_boundary
    :noindex:

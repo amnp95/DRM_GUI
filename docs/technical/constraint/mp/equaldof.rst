@@ -20,7 +20,7 @@ Usage
 
 .. code-block:: python
 
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.MeshMaker import MeshMaker
    
    # Create MeshMaker instance
    mk = MeshMaker()

@@ -30,7 +30,7 @@ Usage
 
 .. code-block:: python
 
-    from meshmaker.components.Damping import DampingManager
+    from femora.components.Damping import DampingManager
     
     damping_manager = DampingManager()
     secstiff_damping = damping_manager.create_damping(

@@ -26,7 +26,7 @@ There are two ways to access the MP Constraint Manager:
 
    .. code-block:: python
       
-      from meshmaker.components.Constraint.mpConstraint import mpConstraintManager
+      from femora.components.Constraint.mpConstraint import mpConstraintManager
       
       # Get the singleton instance
       mp_manager = mpConstraintManager()
@@ -38,7 +38,7 @@ There are two ways to access the MP Constraint Manager:
 
    .. code-block:: python
       
-      from meshmaker.components.MeshMaker import MeshMaker
+      from femora.components.MeshMaker import MeshMaker
       
       # Create a MeshMaker instance
       mk = MeshMaker()
@@ -84,7 +84,7 @@ MP Constraint Manager API Reference
 
 Below is the complete API reference for the MPConstraintManager class:
 
-.. autoclass:: meshmaker.components.Constraint.mpConstraint.mpConstraintManager
+.. autoclass:: femora.components.Constraint.mpConstraint.mpConstraintManager
    :members:
    :undoc-members:
    :show-inheritance:

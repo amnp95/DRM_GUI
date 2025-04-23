@@ -36,8 +36,8 @@ Parameters:
     .. code-block:: python
 
         # Direct creation
-        from meshmaker.components.Element.elementsOpenSees import SSPQuadElement
-        from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial
+        from femora.components.Element.elementsOpenSees import SSPQuadElement
+        from femora.components.Material.materialsOpenSees import ElasticIsotropicMaterial
 
         # Create a material first
         material = ElasticIsotropicMaterial(user_name="Steel", E=200e9, nu=0.3, rho=7850)
@@ -53,7 +53,7 @@ Parameters:
         )
 
         # Via MeshMaker
-        from meshmaker.components.MeshMaker import MeshMaker
+        from femora.components.MeshMaker import MeshMaker
         mk = MeshMaker()
 
         # Create material

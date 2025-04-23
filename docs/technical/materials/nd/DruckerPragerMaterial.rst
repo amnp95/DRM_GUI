@@ -57,7 +57,7 @@ Parameters:
     .. code-block:: python
 
         # Direct creation
-        from meshmaker.components.Material.materialsOpenSees import DruckerPragerMaterial
+        from femora.components.Material.materialsOpenSees import DruckerPragerMaterial
         dp_material = DruckerPragerMaterial(
             user_name="Sand",
             k=8.33e6,      # Bulk modulus (Pa)
@@ -77,7 +77,7 @@ Parameters:
         or 
 
         # Via MeshMaker
-        from meshmaker.components.MeshMaker import MeshMaker
+        from femora.components.MeshMaker import MeshMaker
         mk = MeshMaker()
         mk.material.create_material(
             material_category="nDMaterial",

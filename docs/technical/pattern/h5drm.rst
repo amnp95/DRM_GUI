@@ -44,7 +44,7 @@ Usage Example
 
 .. code-block:: python
 
-   from meshmaker.components.Pattern.patternBase import PatternManager
+   from femora.components.Pattern.patternBase import PatternManager
 
    # Get the pattern manager instance
    pattern_manager = PatternManager()

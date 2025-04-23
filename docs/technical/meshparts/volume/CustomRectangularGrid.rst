@@ -40,7 +40,7 @@ The following example demonstrates how to create a 3D rectangular domain with cu
 
 .. code-block:: python
 
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.MeshMaker import MeshMaker
    
    # Create a MeshMaker instance
    mk = MeshMaker()

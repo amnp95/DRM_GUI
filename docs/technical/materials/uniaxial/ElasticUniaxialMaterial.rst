@@ -28,10 +28,10 @@ Parameters:
     .. code-block:: python
 
         # Direct creation
-        from meshmaker.components.Material.materialsOpenSees import ElasticUniaxialMaterial
+        from femora.components.Material.materialsOpenSees import ElasticUniaxialMaterial
         elastic_material = ElasticUniaxialMaterial("Steel", E=200e9, eta=0.05, Eneg=200e9)
 
         # Via MeshMaker
-        from meshmaker.components.MeshMaker import MeshMaker
+        from femora.components.MeshMaker import MeshMaker
         mk = MeshMaker()
         mk.material.create_material("uniaxialMaterial", "Elastic", "Steel", E=200e9, eta=0.05, Eneg=200e9)
