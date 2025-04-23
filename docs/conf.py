@@ -47,3 +47,10 @@ html_static_path = ['_static']
 html_css_files = [
     'css/custom.css',
 ]
+
+# -- Logo configuration -----------------------------------------------------
+html_logo = 'images/Femora_logo.png'
+html_theme_options = {
+    'logo_only': True,
+    'display_version': True,
+}
