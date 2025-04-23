@@ -9,8 +9,8 @@ Modules:
     pyvista (pv): A 3D plotting and mesh analysis library for Python.
     abc: A module that provides tools for defining abstract base classes.
     typing: A module that provides runtime support for type hints.
-    meshmaker.components.Element.elementBase: A module that defines the Element and ElementRegistry classes.
-    meshmaker.components.Material.materialBase: A module that defines the Material class.
+    femora.components.Element.elementBase: A module that defines the Element and ElementRegistry classes.
+    femora.components.Material.materialBase: A module that defines the Material class.
 Usage:
     This module is intended to be used as part of a larger DRM analysis application. 
     The MeshPart class should be subclassed to create specific types of mesh parts, 
