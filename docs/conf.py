@@ -5,6 +5,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../src'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -34,6 +35,9 @@ autodoc_default_options = {
     'special-members': '__init__',
 }
 
+# Mock imports for modules that might not be available during documentation building
+autodoc_mock_imports = ['pykdtree']
+
 # Set custom templates
 autodoc_class_template = 'autoclasstemplate.rst'
 
@@ -49,8 +53,7 @@ html_css_files = [
 ]
 
 # -- Logo configuration -----------------------------------------------------
-html_logo = 'images/Femora_logo.png'
+html_logo = 'images/Simcenter_Femora.png'
 html_theme_options = {
     'logo_only': True,
-    'display_version': True,
 }
