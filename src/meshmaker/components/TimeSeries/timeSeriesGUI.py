@@ -6,7 +6,7 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
-from meshmaker.components.TimeSeries.timeSeriesBase import (
+from femora.components.TimeSeries.timeSeriesBase import (
     TimeSeries, TimeSeriesRegistry, ConstantTimeSeries, LinearTimeSeries,
     TrigTimeSeries, RampTimeSeries, TriangularTimeSeries, RectangularTimeSeries,
     PulseTimeSeries, PathTimeSeries

@@ -1,4 +1,4 @@
-from meshmaker.components.Damping.dampingBase import DampingBase
+from femora.components.Damping.dampingBase import DampingBase
 import weakref 
 from abc import ABC, abstractmethod
 from typing import List, Dict, Type, Optional, Union
@@ -615,7 +615,7 @@ class RegionManager:
         RegionBase.print_regions()
 
 if __name__ == "__main__":
-    from meshmaker.components.Damping.dampingBase import RayleighDamping, ModalDamping
+    from femora.components.Damping.dampingBase import RayleighDamping, ModalDamping
     # ---- Test Global Region ----
     # test the DampingBase class
     damping1 = DampingBase()

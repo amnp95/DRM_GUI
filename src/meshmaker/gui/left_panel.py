@@ -1,19 +1,19 @@
 from qtpy.QtWidgets import QFrame, QVBoxLayout, QWidget, QTabWidget, QLabel, QPushButton
 from qtpy.QtCore import Qt
 
-from meshmaker.components.Material.materialGUI import MaterialManagerTab
-from meshmaker.components.Mesh.meshPartGUI import MeshPartManagerTab
-from meshmaker.components.Assemble.AssemblerGUI import AssemblyManagerTab
-from meshmaker.components.Damping.dampingGUI import DampingManagerTab
-from meshmaker.components.Region.regionGUI import RegionManagerTab
-from meshmaker.components.Constraint.mpConstraintGUI import MPConstraintManagerTab
-from meshmaker.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
-from meshmaker.components.Constraint.spConstraintGUI import SPConstraintManagerTab
-from meshmaker.components.Pattern.patternGUI import PatternManagerTab
-from meshmaker.components.Recorder.recorderGUI import RecorderManagerTab
-from meshmaker.components.Analysis.analysisGUI import AnalysisManagerTab
-from meshmaker.components.Process.processGUI import ProcessGUI
-from meshmaker.components.DRM.combinedDRMGUI import CombinedDRMGUI
+from femora.components.Material.materialGUI import MaterialManagerTab
+from femora.components.Mesh.meshPartGUI import MeshPartManagerTab
+from femora.components.Assemble.AssemblerGUI import AssemblyManagerTab
+from femora.components.Damping.dampingGUI import DampingManagerTab
+from femora.components.Region.regionGUI import RegionManagerTab
+from femora.components.Constraint.mpConstraintGUI import MPConstraintManagerTab
+from femora.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
+from femora.components.Constraint.spConstraintGUI import SPConstraintManagerTab
+from femora.components.Pattern.patternGUI import PatternManagerTab
+from femora.components.Recorder.recorderGUI import RecorderManagerTab
+from femora.components.Analysis.analysisGUI import AnalysisManagerTab
+from femora.components.Process.processGUI import ProcessGUI
+from femora.components.DRM.combinedDRMGUI import CombinedDRMGUI
 
 class LeftPanel(QFrame):
     '''

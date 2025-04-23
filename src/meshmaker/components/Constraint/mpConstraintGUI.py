@@ -5,7 +5,7 @@ from qtpy.QtWidgets import (
     QDialog, QFormLayout, QMessageBox, QHeaderView, QGridLayout, QMenu,
     QSizePolicy, QProgressDialog, QApplication, QSpinBox, QDoubleSpinBox
 )
-from meshmaker.components.Constraint.mpConstraint import (
+from femora.components.Constraint.mpConstraint import (
     mpConstraint, equalDOF, rigidLink, rigidDiaphragm, mpConstraintManager
 )
 import time

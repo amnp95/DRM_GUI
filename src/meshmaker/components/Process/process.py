@@ -2,11 +2,11 @@ from typing import List, Dict, Union, Optional
 import weakref
 
 # Import your existing component classes
-from meshmaker.components.Constraint.mpConstraint import mpConstraint
-from meshmaker.components.Constraint.spConstraint import SPConstraint
-from meshmaker.components.Pattern.patternBase import Pattern
-from meshmaker.components.Recorder.recorderBase import Recorder
-from meshmaker.components.Analysis.analysis import Analysis
+from femora.components.Constraint.mpConstraint import mpConstraint
+from femora.components.Constraint.spConstraint import SPConstraint
+from femora.components.Pattern.patternBase import Pattern
+from femora.components.Recorder.recorderBase import Recorder
+from femora.components.Analysis.analysis import Analysis
 
 # Define a union type for all components that can be used in the process
 ProcessComponent = Union[SPConstraint, mpConstraint, Pattern, Recorder, Analysis]

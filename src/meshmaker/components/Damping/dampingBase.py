@@ -665,11 +665,11 @@ class DampingManager:
     
     Usage:
         # Direct access
-        from meshmaker.components.Damping import DampingManager
+        from femora.components.Damping import DampingManager
         damping_manager = DampingManager()
         
         # Through MeshMaker (recommended)
-        from meshmaker.components.MeshMaker import MeshMaker
+        from femora.components.MeshMaker import MeshMaker
         mk = MeshMaker()
         damping_manager = mk.damping
         

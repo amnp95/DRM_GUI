@@ -32,11 +32,11 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
-from meshmaker.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
-from meshmaker.components.Element.elementBase import ElementRegistry
-from meshmaker.components.Element.elementGUI import ElementCreationDialog
-from meshmaker.gui.plotter import PlotterManager
-from meshmaker.components.Mesh.meshPartInstance import *
+from femora.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
+from femora.components.Element.elementBase import ElementRegistry
+from femora.components.Element.elementGUI import ElementCreationDialog
+from femora.gui.plotter import PlotterManager
+from femora.components.Mesh.meshPartInstance import *
 
 
 class MeshPartManagerTab(QWidget):
@@ -507,7 +507,7 @@ class MeshPartCreationDialog(QDialog):
             """
             Open the region management dialog and refresh regions when it closes
             """
-            from meshmaker.components.Region.regionGUI import RegionManagerTab
+            from femora.components.Region.regionGUI import RegionManagerTab
             dialog = RegionManagerTab(self)
             # Connect to the finished signal which is emitted regardless of how the dialog is closed
             dialog.finished.connect(self.refresh_regions)
@@ -740,7 +740,7 @@ class MeshPartEditDialog(QDialog):
         """
         Open the region management dialog and refresh regions when it closes
         """
-        from meshmaker.components.Region.regionGUI import RegionManagerTab
+        from femora.components.Region.regionGUI import RegionManagerTab
         dialog = RegionManagerTab(self)
         dialog.finished.connect(self.refresh_regions)
         dialog.exec()
@@ -856,7 +856,7 @@ if __name__ == "__main__":
     Test the MeshPartManagerTab GUI
     '''
     from PySide6.QtWidgets import QApplication
-    from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial, ElasticUniaxialMaterial
+    from femora.components.Material.materialsOpenSees import ElasticIsotropicMaterial, ElasticUniaxialMaterial
     import sys
     # Create the Qt Application
     app = QApplication(sys.argv)

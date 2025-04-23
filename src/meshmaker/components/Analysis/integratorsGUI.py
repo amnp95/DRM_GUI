@@ -7,8 +7,8 @@ from qtpy.QtWidgets import (
     QTabWidget, QStackedWidget, QScrollArea, QTextEdit
 )
 
-from meshmaker.utils.validator import DoubleValidator, IntValidator
-from meshmaker.components.Analysis.integrators import (
+from femora.utils.validator import DoubleValidator, IntValidator
+from femora.components.Analysis.integrators import (
     IntegratorManager, Integrator, StaticIntegrator, TransientIntegrator,
     LoadControlIntegrator, DisplacementControlIntegrator, ParallelDisplacementControlIntegrator,
     MinUnbalDispNormIntegrator, ArcLengthIntegrator, CentralDifferenceIntegrator,

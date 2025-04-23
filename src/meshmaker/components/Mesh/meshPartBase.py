@@ -21,9 +21,9 @@ import numpy as np
 import pyvista as pv
 from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple, Type, Union, Optional
-from meshmaker.components.Element.elementBase import Element
-from meshmaker.components.Material.materialBase import Material
-from meshmaker.components.Region.regionBase import RegionBase, GlobalRegion
+from femora.components.Element.elementBase import Element
+from femora.components.Material.materialBase import Material
+from femora.components.Region.regionBase import RegionBase, GlobalRegion
 
 
 class MeshPart(ABC):

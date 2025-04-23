@@ -5,8 +5,8 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
-from meshmaker.components.Material.materialBase import Material, MaterialRegistry
-from meshmaker.components.Material.materialsOpenSees import *
+from femora.components.Material.materialBase import Material, MaterialRegistry
+from femora.components.Material.materialsOpenSees import *
 
 
 

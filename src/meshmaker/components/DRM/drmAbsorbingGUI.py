@@ -4,8 +4,8 @@ from qtpy.QtWidgets import (
     QSlider, QDialog, QDoubleSpinBox, QCheckBox, QFileDialog, QHBoxLayout, 
 )
 from qtpy.QtCore import Qt
-from meshmaker.gui.plotter import PlotterManager
-from meshmaker.components.MeshMaker import MeshMaker
+from femora.gui.plotter import PlotterManager
+from femora.components.MeshMaker import MeshMaker
 from qtpy.QtWidgets import QSizePolicy
 
 class AbsorbingMeshViewOptionsDialog(QDialog):

@@ -4,9 +4,9 @@ from qtpy.QtWidgets import (
     QHBoxLayout
 )
 from qtpy.QtCore import Qt
-from meshmaker.components.MeshMaker import MeshMaker
+from femora.components.MeshMaker import MeshMaker
 from qtpy.QtWidgets import QSizePolicy
-from meshmaker.components.Process.processGUI import ProcessGUI
+from femora.components.Process.processGUI import ProcessGUI
 
 class DRMProcessGUI(QWidget):
     def __init__(self, parent=None):

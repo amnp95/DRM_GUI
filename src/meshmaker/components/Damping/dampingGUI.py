@@ -6,7 +6,7 @@ from qtpy.QtWidgets import (
 )
 
 from qtpy.QtCore import Qt
-from meshmaker.components.Damping.dampingBase import DampingBase, DampingRegistry
+from femora.components.Damping.dampingBase import DampingBase, DampingRegistry
 
 class DampingManagerTab(QDialog):
     def __init__(self, parent=None):
@@ -362,7 +362,7 @@ class DampingEditDialog(QDialog):
 if __name__ == "__main__":
     import sys
     from qtpy.QtWidgets import QApplication
-    from meshmaker.components.Damping.dampingBase import RayleighDamping, ModalDamping
+    from femora.components.Damping.dampingBase import RayleighDamping, ModalDamping
     RayleighDamping1 = RayleighDamping(alphaM=0.1, betaK=0.2, betaKInit=0.3, betaKComm=0.4)
     RayleighDamping2 = RayleighDamping(alphaM=0.5, betaK=0.6, betaKInit=0.7, betaKComm=0.8)
     ModalDamping1 = ModalDamping(numberofModes=2, dampingFactors="0.1,0.2")

@@ -3,9 +3,9 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
-from meshmaker.components.DRM.drmAbsorbingGUI import AbsorbingGUI
-from meshmaker.components.DRM.drmPatternGUI import DRMGUI
-from meshmaker.components.DRM.drmProcessGUI import DRMProcessGUI
+from femora.components.DRM.drmAbsorbingGUI import AbsorbingGUI
+from femora.components.DRM.drmPatternGUI import DRMGUI
+from femora.components.DRM.drmProcessGUI import DRMProcessGUI
 
 class CombinedDRMGUI(QWidget):
     """

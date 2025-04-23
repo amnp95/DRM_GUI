@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Type, Optional, Union
-from meshmaker.components.Material.materialBase import Material, MaterialManager
+from femora.components.Material.materialBase import Material, MaterialManager
 
 
 class Element(ABC):
@@ -366,7 +366,7 @@ class ElementRegistry:
     
     
 
-from meshmaker.components.Element.elementsOpenSees import *
+from femora.components.Element.elementsOpenSees import *
 
     
 

@@ -27,9 +27,9 @@ from typing import Dict, List, Tuple, Union
 from abc import ABC, abstractmethod
 import numpy as np
 import pyvista as pv
-from meshmaker.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
-from meshmaker.components.Element.elementBase import Element
-from meshmaker.components.Region.regionBase import RegionBase
+from femora.components.Mesh.meshPartBase import MeshPart, MeshPartRegistry
+from femora.components.Element.elementBase import Element
+from femora.components.Region.regionBase import RegionBase
 
 
 

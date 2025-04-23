@@ -6,9 +6,9 @@ from qtpy.QtWidgets import (
     QStackedWidget, QScrollArea, QTextEdit
 )
 
-from meshmaker.components.Pattern.patternBase import Pattern, PatternManager
-from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeries, TimeSeriesManager
-from meshmaker.utils.validator import DoubleValidator, IntValidator
+from femora.components.Pattern.patternBase import Pattern, PatternManager
+from femora.components.TimeSeries.timeSeriesBase import TimeSeries, TimeSeriesManager
+from femora.utils.validator import DoubleValidator, IntValidator
 
 class PatternManagerTab(QDialog):
     def __init__(self, parent=None):
@@ -228,7 +228,7 @@ class UniformExcitationCreationDialog(QDialog):
 
     def open_time_series_dialog(self):
         """Open dialog to create a new time series"""
-        from meshmaker.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
+        from femora.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
         dialog = TimeSeriesManagerTab(self)
         if dialog.exec() == QDialog.Accepted:
             self.update_time_series_list()
@@ -351,7 +351,7 @@ class UniformExcitationEditDialog(QDialog):
 
     def open_time_series_dialog(self):
         """Open dialog to create a new time series"""
-        from meshmaker.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
+        from femora.components.TimeSeries.timeSeriesGUI import TimeSeriesManagerTab
         dialog = TimeSeriesManagerTab(self)
         if dialog.exec() == QDialog.Accepted:
             self.update_time_series_list()
@@ -690,7 +690,7 @@ if __name__ == '__main__':
     import sys
     
     # Create sample time series for testing
-    from meshmaker.components.TimeSeries.timeSeriesBase import (
+    from femora.components.TimeSeries.timeSeriesBase import (
         ConstantTimeSeries, LinearTimeSeries, TrigTimeSeries
     )
     

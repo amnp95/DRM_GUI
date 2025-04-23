@@ -7,11 +7,11 @@ from qtpy.QtWidgets import (
     QFileDialog, QGroupBox
 )
 
-from meshmaker.components.Recorder.recorderBase import (
+from femora.components.Recorder.recorderBase import (
     Recorder, RecorderManager, RecorderRegistry,
     NodeRecorder, VTKHDFRecorder
 )
-from meshmaker.utils.validator import DoubleValidator, IntValidator
+from femora.utils.validator import DoubleValidator, IntValidator
 
 
 class RecorderManagerTab(QDialog):

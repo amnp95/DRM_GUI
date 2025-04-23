@@ -1,6 +1,6 @@
 from typing import List, Dict
 from abc import ABC, abstractmethod
-from meshmaker.components.Assemble.Assembler import Assembler
+from femora.components.Assemble.Assembler import Assembler
 from pykdtree.kdtree import KDTree
 import numpy as np
 

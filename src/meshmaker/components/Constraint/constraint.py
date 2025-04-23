@@ -1,5 +1,5 @@
-from meshmaker.components.Constraint.mpConstraint import mpConstraintManager
-from meshmaker.components.Constraint.spConstraint import SPConstraintManager
+from femora.components.Constraint.mpConstraint import mpConstraintManager
+from femora.components.Constraint.spConstraint import SPConstraintManager
 
 class Constraint:
     """
@@ -20,11 +20,11 @@ class Constraint:
 
     Usage:
         # Direct access to the Constraint manager
-        from meshmaker.components.Constraint.constraint import Constraint
+        from femora.components.Constraint.constraint import Constraint
         constraint_instance = Constraint()
         
         # Access through MeshMaker (recommended approach)
-        from meshmaker.components.MeshMaker import MeshMaker
+        from femora.components.MeshMaker import MeshMaker
         mk = MeshMaker()
         constraint_manager = mk.constraint
         

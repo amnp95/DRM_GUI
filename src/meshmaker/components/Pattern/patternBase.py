@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Optional, Union, Type
 import numpy as np
-from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeries
+from femora.components.TimeSeries.timeSeriesBase import TimeSeries
 
 class Pattern(ABC):
     """

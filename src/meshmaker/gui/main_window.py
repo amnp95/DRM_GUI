@@ -4,12 +4,12 @@ from qtpy.QtCore import Qt
 
 import pyvistaqt
 import pyvista as pv
-from meshmaker.components.MeshMaker import MeshMaker
-from meshmaker.gui.left_panel import LeftPanel
-from meshmaker.gui.console import InteractiveConsole
-from meshmaker.components.drm_creators.drm_manager import DRMManager
-from meshmaker.gui.plotter import PlotterManager
-from meshmaker.gui.toolbar import ToolbarManager
+from femora.components.MeshMaker import MeshMaker
+from femora.gui.left_panel import LeftPanel
+from femora.gui.console import InteractiveConsole
+from femora.components.drm_creators.drm_manager import DRMManager
+from femora.gui.plotter import PlotterManager
+from femora.gui.toolbar import ToolbarManager
 
 
 class MainWindow(QMainWindow):

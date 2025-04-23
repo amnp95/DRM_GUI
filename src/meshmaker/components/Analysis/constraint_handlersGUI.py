@@ -6,8 +6,8 @@ from qtpy.QtWidgets import (
     QCheckBox, QGroupBox, QDoubleSpinBox, QRadioButton
 )
 
-from meshmaker.utils.validator import DoubleValidator
-from meshmaker.components.Analysis.constraint_handlers import (
+from femora.utils.validator import DoubleValidator
+from femora.components.Analysis.constraint_handlers import (
     ConstraintHandler, ConstraintHandlerManager, 
     PlainConstraintHandler, TransformationConstraintHandler,
     PenaltyConstraintHandler, LagrangeConstraintHandler, 

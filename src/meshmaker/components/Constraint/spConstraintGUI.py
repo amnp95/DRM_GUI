@@ -6,13 +6,13 @@ from qtpy.QtWidgets import (
     QStackedWidget, QRadioButton, QButtonGroup, QGroupBox, QCheckBox, QMenu,
     QScrollArea
 )
-from meshmaker.components.Constraint.spConstraint import (
+from femora.components.Constraint.spConstraint import (
     SPConstraint, FixConstraint, FixXConstraint, FixYConstraint, FixZConstraint, SPConstraintManager,
     FixMacroX_max, FixMacroX_min, FixMacroY_max, FixMacroY_min, FixMacroZ_max, FixMacroZ_min
 )
-from meshmaker.utils.validator import DoubleValidator, IntValidator
-from meshmaker.gui.plotter import PlotterManager
-from meshmaker.components.MeshMaker import MeshMaker
+from femora.utils.validator import DoubleValidator, IntValidator
+from femora.gui.plotter import PlotterManager
+from femora.components.MeshMaker import MeshMaker
 
 
 class SPConstraintManagerTab(QDialog):

@@ -3,9 +3,9 @@ import numpy as np
 import pyvista as pv
 import warnings
 
-from meshmaker.components.Mesh.meshPartBase import MeshPart
-from meshmaker.components.Element.elementBase import Element
-from meshmaker.components.Material.materialBase import Material
+from femora.components.Mesh.meshPartBase import MeshPart
+from femora.components.Element.elementBase import Element
+from femora.components.Material.materialBase import Material
   
 
 class Assembler:

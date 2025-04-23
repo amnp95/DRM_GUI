@@ -1,17 +1,17 @@
-from meshmaker.components.Material.materialBase import MaterialManager
-from meshmaker.components.Element.elementBase import Element, ElementRegistry
-from meshmaker.components.Assemble.Assembler import Assembler
-from meshmaker.components.Damping.dampingBase import DampingManager
-from meshmaker.components.Region.regionBase import RegionManager
-from meshmaker.components.Constraint.constraint import Constraint
-from meshmaker.components.Mesh.meshPartBase import MeshPartRegistry
-from meshmaker.components.Mesh.meshPartInstance import *
-from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeriesManager
-from meshmaker.components.Analysis.analysis import AnalysisManager
-from meshmaker.components.Pattern.patternBase import PatternManager
-from meshmaker.components.Recorder.recorderBase import RecorderManager
-from meshmaker.components.Process.process import ProcessManager
-from meshmaker.components.DRM.DRM import DRM
+from femora.components.Material.materialBase import MaterialManager
+from femora.components.Element.elementBase import Element, ElementRegistry
+from femora.components.Assemble.Assembler import Assembler
+from femora.components.Damping.dampingBase import DampingManager
+from femora.components.Region.regionBase import RegionManager
+from femora.components.Constraint.constraint import Constraint
+from femora.components.Mesh.meshPartBase import MeshPartRegistry
+from femora.components.Mesh.meshPartInstance import *
+from femora.components.TimeSeries.timeSeriesBase import TimeSeriesManager
+from femora.components.Analysis.analysis import AnalysisManager
+from femora.components.Pattern.patternBase import PatternManager
+from femora.components.Recorder.recorderBase import RecorderManager
+from femora.components.Process.process import ProcessManager
+from femora.components.DRM.DRM import DRM
 import os
 from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones, full, uint16, repeat, where, isin
 from pyvista import Cube, MultiBlock, StructuredGrid
@@ -125,7 +125,7 @@ class MeshMaker:
         try:
             # Import required modules
             from qtpy.QtWidgets import QApplication
-            from meshmaker.gui.main_window import MainWindow
+            from femora.gui.main_window import MainWindow
             
             # Ensure a QApplication instance exists
             app = QApplication.instance()

@@ -5,7 +5,7 @@ from qtpy.QtWidgets import (
     QPushButton, QHeaderView, QCheckBox
 )
 
-from meshmaker.components.Analysis.numberers import NumbererManager, Numberer
+from femora.components.Analysis.numberers import NumbererManager, Numberer
 
 
 class NumbererManagerTab(QDialog):

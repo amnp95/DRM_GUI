@@ -3,7 +3,7 @@ from numpy import unique, zeros, arange, array, abs, concatenate, meshgrid, ones
 from pyvista import Cube, MultiBlock, StructuredGrid
 import tqdm
 from pykdtree.kdtree import KDTree as pykdtree
-from meshmaker.components.Pattern.patternBase import H5DRMPattern
+from femora.components.Pattern.patternBase import H5DRMPattern
 
 class DRM:
     """

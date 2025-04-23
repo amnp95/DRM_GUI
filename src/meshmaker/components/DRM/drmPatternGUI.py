@@ -5,16 +5,16 @@ from qtpy.QtWidgets import (
     QRadioButton, QButtonGroup
 )
 from qtpy.QtCore import Qt
-from meshmaker.gui.plotter import PlotterManager
-from meshmaker.components.MeshMaker import MeshMaker
+from femora.gui.plotter import PlotterManager
+from femora.components.MeshMaker import MeshMaker
 from qtpy.QtWidgets import QSizePolicy
-from meshmaker.components.Pattern.patternBase import H5DRMPattern, PatternManager
+from femora.components.Pattern.patternBase import H5DRMPattern, PatternManager
 import numpy as np
 import os
 import csv
 import tempfile
-from meshmaker.gui.tapis_integration import TapisWorker, TACCFileBrowserDialog
-from meshmaker.components.DRM.DRM import DRM
+from femora.gui.tapis_integration import TapisWorker, TACCFileBrowserDialog
+from femora.components.DRM.DRM import DRM
 
 class DRMGUI(QWidget):
     def __init__(self, parent=None):

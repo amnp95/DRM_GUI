@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (QLabel, QLineEdit, QComboBox, QPushButton,
 import numpy as np
 import pyvista as pv
 from .baseGrid import BaseGridTab
-from meshmaker.utils.validator import DoubleValidator, IntValidator
+from femora.utils.validator import DoubleValidator, IntValidator
 
 class SpacingSettingsDialog(QDialog):
     """Popup dialog for spacing method settings"""

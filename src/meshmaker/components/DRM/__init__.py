@@ -1,3 +1,3 @@
-from meshmaker.components.DRM.DRM import DRM
+from femora.components.DRM.DRM import DRM
 
 __all__ = ['DRM']

@@ -6,8 +6,8 @@ from qtpy.QtWidgets import (
     QCheckBox, QGroupBox, QDoubleSpinBox, QRadioButton, QSpinBox
 )
 
-from meshmaker.utils.validator import DoubleValidator, IntValidator
-from meshmaker.components.Analysis.convergenceTests import (
+from femora.utils.validator import DoubleValidator, IntValidator
+from femora.components.Analysis.convergenceTests import (
     Test, TestManager, 
     NormUnbalanceTest, NormDispIncrTest,
     EnergyIncrTest, RelativeNormUnbalanceTest,

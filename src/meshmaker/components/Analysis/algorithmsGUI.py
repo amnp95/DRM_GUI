@@ -6,8 +6,8 @@ from qtpy.QtWidgets import (
     QCheckBox, QGroupBox, QDoubleSpinBox, QSpinBox, QRadioButton
 )
 
-from meshmaker.utils.validator import DoubleValidator, IntValidator
-from meshmaker.components.Analysis.algorithms import (
+from femora.utils.validator import DoubleValidator, IntValidator
+from femora.components.Analysis.algorithms import (
     Algorithm, AlgorithmManager, 
     LinearAlgorithm, NewtonAlgorithm, ModifiedNewtonAlgorithm,
     NewtonLineSearchAlgorithm, KrylovNewtonAlgorithm, SecantNewtonAlgorithm,

@@ -6,20 +6,20 @@ from qtpy.QtWidgets import (
     QGroupBox, QSpinBox, QDoubleSpinBox, QRadioButton, QCheckBox
 )
 
-from meshmaker.components.Analysis.analysis import Analysis, AnalysisManager
-from meshmaker.components.Analysis.constraint_handlersGUI import ConstraintHandlerManagerTab
-from meshmaker.components.Analysis.integratorsGUI import IntegratorManagerTab
-from meshmaker.components.Analysis.algorithmsGUI import AlgorithmManagerTab
-from meshmaker.components.Analysis.systemsGUI import SystemManagerTab
-from meshmaker.components.Analysis.numberersGUI import NumbererManagerTab
-from meshmaker.components.Analysis.convergenceTestsGUI import TestManagerTab
+from femora.components.Analysis.analysis import Analysis, AnalysisManager
+from femora.components.Analysis.constraint_handlersGUI import ConstraintHandlerManagerTab
+from femora.components.Analysis.integratorsGUI import IntegratorManagerTab
+from femora.components.Analysis.algorithmsGUI import AlgorithmManagerTab
+from femora.components.Analysis.systemsGUI import SystemManagerTab
+from femora.components.Analysis.numberersGUI import NumbererManagerTab
+from femora.components.Analysis.convergenceTestsGUI import TestManagerTab
 
-from meshmaker.components.Analysis.constraint_handlers import ConstraintHandlerManager
-from meshmaker.components.Analysis.numberers import NumbererManager
-from meshmaker.components.Analysis.systems import SystemManager
-from meshmaker.components.Analysis.algorithms import AlgorithmManager
-from meshmaker.components.Analysis.convergenceTests import TestManager
-from meshmaker.components.Analysis.integrators import IntegratorManager, StaticIntegrator, TransientIntegrator
+from femora.components.Analysis.constraint_handlers import ConstraintHandlerManager
+from femora.components.Analysis.numberers import NumbererManager
+from femora.components.Analysis.systems import SystemManager
+from femora.components.Analysis.algorithms import AlgorithmManager
+from femora.components.Analysis.convergenceTests import TestManager
+from femora.components.Analysis.integrators import IntegratorManager, StaticIntegrator, TransientIntegrator
 
 
 class AnalysisManagerTab(QDialog):

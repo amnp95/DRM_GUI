@@ -10,10 +10,10 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt, QMimeData, QPoint
 
-from meshmaker.components.Process.process import ProcessManager
-from meshmaker.components.Recorder.recorderBase import Recorder, RecorderManager
-from meshmaker.components.Analysis.analysis import Analysis, AnalysisManager
-from meshmaker.components.Pattern.patternBase import Pattern, PatternManager
+from femora.components.Process.process import ProcessManager
+from femora.components.Recorder.recorderBase import Recorder, RecorderManager
+from femora.components.Analysis.analysis import Analysis, AnalysisManager
+from femora.components.Pattern.patternBase import Pattern, PatternManager
 
 
 class ComponentDragItem(QListWidgetItem):
@@ -386,14 +386,14 @@ if __name__ == "__main__":
     pattern_manager = PatternManager()
     
     # Create sample recorders
-    from meshmaker.components.Recorder.recorderBase import NodeRecorder, VTKHDFRecorder
+    from femora.components.Recorder.recorderBase import NodeRecorder, VTKHDFRecorder
     recorder1 = NodeRecorder(file_name="disp.out", nodes=[1, 2, 3], dofs=[1, 2], resp_type="disp")
     recorder2 = VTKHDFRecorder(file_base_name="results", resp_types=["disp", "vel"])
     
     # Create sample patterns
     try:
-        from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeries, TimeSeriesManager
-        from meshmaker.components.Pattern.patternBase import UniformExcitation, H5DRMPattern
+        from femora.components.TimeSeries.timeSeriesBase import TimeSeries, TimeSeriesManager
+        from femora.components.Pattern.patternBase import UniformExcitation, H5DRMPattern
         
         # Create a sample time series
         time_series = TimeSeriesManager().create_time_series("Path", filePath="accel.dat", fileTime="accel.time" )
@@ -420,12 +420,12 @@ if __name__ == "__main__":
     # Create sample analyses (Note: This is simplified as actual Analysis objects require many components)
     # In a real implementation, you would create proper Analysis objects with all required components
     try:
-        from meshmaker.components.Analysis.constraint_handlers import ConstraintHandlerManager
-        from meshmaker.components.Analysis.numberers import NumbererManager
-        from meshmaker.components.Analysis.systems import SystemManager
-        from meshmaker.components.Analysis.algorithms import AlgorithmManager
-        from meshmaker.components.Analysis.convergenceTests import TestManager
-        from meshmaker.components.Analysis.integrators import IntegratorManager
+        from femora.components.Analysis.constraint_handlers import ConstraintHandlerManager
+        from femora.components.Analysis.numberers import NumbererManager
+        from femora.components.Analysis.systems import SystemManager
+        from femora.components.Analysis.algorithms import AlgorithmManager
+        from femora.components.Analysis.convergenceTests import TestManager
+        from femora.components.Analysis.integrators import IntegratorManager
         
         # Create components for analysis
         constraint_handler = ConstraintHandlerManager().create_handler("transformation")

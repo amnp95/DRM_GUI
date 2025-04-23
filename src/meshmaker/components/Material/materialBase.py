@@ -351,7 +351,7 @@ class MaterialRegistry:
         """
         return ""
 
-from meshmaker.components.Material.materialsOpenSees import *
+from femora.components.Material.materialsOpenSees import *
 class MaterialManager:
     """
     Singleton class for managing mesh materials and properties

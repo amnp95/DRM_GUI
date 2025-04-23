@@ -11,9 +11,9 @@ from qtpy.QtWidgets import (
 
 
 
-from meshmaker.components.Mesh.meshPartBase import MeshPart
-from meshmaker.components.Assemble.Assembler import Assembler
-from meshmaker.gui.plotter import PlotterManager
+from femora.components.Mesh.meshPartBase import MeshPart
+from femora.components.Assemble.Assembler import Assembler
+from femora.gui.plotter import PlotterManager
 
 class AssemblyManagerTab(QWidget):
     def __init__(self, parent=None):
@@ -337,7 +337,7 @@ class AssemblyManagerTab(QWidget):
         """
         Open dialog to create a new assembly section
         """
-        from meshmaker.components.Assemble.AssemblerGUI import AssemblySectionCreationDialog
+        from femora.components.Assemble.AssemblerGUI import AssemblySectionCreationDialog
         
         dialog = AssemblySectionCreationDialog(self)
         
@@ -808,9 +808,9 @@ if __name__ == "__main__":
     import sys
 
     # Preliminary setup of mesh parts for testing
-    from meshmaker.components.Material.materialsOpenSees import ElasticIsotropicMaterial
-    from meshmaker.components.Element.elementsOpenSees import stdBrickElement
-    from meshmaker.components.Mesh.meshPartInstance import StructuredRectangular3D
+    from femora.components.Material.materialsOpenSees import ElasticIsotropicMaterial
+    from femora.components.Element.elementsOpenSees import stdBrickElement
+    from femora.components.Mesh.meshPartInstance import StructuredRectangular3D
 
     # Create the Qt Application
     app = QApplication(sys.argv)
