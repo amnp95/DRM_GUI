@@ -36,7 +36,7 @@ The linear time series creates a function that increases linearly with time, mul
         # Via FEMORA
         import femora as fm
         
-        mk = FEMORA()
+         
         linear_ts = fm.timeSeries.create_time_series(
             'Linear',
             factor=1.5

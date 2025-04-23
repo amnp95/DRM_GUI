@@ -64,7 +64,7 @@ Parameters:
         # Via FEMORA
         import femora as fm
         
-        mk = FEMORA()
+         
         pathtime_ts = fm.timeSeries.create_time_series(
             'PathTime',
             time=[0, 1, 2, 3],

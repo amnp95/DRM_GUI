@@ -40,7 +40,7 @@ There are two ways to access the Assembler:
       import femora as fm
       
       # Create a FEMORA instance
-      mk = FEMORA()
+       
       
       # Access the Assembler through MeshMaker
       assembler = fm.assembler

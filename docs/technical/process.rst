@@ -39,7 +39,7 @@ There are two ways to access the Process component in your code:
       import femora as fm
       
       # Create a FEMORA instance
-      mk = FEMORA()
+       
       
       # Access the ProcessManager through the .process property
       fm.process.add_step(...)
@@ -110,7 +110,7 @@ Example of creating and managing a process:
    import femora as fm
    
    # Create a FEMORA instance
-   mk = FEMORA()
+    
    
    # Create components for the process
    sp_constraint = fm.constraint.sp.create_constraint(...)

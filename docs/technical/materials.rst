@@ -32,7 +32,7 @@ There are two ways to access the MaterialManager in your code:
       import femora as fm
       
       # Create a FEMORA instance
-      mk = FEMORA()
+       
       
       # Access the MaterialManager through the .material property
       fm.material.create_material(...)

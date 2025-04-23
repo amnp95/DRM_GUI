@@ -53,7 +53,7 @@ Parameters:
         # Via FEMORA
         import femora as fm
         
-        mk = FEMORA()
+         
         pulse_ts = fm.timeSeries.create_time_series(
             'PulseTrain',
             tStart=0.0,

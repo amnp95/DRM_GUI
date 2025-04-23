@@ -28,7 +28,7 @@ Step 1: Initialize MeshMaker
 .. code-block:: python
 
    # Create a FEMORA instance
-   mk = FEMORA()
+    
 
 Step 2: Define Materials
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -148,7 +148,7 @@ Here's the complete code for this quick start example:
    import numpy as np
    
    # Create a FEMORA instance
-   mk = FEMORA()
+    
    
    # Create material
    fm.material.create_material(

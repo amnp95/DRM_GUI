@@ -32,7 +32,7 @@ There are two ways to access the PatternManager in your code:
       import femora as fm
 
       # Create a FEMORA instance
-      mk = FEMORA()
+       
 
       # Access the PatternManager through the .pattern property
       fm.pattern.create_pattern(...)

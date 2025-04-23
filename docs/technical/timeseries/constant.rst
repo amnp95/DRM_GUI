@@ -34,7 +34,7 @@ Parameters:
         # Via FEMORA
         import femora as fm
         
-        mk = FEMORA()
+         
         constant_ts = fm.timeSeries.create_time_series(
             'Constant',
             factor=1.5

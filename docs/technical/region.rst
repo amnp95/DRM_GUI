@@ -32,7 +32,7 @@ There are two ways to access the RegionManager in your code:
       import femora as fm
       
       # Create a FEMORA instance
-      mk = FEMORA()
+       
       
       # Access the RegionManager through the .region property
       fm.region.create_region(...)

@@ -32,7 +32,7 @@ There are two ways to access the TimeSeriesManager in your code:
       import femora as fm
 
       # Create a FEMORA instance
-      mk = FEMORA()
+       
 
       # Access the TimeSeriesManager through the .timeSeries property
       fm.timeSeries.create_time_series(...)
@@ -145,7 +145,7 @@ Usage Example
    import femora as fm
 
    # Create a FEMORA instance
-   mk = FEMORA()
+    
 
    # Create a constant time series
    constant_ts = fm.timeSeries.create_time_series(

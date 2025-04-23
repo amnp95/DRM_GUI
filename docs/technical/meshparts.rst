@@ -35,7 +35,7 @@ There are two ways to access the MeshPartManager in your code:
       import femora as fm
       
       # Create a FEMORA instance
-      mk = FEMORA()
+       
       
       # Access the MeshPartManager through the .meshPart property
       mesh_part_types = fm.meshPart.get_mesh_part_categories()
@@ -84,7 +84,7 @@ The MeshPart base class implements an object-oriented design that:
 .. code-block:: python
 
    # Example of creating a simple volumetric mesh part
-   mk = FEMORA()
+    
    
    # Create element and region first
    element = fm.element.create_element(...)

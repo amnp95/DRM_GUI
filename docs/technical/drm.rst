@@ -29,7 +29,7 @@ The DRM component can only be accessed through the MeshMaker class's analysis.dr
    import femora as fm
    
    # Create a MeshMaker instance
-   mk = FEMORA()
+    
    
    # Access the DRM component through the analysis.drm property
    fm.analysis.drm.createDefaultProcess(dT=0.01, finalTime=10.0)
@@ -110,7 +110,7 @@ Example of creating a DRM analysis:
    import femora as fm
    
    # Create a MeshMaker instance
-   mk = FEMORA()
+    
    
    # Assume a model has been set up already...
    
