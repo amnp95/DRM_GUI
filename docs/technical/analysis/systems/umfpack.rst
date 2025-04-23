@@ -33,13 +33,13 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a UMFPACK system solver with default settings
-   mk.analysis.system.create_system("Umfpack")
+   fm.analysis.system.create_system("Umfpack")
 
    # Create a UMFPACK system solver with custom L-value factor
-   mk.analysis.system.create_system("Umfpack", lvalue_fact=10.0)
+   fm.analysis.system.create_system("Umfpack", lvalue_fact=10.0)
 
 Notes
 -----

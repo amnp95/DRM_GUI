@@ -32,10 +32,10 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a Band General system solver
-   mk.analysis.system.create_system("BandGeneral")
+   fm.analysis.system.create_system("BandGeneral")
 
 Notes
 -----

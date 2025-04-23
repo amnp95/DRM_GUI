@@ -31,13 +31,13 @@ There are two ways to access the SP Constraint Manager:
 
    .. code-block:: python
       
-      from femora.components.MeshMaker import MeshMaker
+      import femora as fm
       
       # Create a MeshMaker instance
-      mk = MeshMaker()
+       
       
       # Access the SPConstraintManager through the constraint property
-      sp_manager = mk.constraint.sp
+      sp_manager = fm.constraint.sp
       
       # Add constraints using the manager
       sp_manager.fix(node_tag=1, dofs=[1, 1, 1, 0, 0, 0])
@@ -62,15 +62,15 @@ To create SP constraints, you must first assemble your mesh, as constraints are 
 .. code-block:: python
 
    # First, assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
 
    # Now add constraints to nodes
    # Fix translations (DOFs 1-3) but allow rotations (DOFs 4-6) at node 10
-   mk.constraint.sp.fix(node_tag=10, dofs=[1, 1, 1, 0, 0, 0])
+   fm.constraint.sp.fix(node_tag=10, dofs=[1, 1, 1, 0, 0, 0])
    
    # Fix all DOFs at a specific X coordinate
-   mk.constraint.sp.fixX(xCoordinate=0.0, dofs=[1, 1, 1, 1, 1, 1])
+   fm.constraint.sp.fixX(xCoordinate=0.0, dofs=[1, 1, 1, 1, 1, 1])
 
 DOF Specification Format
 ------------------------

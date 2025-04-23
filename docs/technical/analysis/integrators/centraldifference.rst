@@ -26,4 +26,4 @@ Usage Example
 .. code-block:: python
 
     # Create a CentralDifference integrator
-    integrator = mk.analysis.integrators.create_integrator("centraldifference") 
+    integrator = fm.analysis.integrators.create_integrator("centraldifference") 

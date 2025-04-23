@@ -38,8 +38,8 @@ There are two ways to access the MeshPartManager in your code:
       mk = FEMORA()
       
       # Access the MeshPartManager through the .meshPart property
-      mesh_part_types = mk.meshPart.get_mesh_part_categories()
-      my_mesh_part = mk.meshPart.create_mesh_part(...)
+      mesh_part_types = fm.meshPart.get_mesh_part_categories()
+      my_mesh_part = fm.meshPart.create_mesh_part(...)
 
 The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
 
@@ -87,11 +87,11 @@ The MeshPart base class implements an object-oriented design that:
    mk = FEMORA()
    
    # Create element and region first
-   element = mk.element.create_element(...)
-   region = mk.region.create_region(...)
+   element = fm.element.create_element(...)
+   region = fm.region.create_region(...)
    
    # Create the mesh part
-   mk.meshPart.create_mesh_part(
+   fm.meshPart.create_mesh_part(
        "Volume mesh",                  # Category
        "Uniform Rectangular Grid",     # Mesh part type
        "MyMeshPart",                   # Unique user name

@@ -21,21 +21,21 @@ Usage
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create MeshMaker instance
-   mk = MeshMaker()
+    
    
    # First assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
    # Apply fix constraint to node 10
    # Fix translations (DOFs 1,2,3) but allow rotations (DOFs 4,5,6)
-   mk.constraint.sp.fix(node_tag=10, dofs=[1, 1, 1, 0, 0, 0])
+   fm.constraint.sp.fix(node_tag=10, dofs=[1, 1, 1, 0, 0, 0])
    
    # Fix all degrees of freedom at node 20
-   mk.constraint.sp.fix(node_tag=20, dofs=[1, 1, 1, 1, 1, 1])
+   fm.constraint.sp.fix(node_tag=20, dofs=[1, 1, 1, 1, 1, 1])
    
    # Fix only X direction at node 30
-   mk.constraint.sp.fix(node_tag=30, dofs=[1, 0, 0, 0, 0, 0])
+   fm.constraint.sp.fix(node_tag=30, dofs=[1, 0, 0, 0, 0, 0])
 

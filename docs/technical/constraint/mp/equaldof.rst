@@ -20,30 +20,30 @@ Usage
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create MeshMaker instance
-   mk = MeshMaker()
+    
    
    # First assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
    # Make nodes 10, 11, and 12 follow node 1 in translational DOFs
-   mk.constraint.mp.create_equal_dof(
+   fm.constraint.mp.create_equal_dof(
        master_node=1,
        slave_nodes=[10, 11, 12],
        dofs=[1, 2, 3]
    )
    
    # Make node 20 follow node 5 in all DOFs (translations and rotations)
-   mk.constraint.mp.create_equal_dof(
+   fm.constraint.mp.create_equal_dof(
        master_node=5,
        slave_nodes=[20],
        dofs=[1, 2, 3, 4, 5, 6]
    )
    
    # Make nodes follow only in X direction (DOF 1)
-   mk.constraint.mp.create_equal_dof(
+   fm.constraint.mp.create_equal_dof(
        master_node=1,
        slave_nodes=[30, 31, 32],
        dofs=[1]

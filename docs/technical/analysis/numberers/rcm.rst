@@ -32,10 +32,10 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Get an RCM numberer
-   mk.analysis.numberer.get_numberer("RCM")
+   fm.analysis.numberer.get_numberer("RCM")
 
 Notes
 -----

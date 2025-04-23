@@ -32,13 +32,13 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a BFGS algorithm with default settings
-   mk.analysis.algorithm.create_algorithm("BFGS", count=3)
+   fm.analysis.algorithm.create_algorithm("BFGS", count=3)
 
    # Create a BFGS algorithm with more vectors
-   mk.analysis.algorithm.create_algorithm("BFGS", count=5)
+   fm.analysis.algorithm.create_algorithm("BFGS", count=5)
 
 Notes
 -----

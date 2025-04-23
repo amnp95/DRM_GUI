@@ -43,7 +43,7 @@ There are two ways to access the Assembler:
       mk = FEMORA()
       
       # Access the Assembler through MeshMaker
-      assembler = mk.assembler
+      assembler = fm.assembler
 
 The second approach is recommended as it ensures proper initialization of dependencies.
 

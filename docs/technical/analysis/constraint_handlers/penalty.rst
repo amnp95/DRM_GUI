@@ -18,10 +18,10 @@ Usage Example
 .. code-block:: python
 
     # Create a MeshMaker instance
-    mk = MeshMaker()
+     
     
     # Create a Penalty constraint handler with default parameters
-    mk.analysis.constraint.create_handler("Penalty")
+    fm.analysis.constraint.create_handler("Penalty")
     
     # Create a Penalty constraint handler with custom parameters
-    mk.analysis.constraint.create_handler("Penalty", alpha_s=1.0e7, alpha_m=1.0e8) 
+    fm.analysis.constraint.create_handler("Penalty", alpha_s=1.0e7, alpha_m=1.0e8) 

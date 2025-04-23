@@ -32,10 +32,10 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a Full General system solver
-   mk.analysis.system.create_system("FullGeneral")
+   fm.analysis.system.create_system("FullGeneral")
 
 Notes
 -----

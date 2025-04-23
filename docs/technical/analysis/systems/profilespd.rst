@@ -33,10 +33,10 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a Profile SPD system solver
-   mk.analysis.system.create_system("ProfileSPD")
+   fm.analysis.system.create_system("ProfileSPD")
 
 Notes
 -----

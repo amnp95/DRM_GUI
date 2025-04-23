@@ -38,13 +38,13 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a Krylov Newton algorithm with default settings
-   mk.analysis.algorithm.create_algorithm("KrylovNewton")
+   fm.analysis.algorithm.create_algorithm("KrylovNewton")
 
    # Create a Krylov Newton algorithm with custom settings
-   mk.analysis.algorithm.create_algorithm(
+   fm.analysis.algorithm.create_algorithm(
        "KrylovNewton",
        tang_iter="initial",
        tang_incr="current",

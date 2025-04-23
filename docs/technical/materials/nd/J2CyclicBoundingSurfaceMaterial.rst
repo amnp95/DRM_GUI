@@ -62,9 +62,9 @@ Parameters:
         or 
 
         # Via MeshMaker
-        from femora.components.MeshMaker import MeshMaker
-        mk = MeshMaker()
-        mk.material.create_material(
+        import femora as fm
+         
+        fm.material.create_material(
             material_category="nDMaterial",
             material_type="J2CyclicBoundingSurface", 
             user_name="Clay", 

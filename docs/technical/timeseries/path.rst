@@ -62,7 +62,7 @@ Parameters:
         from femora.components.FEMORA import FEMORA
         
         mk = FEMORA()
-        path_ts = mk.timeSeries.create_time_series(
+        path_ts = fm.timeSeries.create_time_series(
             'Path',
             dt=0.02,
             filePath='acceleration.txt',

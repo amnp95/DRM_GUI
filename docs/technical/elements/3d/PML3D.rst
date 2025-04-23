@@ -82,11 +82,11 @@ Parameters:
         )
 
         # Via MeshMaker
-        from femora.components.MeshMaker import MeshMaker
-        mk = MeshMaker()
+        import femora as fm
+         
 
         # Create material
-        soil = mk.material.create_material(
+        soil = fm.material.create_material(
             material_category="nDMaterial",
             material_type="ElasticIsotropic",
             user_name="Soil",
@@ -96,7 +96,7 @@ Parameters:
         )
 
         # Create element
-        pml = mk.element.create_element(
+        pml = fm.element.create_element(
             element_type="PML3D",
             ndof=9,
             material="Soil",

@@ -33,13 +33,13 @@ Usage Example
 .. code-block:: python
 
     # Create a MeshMaker instance
-    mk = MeshMaker()
+     
     
     # Create an Auto constraint handler with default settings
-    mk.analysis.constraint.create_handler("Auto")
+    fm.analysis.constraint.create_handler("Auto")
     
     # Create with verbose output
-    mk.analysis.constraint.create_handler("Auto", verbose=True)
+    fm.analysis.constraint.create_handler("Auto", verbose=True)
     
     # Create with custom penalty factor
-    mk.analysis.constraint.create_handler("Auto", user_penalty=1.0e8) 
+    fm.analysis.constraint.create_handler("Auto", user_penalty=1.0e8) 

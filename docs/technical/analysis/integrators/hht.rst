@@ -37,10 +37,10 @@ Usage Example
 .. code-block:: python
 
     # Create an HHT integrator with only alpha specified (gamma and beta calculated automatically)
-    integrator = mk.analysis.integrators.create_integrator("hht", alpha=-0.1)
+    integrator = fm.analysis.integrators.create_integrator("hht", alpha=-0.1)
     
     # Create an HHT integrator with all parameters explicitly defined
-    integrator = mk.analysis.integrators.create_integrator("hht", 
+    integrator = fm.analysis.integrators.create_integrator("hht", 
                                                     alpha=-0.1, 
                                                     gamma=0.6, 
                                                     beta=0.3025) 

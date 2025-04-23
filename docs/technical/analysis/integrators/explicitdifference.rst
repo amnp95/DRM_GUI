@@ -26,4 +26,4 @@ Usage Example
 .. code-block:: python
 
     # Create an ExplicitDifference integrator
-    integrator = mk.analysis.integrators.create_integrator("explicitdifference") 
+    integrator = fm.analysis.integrators.create_integrator("explicitdifference") 

@@ -49,11 +49,11 @@ Parameters:
         )
 
         # Via MeshMaker
-        from femora.components.MeshMaker import MeshMaker
-        mk = MeshMaker()
+        import femora as fm
+         
 
         # Create material
-        concrete = mk.material.create_material(
+        concrete = fm.material.create_material(
             material_category="nDMaterial",
             material_type="ElasticIsotropic",
             user_name="Concrete",
@@ -63,7 +63,7 @@ Parameters:
         )
 
         # Create element
-        brick = mk.element.create_element(
+        brick = fm.element.create_element(
             element_type="stdBrick",
             ndof=3,
             material="Concrete",

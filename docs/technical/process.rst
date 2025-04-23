@@ -42,7 +42,7 @@ There are two ways to access the Process component in your code:
       mk = FEMORA()
       
       # Access the ProcessManager through the .process property
-      mk.process.add_step(...)
+      fm.process.add_step(...)
 
 The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 
@@ -113,34 +113,34 @@ Example of creating and managing a process:
    mk = FEMORA()
    
    # Create components for the process
-   sp_constraint = mk.constraint.sp.create_constraint(...)
-   pattern = mk.pattern.create_pattern(...)
-   analysis = mk.analysis.create_analysis(...)
-   recorder = mk.recorder.create_node_recorder(...)
+   sp_constraint = fm.constraint.sp.create_constraint(...)
+   pattern = fm.pattern.create_pattern(...)
+   analysis = fm.analysis.create_analysis(...)
+   recorder = fm.recorder.create_node_recorder(...)
    
    # Add steps to the process
-   mk.process.add_step(sp_constraint, "Apply boundary conditions")
-   mk.process.add_step(pattern, "Apply gravity loads")
-   mk.process.add_step(recorder, "Set up recorder")
-   mk.process.add_step(analysis, "Run analysis")
+   fm.process.add_step(sp_constraint, "Apply boundary conditions")
+   fm.process.add_step(pattern, "Apply gravity loads")
+   fm.process.add_step(recorder, "Set up recorder")
+   fm.process.add_step(analysis, "Run analysis")
    
    # Insert a step at position 2
-   mp_constraint = mk.constraint.mp.create_constraint(...)
-   mk.process.insert_step(2, mp_constraint, "Apply multi-point constraints")
+   mp_constraint = fm.constraint.mp.create_constraint(...)
+   fm.process.insert_step(2, mp_constraint, "Apply multi-point constraints")
    
    # Remove a step
-   mk.process.remove_step(1)
+   fm.process.remove_step(1)
    
    # Get all steps
-   steps = mk.process.get_steps()
+   steps = fm.process.get_steps()
    
    # Get a specific step
-   step = mk.process.get_step(0)
+   step = fm.process.get_step(0)
    
    # Clear all steps
-   mk.process.clear_steps()
+   fm.process.clear_steps()
    
    # Generate TCL script for the process
-   tcl_script = mk.process.to_tcl()
+   tcl_script = fm.process.to_tcl()
 
 Each step in the process is executed in sequence when the analysis is run, generating the appropriate OpenSees TCL commands based on the components in each step. 

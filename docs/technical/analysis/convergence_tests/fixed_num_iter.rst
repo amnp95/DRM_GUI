@@ -35,7 +35,7 @@ Usage Example
 .. code-block:: python
 
     # Create a MeshMaker instance
-    mk = MeshMaker()
+     
     
     # Create a Fixed Num Iter convergence test
-    mk.analysis.test.create_test("FixedNumIter", numIter=5) 
+    fm.analysis.test.create_test("FixedNumIter", numIter=5) 

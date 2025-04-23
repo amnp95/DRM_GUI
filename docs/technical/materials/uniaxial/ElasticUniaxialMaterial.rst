@@ -32,6 +32,6 @@ Parameters:
         elastic_material = ElasticUniaxialMaterial("Steel", E=200e9, eta=0.05, Eneg=200e9)
 
         # Via MeshMaker
-        from femora.components.MeshMaker import MeshMaker
-        mk = MeshMaker()
-        mk.material.create_material("uniaxialMaterial", "Elastic", "Steel", E=200e9, eta=0.05, Eneg=200e9)
+        import femora as fm
+         
+        fm.material.create_material("uniaxialMaterial", "Elastic", "Steel", E=200e9, eta=0.05, Eneg=200e9)

@@ -26,7 +26,7 @@ Usage Example
 .. code-block:: python
 
     # Create a TRBDF2 integrator
-    integrator = mk.analysis.integrators.create_integrator("trbdf2")
+    integrator = fm.analysis.integrators.create_integrator("trbdf2")
 
 
 

@@ -35,7 +35,7 @@ There are two ways to access the TimeSeriesManager in your code:
       mk = FEMORA()
 
       # Access the TimeSeriesManager through the .timeSeries property
-      mk.timeSeries.create_time_series(...)
+      fm.timeSeries.create_time_series(...)
 
 The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 
@@ -148,20 +148,20 @@ Usage Example
    mk = FEMORA()
 
    # Create a constant time series
-   constant_ts = mk.timeSeries.create_time_series(
+   constant_ts = fm.timeSeries.create_time_series(
        'Constant', 
        factor=1.0
    )
 
    # Create a linear time series
-   linear_ts = mk.timeSeries.create_time_series(
+   linear_ts = fm.timeSeries.create_time_series(
        'Linear',
        time_points=[0.0, 0.1, 0.2, 0.5, 1.0],
        factor_points=[0.0, 0.2, 0.5, 0.8, 1.0]
    )
 
    # Create a path time series from a file
-   path_ts = mk.timeSeries.create_time_series(
+   path_ts = fm.timeSeries.create_time_series(
        'Path',
        file_path='data/acceleration.txt',
        dt=0.01,
@@ -169,7 +169,7 @@ Usage Example
    )
 
    # Create a trigonometric time series
-   trig_ts = mk.timeSeries.create_time_series(
+   trig_ts = fm.timeSeries.create_time_series(
        'Trig',
        trig_type='Sine',  # 'Sine' or 'Cosine'
        period=1.0,
@@ -208,7 +208,7 @@ Example of applying a time series to a uniform excitation pattern:
 .. code-block:: python
 
    # Create a time series for ground motion
-   ground_motion_ts = mk.timeSeries.create_time_series(
+   ground_motion_ts = fm.timeSeries.create_time_series(
        'Path',
        file_path='ground_motion.txt',
        dt=0.01,
@@ -216,7 +216,7 @@ Example of applying a time series to a uniform excitation pattern:
    )
 
    # Create a pattern using the time series
-   mk.pattern.create_pattern(
+   fm.pattern.create_pattern(
        'uniformexcitation',
        dof=1,  # X direction
        time_series=ground_motion_ts,

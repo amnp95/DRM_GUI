@@ -33,10 +33,10 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a SuperLU system solver
-   mk.analysis.system.create_system("SuperLU")
+   fm.analysis.system.create_system("SuperLU")
 
 Notes
 -----

@@ -43,13 +43,13 @@ Usage Example
 .. code-block:: python
 
     # Create a DisplacementControl integrator with basic parameters
-    integrator = mk.analysis.integrators.create_integrator("displacementcontrol", 
+    integrator = fm.analysis.integrators.create_integrator("displacementcontrol", 
                                                     node_tag=3, 
                                                     dof=1, 
                                                     incr=0.01)
     
     # Create a DisplacementControl integrator with custom step size limits
-    integrator = mk.analysis.integrators.create_integrator("displacementcontrol", 
+    integrator = fm.analysis.integrators.create_integrator("displacementcontrol", 
                                                     node_tag=3, 
                                                     dof=1, 
                                                     incr=0.01, 

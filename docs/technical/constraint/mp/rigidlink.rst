@@ -23,23 +23,23 @@ Usage
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create MeshMaker instance
-   mk = MeshMaker()
+    
    
    # First assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
    # Create a rigid bar link (constrains translations only)
-   mk.constraint.mp.create_rigid_link(
+   fm.constraint.mp.create_rigid_link(
        type_str='bar',
        master_node=1,
        slave_nodes=[10, 11, 12]
    )
    
    # Create a rigid beam link (constrains translations and rotations)
-   mk.constraint.mp.create_rigid_link(
+   fm.constraint.mp.create_rigid_link(
        type_str='beam',
        master_node=5,
        slave_nodes=[20]

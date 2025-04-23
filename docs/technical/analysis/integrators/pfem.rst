@@ -35,9 +35,9 @@ Usage Example
 .. code-block:: python
 
     # Create a PFEM integrator with default parameters
-    integrator = mk.analysis.integrators.create_integrator("pfem")
+    integrator = fm.analysis.integrators.create_integrator("pfem")
     
     # Create a PFEM integrator with custom parameters
-    integrator = mk.analysis.integrators.create_integrator("pfem", 
+    integrator = fm.analysis.integrators.create_integrator("pfem", 
                                                     gamma=0.6, 
                                                     beta=0.3) 

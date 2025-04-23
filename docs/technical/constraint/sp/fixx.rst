@@ -22,19 +22,19 @@ Usage
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create MeshMaker instance
-   mk = MeshMaker()
+    
    
    # First assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
    # Fix all nodes at X=0 (e.g., left face of a model)
    # Fix translations (DOFs 1,2,3) but allow rotations (DOFs 4,5,6)
-   mk.constraint.sp.fixX(xCoordinate=0.0, dofs=[1, 1, 1, 0, 0, 0])
+   fm.constraint.sp.fixX(xCoordinate=0.0, dofs=[1, 1, 1, 0, 0, 0])
    
    # Fix all nodes at X=10 (e.g., right face of model)
    # Use a larger tolerance for floating-point comparison
-   mk.constraint.sp.fixX(xCoordinate=10.0, dofs=[1, 0, 0, 0, 0, 0], tol=1e-6)
+   fm.constraint.sp.fixX(xCoordinate=10.0, dofs=[1, 0, 0, 0, 0, 0], tol=1e-6)
 

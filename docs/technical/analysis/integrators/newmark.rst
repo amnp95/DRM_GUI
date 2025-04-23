@@ -38,8 +38,8 @@ Usage Example
 .. code-block:: python
 
     # Create a Newmark integrator
-    integrator = mk.analysis.integrators.create_integrator("newmark", gamma=0.5, beta=0.25)
+    integrator = fm.analysis.integrators.create_integrator("newmark", gamma=0.5, beta=0.25)
     
     # Create a Newmark integrator with velocity as primary variable
-    integrator = mk.analysis.integrators.create_integrator("newmark", gamma=0.5, beta=0.25, form="V")
+    integrator = fm.analysis.integrators.create_integrator("newmark", gamma=0.5, beta=0.25, form="V")
 

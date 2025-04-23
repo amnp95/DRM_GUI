@@ -35,13 +35,13 @@ There are two ways to access the Analysis component in your code:
    
    .. code-block:: python
       
-      from femora.components.MeshMaker import MeshMaker
+      import femora as fm
       
       # Create a MeshMaker instance
-      mk = MeshMaker()
+       
       
       # Access the AnalysisManager through the .analysis property
-      mk.analysis.create_analysis(...)
+      fm.analysis.create_analysis(...)
 
 The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
 

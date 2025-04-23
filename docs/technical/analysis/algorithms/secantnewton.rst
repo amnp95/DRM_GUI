@@ -38,13 +38,13 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a Secant Newton algorithm with default settings
-   mk.analysis.algorithm.create_algorithm("SecantNewton")
+   fm.analysis.algorithm.create_algorithm("SecantNewton")
 
    # Create a Secant Newton algorithm with custom settings
-   mk.analysis.algorithm.create_algorithm(
+   fm.analysis.algorithm.create_algorithm(
        "SecantNewton",
        tang_iter="initial",
        tang_incr="current",

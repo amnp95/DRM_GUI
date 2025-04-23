@@ -38,10 +38,10 @@ Usage Example
 .. code-block:: python
 
     # Create a LoadControl integrator with basic parameters
-    integrator = mk.analysis.integrators.create_integrator("loadcontrol", incr=0.1)
+    integrator = fm.analysis.integrators.create_integrator("loadcontrol", incr=0.1)
     
     # Create a LoadControl integrator with custom step size limits
-    integrator = mk.analysis.integrators.create_integrator("loadcontrol", 
+    integrator = fm.analysis.integrators.create_integrator("loadcontrol", 
                                                     incr=0.1, 
                                                     num_iter=5, 
                                                     min_incr=0.05, 

@@ -39,12 +39,12 @@ Usage Example
 .. code-block:: python
 
     # Create a GeneralizedAlpha integrator with basic parameters (gamma and beta calculated automatically)
-    integrator = mk.analysis.integrators.create_integrator("generalizedalpha", 
+    integrator = fm.analysis.integrators.create_integrator("generalizedalpha", 
                                                     alpha_m=0.2, 
                                                     alpha_f=0.4)
     
     # Create a GeneralizedAlpha integrator with all parameters explicitly defined
-    integrator = mk.analysis.integrators.create_integrator("generalizedalpha", 
+    integrator = fm.analysis.integrators.create_integrator("generalizedalpha", 
                                                     alpha_m=0.2, 
                                                     alpha_f=0.4, 
                                                     gamma=0.3, 

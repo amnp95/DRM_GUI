@@ -22,24 +22,24 @@ Usage
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create MeshMaker instance
-   mk = MeshMaker()
+    
    
    # First assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
    # Create a rigid diaphragm in the XY plane (perpendicular to Z-axis)
    # This is commonly used for floor diaphragms in building models
-   mk.constraint.mp.create_rigid_diaphragm(
+   fm.constraint.mp.create_rigid_diaphragm(
        direction=3,  # 3 for Z-direction (perpendicular to XY plane)
        master_node=100,
        slave_nodes=[101, 102, 103, 104, 105, 106]
    )
    
    # Create a rigid diaphragm in the XZ plane (perpendicular to Y-axis)
-   mk.constraint.mp.create_rigid_diaphragm(
+   fm.constraint.mp.create_rigid_diaphragm(
        direction=2,  # 2 for Y-direction (perpendicular to XZ plane)
        master_node=200,
        slave_nodes=[201, 202, 203, 204]

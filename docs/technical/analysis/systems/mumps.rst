@@ -37,13 +37,13 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a MUMPS system solver with default settings
-   mk.analysis.system.create_system("Mumps")
+   fm.analysis.system.create_system("Mumps")
 
    # Create a MUMPS system solver with custom settings
-   mk.analysis.system.create_system(
+   fm.analysis.system.create_system(
        "Mumps",
        icntl14=20.0,  # 20% increase in working space
        icntl7=5       # Use Metis ordering

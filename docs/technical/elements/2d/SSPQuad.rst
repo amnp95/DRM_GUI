@@ -53,11 +53,11 @@ Parameters:
         )
 
         # Via MeshMaker
-        from femora.components.MeshMaker import MeshMaker
-        mk = MeshMaker()
+        import femora as fm
+         
 
         # Create material
-        steel = mk.material.create_material(
+        steel = fm.material.create_material(
             material_category="nDMaterial",
             material_type="ElasticIsotropic",
             user_name="Steel",
@@ -67,7 +67,7 @@ Parameters:
         )
 
         # Create element
-        quad = mk.element.create_element(
+        quad = fm.element.create_element(
             element_type="SSPQuad",
             ndof=2,
             material="Steel",

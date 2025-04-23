@@ -32,10 +32,10 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Get a Plain numberer
-   mk.analysis.numberer.get_numberer("Plain")
+   fm.analysis.numberer.get_numberer("Plain")
 
 Notes
 -----

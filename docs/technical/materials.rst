@@ -35,7 +35,7 @@ There are two ways to access the MaterialManager in your code:
       mk = FEMORA()
       
       # Access the MaterialManager through the .material property
-      mk.material.create_material(...)
+      fm.material.create_material(...)
 
 The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
 

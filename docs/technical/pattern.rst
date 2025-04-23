@@ -35,7 +35,7 @@ There are two ways to access the PatternManager in your code:
       mk = FEMORA()
 
       # Access the PatternManager through the .pattern property
-      mk.pattern.create_pattern(...)
+      fm.pattern.create_pattern(...)
 
 The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 

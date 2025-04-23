@@ -32,7 +32,7 @@ Usage Example
 .. code-block:: python
 
     # Create a NormDispAndUnbalance convergence test
-    test = mk.analysis.convergence_tests.create_test("normdispandunbalance", 
+    test = fm.analysis.convergence_tests.create_test("normdispandunbalance", 
                                               tolerance1=1.0e-6, 
                                               tolerance2=1.0e-8,
                                               max_iterations=25) 

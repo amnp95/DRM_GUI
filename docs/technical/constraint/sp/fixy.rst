@@ -22,18 +22,18 @@ Usage
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create MeshMaker instance
-   mk = MeshMaker()
+    
    
    # First assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
    # Fix all nodes at Y=0 (e.g., front face of a model)
    # Fix translations (DOFs 1,2,3) but allow rotations (DOFs 4,5,6)
-   mk.constraint.sp.fixY(yCoordinate=0.0, dofs=[1, 1, 1, 0, 0, 0])
+   fm.constraint.sp.fixY(yCoordinate=0.0, dofs=[1, 1, 1, 0, 0, 0])
    
    # Fix only Y direction movement for nodes at Y=5.0 (e.g., middle plane)
-   mk.constraint.sp.fixY(yCoordinate=5.0, dofs=[0, 1, 0, 0, 0, 0], tol=1e-6)
+   fm.constraint.sp.fixY(yCoordinate=5.0, dofs=[0, 1, 0, 0, 0, 0], tol=1e-6)
 

@@ -33,10 +33,10 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Get a Parallel RCM numberer
-   mk.analysis.numberer.get_numberer("ParallelRCM")
+   fm.analysis.numberer.get_numberer("ParallelRCM")
 
 Notes
 -----

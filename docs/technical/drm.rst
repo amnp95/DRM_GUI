@@ -32,7 +32,7 @@ The DRM component can only be accessed through the MeshMaker class's analysis.dr
    mk = FEMORA()
    
    # Access the DRM component through the analysis.drm property
-   mk.analysis.drm.createDefaultProcess(dT=0.01, finalTime=10.0)
+   fm.analysis.drm.createDefaultProcess(dT=0.01, finalTime=10.0)
 
 How DRM Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,15 +115,15 @@ Example of creating a DRM analysis:
    # Assume a model has been set up already...
    
    # Create an H5DRM pattern
-   drm_pattern = mk.pattern.create_pattern("h5drm", 
+   drm_pattern = fm.pattern.create_pattern("h5drm", 
                                         h5file="seismicData.h5", 
                                         timeScaleFactor=1.0)
    
    # Set the pattern in the DRM component
-   mk.analysis.drm.set_pattern(drm_pattern)
+   fm.analysis.drm.set_pattern(drm_pattern)
    
    # Add absorbing layers (PML in this case)
-   mk.analysis.drm.addAbsorbingLayer(numLayers=2, 
+   fm.analysis.drm.addAbsorbingLayer(numLayers=2, 
                                    numPartitions=4, 
                                    partitionAlgo="kd-tree", 
                                    geometry="Rectangular", 
@@ -131,10 +131,10 @@ Example of creating a DRM analysis:
                                    type="PML")
    
    # Create the default DRM analysis process
-   mk.analysis.drm.createDefaultProcess(dT=0.01, finalTime=10.0)
+   fm.analysis.drm.createDefaultProcess(dT=0.01, finalTime=10.0)
    
    # Generate TCL script for the process
-   tcl_script = mk.process.to_tcl()
+   tcl_script = fm.process.to_tcl()
 
 Default Analysis Process Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

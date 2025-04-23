@@ -19,7 +19,7 @@ Learn how to create and analyze a simple beam model:
    mk = FEMORA()
    
    # Create material
-   mk.material.create_material(
+   fm.material.create_material(
        material_category="nDMaterial",
        material_type="ElasticIsotropic",
        user_name="Steel",
@@ -39,7 +39,7 @@ Learn how to create and analyze a simple beam model:
    beam_line = Line(p1, p2)
    
    # Create beam region
-   beam_region = mk.region.create_region(
+   beam_region = fm.region.create_region(
        region_type="Beam",
        user_name="BeamRegion",
        geometry=beam_line,
@@ -50,7 +50,7 @@ Learn how to create and analyze a simple beam model:
    )
    
    # Fix left end
-   mk.boundary.fix_nodes(
+   fm.boundary.fix_nodes(
        region_name="BeamRegion",
        condition_type="FixedDOF",
        dofs=[1, 2, 3],  # Fix all translations and rotations
@@ -58,7 +58,7 @@ Learn how to create and analyze a simple beam model:
    )
    
    # Apply point load at center
-   mk.load.create_load(
+   fm.load.create_load(
        load_type="PointLoad",
        region_name="BeamRegion",
        value=-10000.0,  # 10 kN downward
@@ -67,8 +67,8 @@ Learn how to create and analyze a simple beam model:
    )
    
    # Generate mesh and visualize
-   mk.generate_mesh()
-   mk.visualize.plot_mesh()
+   fm.generate_mesh()
+   fm.visualize.plot_mesh()
 
 2D Plane Stress Analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +86,7 @@ Create a 2D plane stress model:
    mk = FEMORA()
    
    # Create material
-   mk.material.create_material(
+   fm.material.create_material(
        material_category="nDMaterial",
        material_type="ElasticIsotropic",
        user_name="Aluminum",
@@ -112,7 +112,7 @@ Create a 2D plane stress model:
    plate = Surface([l1, l2, l3, l4])
    
    # Create plate region
-   plate_region = mk.region.create_region(
+   plate_region = fm.region.create_region(
        region_type="Quad4Region",
        user_name="PlateRegion",
        geometry=plate,
@@ -121,7 +121,7 @@ Create a 2D plane stress model:
    )
    
    # Fix left edge
-   mk.boundary.fix_nodes(
+   fm.boundary.fix_nodes(
        region_name="PlateRegion",
        condition_type="FixedDOF",
        dofs=[1, 2],  # Fix x and y directions
@@ -129,7 +129,7 @@ Create a 2D plane stress model:
    )
    
    # Apply tensile load on right edge
-   mk.load.create_load(
+   fm.load.create_load(
        load_type="SurfaceLoad",
        region_name="PlateRegion",
        value=1e6,  # 1 MPa tensile stress
@@ -138,8 +138,8 @@ Create a 2D plane stress model:
    )
    
    # Generate mesh and visualize
-   mk.generate_mesh()
-   mk.visualize.plot_mesh()
+   fm.generate_mesh()
+   fm.visualize.plot_mesh()
 
 Advanced Examples
 -----------------
@@ -158,7 +158,7 @@ This example demonstrates how to perform a basic seismic analysis with MeshMaker
    mk = FEMORA()
    
    # Define materials
-   mk.material.create_material(
+   fm.material.create_material(
        material_category="nDMaterial",
        material_type="ElasticIsotropic",
        user_name="Concrete",
@@ -171,7 +171,7 @@ This example demonstrates how to perform a basic seismic analysis with MeshMaker
    # ... (geometry creation code)
    
    # Apply ground motion record
-   mk.load.create_load(
+   fm.load.create_load(
        load_type="UniformExcitation",
        direction=1,
        acceleration_file="examples/Example1/kobe.acc",
@@ -179,7 +179,7 @@ This example demonstrates how to perform a basic seismic analysis with MeshMaker
    )
    
    # Set up analysis parameters
-   mk.analysis.set_parameters(
+   fm.analysis.set_parameters(
        analysis_type="TimeHistory",
        damping_ratio=0.05,
        time_step=0.01,
@@ -187,8 +187,8 @@ This example demonstrates how to perform a basic seismic analysis with MeshMaker
    )
    
    # Generate mesh and export to OpenSees
-   mk.generate_mesh()
-   mk.export.to_opensees("seismic_analysis.tcl")
+   fm.generate_mesh()
+   fm.export.to_opensees("seismic_analysis.tcl")
 
 Soil-Structure Interaction Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

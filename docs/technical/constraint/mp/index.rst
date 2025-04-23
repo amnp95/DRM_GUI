@@ -38,13 +38,13 @@ There are two ways to access the MP Constraint Manager:
 
    .. code-block:: python
       
-      from femora.components.MeshMaker import MeshMaker
+      import femora as fm
       
       # Create a MeshMaker instance
-      mk = MeshMaker()
+       
       
       # Access the MPConstraintManager through the constraint property
-      mp_manager = mk.constraint.mp
+      mp_manager = fm.constraint.mp
       
       # Add constraints using the manager
       mp_manager.create_equal_dof(...)

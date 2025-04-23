@@ -52,13 +52,13 @@ The following example demonstrates how to create a simple 3D rectangular domain 
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
    
    # Create a material
-   material = mk.material.create_material(
+   material = fm.material.create_material(
        material_category="nDMaterial", 
        material_type="ElasticIsotropic", 
        user_name="Soil",
@@ -68,7 +68,7 @@ The following example demonstrates how to create a simple 3D rectangular domain 
    )
    
    # Create an element using this material
-   element = mk.element.create_element(
+   element = fm.element.create_element(
        element_type="stdBrick", 
        ndof=3, 
        material=material, 
@@ -78,11 +78,11 @@ The following example demonstrates how to create a simple 3D rectangular domain 
    )
    
    # Create a region with damping
-   damping = mk.damping.create_damping("frequency rayleigh", dampingFactor=0.05, f1=1, f2=10)
-   region = mk.region.create_region("elementRegion", damping=damping)
+   damping = fm.damping.create_damping("frequency rayleigh", dampingFactor=0.05, f1=1, f2=10)
+   region = fm.region.create_region("elementRegion", damping=damping)
    
    # Create the uniform rectangular grid mesh part
-   mk.meshPart.create_mesh_part(
+   fm.meshPart.create_mesh_part(
        "Volume mesh", 
        "Uniform Rectangular Grid", 
        user_name="SoilBlock", 

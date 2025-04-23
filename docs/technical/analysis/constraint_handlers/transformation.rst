@@ -14,7 +14,7 @@ Usage Example
 .. code-block:: python
 
     # Create a MeshMaker instance
-    mk = MeshMaker()
+     
     
     # Create a Transformation constraint handler
-    mk.analysis.constraint.create_handler("Transformation") 
+    fm.analysis.constraint.create_handler("Transformation") 

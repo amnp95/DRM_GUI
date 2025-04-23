@@ -36,6 +36,6 @@ Usage Example
 .. code-block:: python
 
     # Create an ArcLength integrator
-    integrator = mk.analysis.integrators.create_integrator("arclength", 
+    integrator = fm.analysis.integrators.create_integrator("arclength", 
                                                     s=1.0, 
                                                     alpha=0.1) 

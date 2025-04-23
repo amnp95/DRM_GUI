@@ -41,24 +41,24 @@ Usage
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create MeshMaker instance
-   mk = MeshMaker()
+    
    
    # First assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
    # Fix the base of the model (Z_MIN)
    # Fix all translations (DOFs 1,2,3) but allow rotations (DOFs 4,5,6)
-   mk.constraint.sp.fixMacroZmin(dofs=[1, 1, 1, 0, 0, 0])
+   fm.constraint.sp.fixMacroZmin(dofs=[1, 1, 1, 0, 0, 0])
    
    # Fix the X direction at the maximum X boundary (X_MAX)
-   mk.constraint.sp.fixMacroXmax(dofs=[1, 0, 0, 0, 0, 0])
+   fm.constraint.sp.fixMacroXmax(dofs=[1, 0, 0, 0, 0, 0])
    
    # Fix the Y direction at both Y boundaries (Y_MIN and Y_MAX)
-   mk.constraint.sp.fixMacroYmin(dofs=[0, 1, 0, 0, 0, 0])
-   mk.constraint.sp.fixMacroYmax(dofs=[0, 1, 0, 0, 0, 0])
+   fm.constraint.sp.fixMacroYmin(dofs=[0, 1, 0, 0, 0, 0])
+   fm.constraint.sp.fixMacroYmax(dofs=[0, 1, 0, 0, 0, 0])
 
 OpenSees TCL Output
 -------------------

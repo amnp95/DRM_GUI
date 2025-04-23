@@ -45,13 +45,13 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a Newton Line Search algorithm with default settings
-   mk.analysis.algorithm.create_algorithm("NewtonLineSearch")
+   fm.analysis.algorithm.create_algorithm("NewtonLineSearch")
 
    # Create a Newton Line Search algorithm with custom settings
-   mk.analysis.algorithm.create_algorithm(
+   fm.analysis.algorithm.create_algorithm(
        "NewtonLineSearch",
        type_search="Bisection",
        tol=0.5,

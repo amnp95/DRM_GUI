@@ -42,13 +42,13 @@ Usage Example
 .. code-block:: python
 
     # Create a ParallelDisplacementControl integrator with basic parameters
-    integrator = mk.analysis.integrators.create_integrator("paralleldisplacementcontrol", 
+    integrator = fm.analysis.integrators.create_integrator("paralleldisplacementcontrol", 
                                                     node_tag=3, 
                                                     dof=1, 
                                                     incr=0.01)
     
     # Create a ParallelDisplacementControl integrator with custom step size limits
-    integrator = mk.analysis.integrators.create_integrator("paralleldisplacementcontrol", 
+    integrator = fm.analysis.integrators.create_integrator("paralleldisplacementcontrol", 
                                                     node_tag=3, 
                                                     dof=1, 
                                                     incr=0.01, 

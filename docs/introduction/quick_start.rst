@@ -36,7 +36,7 @@ Step 2: Define Materials
 .. code-block:: python
 
    # Create an elastic isotropic material
-   mk.material.create_material(
+   fm.material.create_material(
        material_category="nDMaterial",
        material_type="ElasticIsotropic",
        user_name="Concrete",
@@ -71,7 +71,7 @@ Step 4: Create a Region
 .. code-block:: python
 
    # Create a meshed region from the surface
-   region = mk.region.create_region(
+   region = fm.region.create_region(
        region_type="Quad4Region",
        user_name="MainRegion",
        geometry=surface,
@@ -85,7 +85,7 @@ Step 5: Apply Boundary Conditions
 .. code-block:: python
 
    # Fix the bottom edge (lines with y=0)
-   mk.boundary.fix_nodes(
+   fm.boundary.fix_nodes(
        region_name="MainRegion",
        condition_type="FixedDOF",
        dofs=[1, 2],  # Fix x and y directions
@@ -98,7 +98,7 @@ Step 6: Apply Loads
 .. code-block:: python
 
    # Apply a distributed load on the top edge
-   mk.load.create_load(
+   fm.load.create_load(
        load_type="SurfaceLoad",
        region_name="MainRegion",
        value=-10000.0,  # N/m² (negative for compression)
@@ -112,7 +112,7 @@ Step 7: Generate the Mesh
 .. code-block:: python
 
    # Generate the mesh
-   mk.generate_mesh()
+   fm.generate_mesh()
 
 Step 8: Visualize the Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,7 +120,7 @@ Step 8: Visualize the Model
 .. code-block:: python
 
    # Visualize the mesh
-   mk.visualize.plot_mesh(
+   fm.visualize.plot_mesh(
        show_nodes=True,
        show_elements=True
    )
@@ -131,7 +131,7 @@ Step 9: Export the Model
 .. code-block:: python
 
    # Export to OpenSees Tcl file
-   mk.export.to_opensees(
+   fm.export.to_opensees(
        filename="my_first_model.tcl",
        analysis_type="Static"
    )
@@ -151,7 +151,7 @@ Here's the complete code for this quick start example:
    mk = FEMORA()
    
    # Create material
-   mk.material.create_material(
+   fm.material.create_material(
        material_category="nDMaterial",
        material_type="ElasticIsotropic",
        user_name="Concrete",
@@ -174,7 +174,7 @@ Here's the complete code for this quick start example:
    surface = Surface([l1, l2, l3, l4])
    
    # Create region
-   region = mk.region.create_region(
+   region = fm.region.create_region(
        region_type="Quad4Region",
        user_name="MainRegion",
        geometry=surface,
@@ -183,7 +183,7 @@ Here's the complete code for this quick start example:
    )
    
    # Apply boundary conditions
-   mk.boundary.fix_nodes(
+   fm.boundary.fix_nodes(
        region_name="MainRegion",
        condition_type="FixedDOF",
        dofs=[1, 2],
@@ -191,7 +191,7 @@ Here's the complete code for this quick start example:
    )
    
    # Apply loads
-   mk.load.create_load(
+   fm.load.create_load(
        load_type="SurfaceLoad",
        region_name="MainRegion",
        value=-10000.0,
@@ -200,16 +200,16 @@ Here's the complete code for this quick start example:
    )
    
    # Generate mesh
-   mk.generate_mesh()
+   fm.generate_mesh()
    
    # Visualize
-   mk.visualize.plot_mesh(
+   fm.visualize.plot_mesh(
        show_nodes=True,
        show_elements=True
    )
    
    # Export
-   mk.export.to_opensees(
+   fm.export.to_opensees(
        filename="my_first_model.tcl",
        analysis_type="Static"
    )

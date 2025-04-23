@@ -29,14 +29,14 @@ There are two ways to access the ElementRegistry in your code:
    
    .. code-block:: python
       
-      from femora.components.MeshMaker import MeshMaker
+      import femora as fm
       
       # Create a MeshMaker instance
-      mk = MeshMaker()
+       
       
       # Access the ElementRegistry through the .element property
-      element_types = mk.element.get_element_types()
-      my_element = mk.element.create_element(...)
+      element_types = fm.element.get_element_types()
+      my_element = fm.element.create_element(...)
 
 The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
 

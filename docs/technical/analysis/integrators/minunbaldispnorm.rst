@@ -40,11 +40,11 @@ Usage Example
 .. code-block:: python
 
     # Create a MinUnbalDispNorm integrator with basic parameters
-    integrator = mk.analysis.integrators.create_integrator("minunbaldispnorm", 
+    integrator = fm.analysis.integrators.create_integrator("minunbaldispnorm", 
                                                     dlambda1=0.1)
     
     # Create a MinUnbalDispNorm integrator with custom parameters
-    integrator = mk.analysis.integrators.create_integrator("minunbaldispnorm", 
+    integrator = fm.analysis.integrators.create_integrator("minunbaldispnorm", 
                                                     dlambda1=0.1, 
                                                     jd=3, 
                                                     min_lambda=0.05, 

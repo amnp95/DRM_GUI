@@ -57,7 +57,7 @@ Parameters:
         import math
         
         mk = FEMORA()
-        trig_ts = mk.timeSeries.create_time_series(
+        trig_ts = fm.timeSeries.create_time_series(
             'Trig',
             trig_type='Sine',
             period=0.5,

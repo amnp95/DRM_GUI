@@ -25,17 +25,17 @@ Usage
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create MeshMaker instance
-   mk = MeshMaker()
+    
    
    # First assemble the mesh
-   mk.assembler.Assemble(merge_points=True)
+   fm.assembler.Assemble(merge_points=True)
    
    # Create a laminar boundary constraint where nodes at the same Z-coordinate
    # are constrained to have the same X and Y translations
-   mk.constraint.mp.create_laminar_boundary(
+   fm.constraint.mp.create_laminar_boundary(
        dofs=[1, 2],      # Constrain x and y translations
        direction=3,      # Layers perpendicular to Z-axis
        tol=1e-2          # Tolerance for identifying nodes in the same layer
@@ -43,7 +43,7 @@ Usage
    
    # Create a laminar boundary in X-direction (layers perpendicular to X-axis)
    # Constraining only Y translations
-   mk.constraint.mp.create_laminar_boundary(
+   fm.constraint.mp.create_laminar_boundary(
        dofs=[2],         # Constrain only y translations
        direction=1,      # Layers perpendicular to X-axis
        tol=1e-3          # Smaller tolerance for more precise layer identification
@@ -89,13 +89,13 @@ A common application is creating a soil box model for dynamic analysis:
    # Apply laminar boundary conditions on all four sides
    
    # X-face constraints (nodes with same X coordinate move together in Y)
-   mk.constraint.mp.create_laminar_boundary(dofs=[2], direction=1)
+   fm.constraint.mp.create_laminar_boundary(dofs=[2], direction=1)
    
    # Y-face constraints (nodes with same Y coordinate move together in X)
-   mk.constraint.mp.create_laminar_boundary(dofs=[1], direction=2)
+   fm.constraint.mp.create_laminar_boundary(dofs=[1], direction=2)
    
    # Fix the base in X, Y, and Z directions using SP constraints
-   mk.constraint.sp.fixZ(zCoordinate=0.0, dofs=[1, 1, 1, 0, 0, 0])
+   fm.constraint.sp.fixZ(zCoordinate=0.0, dofs=[1, 1, 1, 0, 0, 0])
 
 Function Reference
 ------------------

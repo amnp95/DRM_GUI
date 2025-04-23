@@ -35,16 +35,16 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a Modified Newton algorithm with default settings
-   mk.analysis.algorithm.create_algorithm("ModifiedNewton")
+   fm.analysis.algorithm.create_algorithm("ModifiedNewton")
 
    # Create a Modified Newton algorithm using initial stiffness
-   mk.analysis.algorithm.create_algorithm("ModifiedNewton", initial=True)
+   fm.analysis.algorithm.create_algorithm("ModifiedNewton", initial=True)
 
    # Create a Modified Newton algorithm that factors the matrix only once
-   mk.analysis.algorithm.create_algorithm("ModifiedNewton", factor_once=True)
+   fm.analysis.algorithm.create_algorithm("ModifiedNewton", factor_once=True)
 
 Notes
 -----

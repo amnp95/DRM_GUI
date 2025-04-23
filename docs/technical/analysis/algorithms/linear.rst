@@ -35,19 +35,19 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Create a Linear algorithm with default settings
-   mk.analysis.algorithm.create_algorithm("Linear")
+   fm.analysis.algorithm.create_algorithm("Linear")
 
    # Create a Linear algorithm using initial stiffness
-   mk.analysis.algorithm.create_algorithm("Linear", initial=True)
+   fm.analysis.algorithm.create_algorithm("Linear", initial=True)
 
    # Create a Linear algorithm that factors the matrix only once
-   mk.analysis.algorithm.create_algorithm("Linear", factor_once=True)
+   fm.analysis.algorithm.create_algorithm("Linear", factor_once=True)
 
    # Create a Linear algorithm with both options
-   mk.analysis.algorithm.create_algorithm("Linear", initial=True, factor_once=True)
+   fm.analysis.algorithm.create_algorithm("Linear", initial=True, factor_once=True)
 
 Notes
 -----

@@ -32,10 +32,10 @@ Usage Example
 .. code-block:: python
 
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
 
    # Get an AMD numberer
-   mk.analysis.numberer.get_numberer("AMD")
+   fm.analysis.numberer.get_numberer("AMD")
 
 Notes
 -----

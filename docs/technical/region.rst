@@ -35,7 +35,7 @@ There are two ways to access the RegionManager in your code:
       mk = FEMORA()
       
       # Access the RegionManager through the .region property
-      mk.region.create_region(...)
+      fm.region.create_region(...)
 
 The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 

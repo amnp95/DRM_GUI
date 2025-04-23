@@ -40,13 +40,13 @@ The following example demonstrates how to create a 3D rectangular domain with cu
 
 .. code-block:: python
 
-   from femora.components.MeshMaker import MeshMaker
+   import femora as fm
    
    # Create a MeshMaker instance
-   mk = MeshMaker()
+    
    
    # Create a material
-   material = mk.material.create_material(
+   material = fm.material.create_material(
        material_category="nDMaterial", 
        material_type="ElasticIsotropic", 
        user_name="Rock",
@@ -56,7 +56,7 @@ The following example demonstrates how to create a 3D rectangular domain with cu
    )
    
    # Create an element using this material
-   element = mk.element.create_element(
+   element = fm.element.create_element(
        element_type="stdBrick", 
        ndof=3, 
        material=material, 
@@ -66,11 +66,11 @@ The following example demonstrates how to create a 3D rectangular domain with cu
    )
    
    # Create a region with damping
-   damping = mk.damping.create_damping("frequency rayleigh", dampingFactor=0.03, f1=2, f2=15)
-   region = mk.region.create_region("elementRegion", damping=damping)
+   damping = fm.damping.create_damping("frequency rayleigh", dampingFactor=0.03, f1=2, f2=15)
+   region = fm.region.create_region("elementRegion", damping=damping)
    
    # Create the custom rectangular grid mesh part with non-uniform spacing
-   mk.meshPart.create_mesh_part(
+   fm.meshPart.create_mesh_part(
        "Volume mesh", 
        "Custom Rectangular Grid", 
        user_name="RockFormation", 
