@@ -224,10 +224,10 @@ You can download complete example files from our GitHub repository:
 
 .. code-block:: bash
 
-   git clone https://github.com/username/meshmaker-examples.git
+   git clone https://github.com/username/femora-examples.git
 
 Alternatively, browse the examples included with your MeshMaker installation in the 'examples' directory:
 
 .. code-block:: bash
 
-   cd /path/to/meshmaker/examples/
+   cd /path/to/femora/examples/

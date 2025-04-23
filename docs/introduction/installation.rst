@@ -23,7 +23,7 @@ The easiest way to install MeshMaker is using pip:
 
 .. code-block:: bash
 
-   pip install meshmaker
+   pip install femora
 
 From Source
 ~~~~~~~~~~~
@@ -34,8 +34,8 @@ To install from source:
 
    .. code-block:: bash
 
-      git clone https://github.com/yourusername/meshmaker.git
-      cd meshmaker
+      git clone https://github.com/yourusername/femora.git
+      cd femora
 
 2. Install the package:
 
@@ -51,7 +51,7 @@ MeshMaker can also be installed using conda:
 .. code-block:: bash
 
    conda env create -f environment.yml
-   conda activate meshmaker
+   conda activate femora
 
 Verifying Installation
 ----------------------
@@ -60,8 +60,8 @@ To verify that MeshMaker has been installed correctly, run:
 
 .. code-block:: python
 
-   import meshmaker
-   print(meshmaker.__version__)
+   import femora
+   print(femora.__version__)
 
 This should display the version number of your MeshMaker installation.
 
@@ -96,9 +96,9 @@ Common Installation Issues
    
    .. code-block:: bash
    
-      python -m venv meshmaker_env
-      source meshmaker_env/bin/activate  # On Windows: meshmaker_env\Scripts\activate
-      pip install meshmaker
+      python -m venv femora_env
+      source femora_env/bin/activate  # On Windows: femora_env\Scripts\activate
+      pip install femora
 
 3. **Permission Errors**:
    
@@ -106,7 +106,7 @@ Common Installation Issues
    
    .. code-block:: bash
    
-      pip install --user meshmaker
+      pip install --user femora
 
 Getting Help
 ~~~~~~~~~~~~
@@ -114,5 +114,5 @@ Getting Help
 If you continue to experience installation issues, please:
 
 1. Check the GitHub issues page for similar problems and solutions
-2. Contact the support team at support@meshmaker.org
-3. Join our community forum at https://community.meshmaker.org
+2. Contact the support team at support@femora.org
+3. Join our community forum at https://community.femora.org
