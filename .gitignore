@@ -1,6 +1,6 @@
 *.pyc
 *.egg*
-*env/
+*env*/
 tmp/
 *.h5drm
 *.tcl
