@@ -4,7 +4,7 @@ Process
 Understanding the Process Component
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``Process`` component is a core part of the MeshMaker library that manages the sequence of operations in a structural analysis. It implements a system for defining, organizing, and executing analysis steps in a coherent order.
+The ``Process`` component is a core part of the FEMORA library that manages the sequence of operations in a structural analysis. It implements a system for defining, organizing, and executing analysis steps in a coherent order.
 
 The Process component provides functionality to:
 - Add steps to the analysis process
@@ -24,7 +24,7 @@ There are two ways to access the Process component in your code:
    
    .. code-block:: python
       
-      from meshmaker.components.Process.process import ProcessManager
+      from femora.components.Process.process import ProcessManager
       
       # Get the singleton instance
       process_manager = ProcessManager()
@@ -32,19 +32,19 @@ There are two ways to access the Process component in your code:
       # Use the process manager directly
       process_manager.add_step(...)
 
-2. **Through MeshMaker** (Recommended): Access via the MeshMaker class's .process property
+2. **Through FEMORA** (Recommended): Access via the FEMORA class's .process property
    
    .. code-block:: python
       
-      from meshmaker.components.MeshMaker import MeshMaker
+      from femora.components.FEMORA import FEMORA
       
-      # Create a MeshMaker instance
-      mk = MeshMaker()
+      # Create a FEMORA instance
+      mk = FEMORA()
       
       # Access the ProcessManager through the .process property
       mk.process.add_step(...)
 
-The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 
 How Process Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,7 +76,7 @@ The Process component supports the following types of components:
 ProcessManager API Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: meshmaker.components.Process.process.ProcessManager
+.. autoclass:: femora.components.Process.process.ProcessManager
 
 Process Management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,10 +107,10 @@ Example of creating and managing a process:
 
 .. code-block:: python
 
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.FEMORA import FEMORA
    
-   # Create a MeshMaker instance
-   mk = MeshMaker()
+   # Create a FEMORA instance
+   mk = FEMORA()
    
    # Create components for the process
    sp_constraint = mk.constraint.sp.create_constraint(...)

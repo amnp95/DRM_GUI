@@ -36,7 +36,7 @@ Parameters:
     .. code-block:: python
 
         # Direct creation
-        from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeriesManager
+        from femora.components.TimeSeries.timeSeriesBase import TimeSeriesManager
         
         ts_manager = TimeSeriesManager()
         
@@ -50,10 +50,10 @@ Parameters:
             factor=1.0
         )
 
-        # Via MeshMaker
-        from meshmaker.components.MeshMaker import MeshMaker
+        # Via FEMORA
+        from femora.components.FEMORA import FEMORA
         
-        mk = MeshMaker()
+        mk = FEMORA()
         pulse_ts = mk.timeSeries.create_time_series(
             'PulseTrain',
             tStart=0.0,

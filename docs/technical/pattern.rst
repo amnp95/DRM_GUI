@@ -4,9 +4,9 @@ Pattern
 Understanding the PatternManager
 --------------------------------
 
-The ``PatternManager`` is a core component of the MeshMaker library that serves as a centralized system for creating, retrieving, tracking, and managing pattern objects. It implements the Singleton pattern to ensure a single, consistent point of pattern management across the entire application.
+The ``PatternManager`` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing pattern objects. It implements the Singleton pattern to ensure a single, consistent point of pattern management across the entire application.
 
-Patterns defined in MeshMaker are automatically tracked, tagged, and organized by the PatternManager, simplifying the process of applying repetitive configurations or arrangements within the mesh or model.
+Patterns defined in FEMORA are automatically tracked, tagged, and organized by the PatternManager, simplifying the process of applying repetitive configurations or arrangements within the mesh or model.
 
 Accessing the PatternManager
 ----------------------------
@@ -17,7 +17,7 @@ There are two ways to access the PatternManager in your code:
 
    .. code-block:: python
 
-      from meshmaker.components.Pattern.patternBase import PatternManager
+      from femora.components.Pattern.patternBase import PatternManager
 
       # Get the singleton instance
       pattern_manager = PatternManager()
@@ -25,19 +25,19 @@ There are two ways to access the PatternManager in your code:
       # Use the pattern manager directly
       pattern_manager.create_pattern(...)
 
-2. **Through MeshMaker** (Recommended): Access via the MeshMaker class's .pattern property
+2. **Through FEMORA** (Recommended): Access via the FEMORA class's .pattern property
 
    .. code-block:: python
 
-      from meshmaker.components.MeshMaker import MeshMaker
+      from femora.components.FEMORA import FEMORA
 
-      # Create a MeshMaker instance
-      mk = MeshMaker()
+      # Create a FEMORA instance
+      mk = FEMORA()
 
       # Access the PatternManager through the .pattern property
       mk.pattern.create_pattern(...)
 
-The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 
 How PatternManager Works
 ------------------------
@@ -58,7 +58,7 @@ When a pattern is created, the PatternManager:
 PatternManager API Reference
 ----------------------------
 
-.. autoclass:: meshmaker.components.Pattern.patternBase.PatternManager
+.. autoclass:: femora.components.Pattern.patternBase.PatternManager
    :members:
    :undoc-members:
    :show-inheritance:
@@ -78,7 +78,7 @@ Usage Example
 
 .. code-block:: python
 
-   from meshmaker.components.Pattern.patternBase import PatternManager
+   from femora.components.Pattern.patternBase import PatternManager
 
    # Get the pattern manager instance
    pattern_manager = PatternManager()
@@ -95,7 +95,7 @@ Usage Example
 Available Pattern Types
 ------------------------
 
-The pattern types available in MeshMaker provide different ways to define repetitive configurations. Examples include:
+The pattern types available in FEMORA provide different ways to define repetitive configurations. Examples include:
 
 .. toctree::
    :maxdepth: 2

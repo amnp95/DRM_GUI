@@ -18,7 +18,7 @@ Creating a NodeRegion with specific nodes:
 
 .. code-block:: python
 
-    from meshmaker.components.Region.regionBase import RegionManager
+    from femora.components.Region.regionBase import RegionManager
     
     region_manager = RegionManager()
     
@@ -42,7 +42,7 @@ Associating damping with a NodeRegion:
 
 .. code-block:: python
 
-    from meshmaker.components.Damping.dampingBase import DampingManager
+    from femora.components.Damping.dampingBase import DampingManager
     
     damping_manager = DampingManager()
     

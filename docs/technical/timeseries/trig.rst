@@ -30,7 +30,7 @@ Parameters:
     .. code-block:: python
 
         # Direct creation
-        from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeriesManager
+        from femora.components.TimeSeries.timeSeriesBase import TimeSeriesManager
         
         ts_manager = TimeSeriesManager()
         
@@ -52,11 +52,11 @@ Parameters:
             factor=0.5
         )
 
-        # Via MeshMaker
-        from meshmaker.components.MeshMaker import MeshMaker
+        # Via FEMORA
+        from femora.components.FEMORA import FEMORA
         import math
         
-        mk = MeshMaker()
+        mk = FEMORA()
         trig_ts = mk.timeSeries.create_time_series(
             'Trig',
             trig_type='Sine',

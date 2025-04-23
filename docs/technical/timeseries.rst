@@ -4,9 +4,9 @@ TimeSeries
 Understanding the TimeSeriesManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The `TimeSeriesManager` is a core component of the MeshMaker library that serves as a centralized system for creating, retrieving, tracking, and managing time series objects. It implements the Singleton pattern to ensure a single, consistent point of time series management across the entire application.
+The `TimeSeriesManager` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing time series objects. It implements the Singleton pattern to ensure a single, consistent point of time series management across the entire application.
 
-Time series defined in MeshMaker are automatically tracked, tagged, and organized by the TimeSeriesManager, simplifying the process of creating dynamic models with time-varying loads, displacements, or boundary conditions.
+Time series defined in FEMORA are automatically tracked, tagged, and organized by the TimeSeriesManager, simplifying the process of creating dynamic models with time-varying loads, displacements, or boundary conditions.
 
 Accessing the TimeSeriesManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -17,7 +17,7 @@ There are two ways to access the TimeSeriesManager in your code:
 
    .. code-block:: python
 
-      from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeriesManager
+      from femora.components.TimeSeries.timeSeriesBase import TimeSeriesManager
 
       # Get the singleton instance
       timeseries_manager = TimeSeriesManager()
@@ -25,19 +25,19 @@ There are two ways to access the TimeSeriesManager in your code:
       # Use the time series manager directly
       timeseries_manager.create_time_series(...)
 
-2. **Through MeshMaker** (Recommended): Access via the MeshMaker class's .timeSeries property
+2. **Through FEMORA** (Recommended): Access via the FEMORA class's .timeSeries property
 
    .. code-block:: python
 
-      from meshmaker.components.MeshMaker import MeshMaker
+      from femora.components.FEMORA import FEMORA
 
-      # Create a MeshMaker instance
-      mk = MeshMaker()
+      # Create a FEMORA instance
+      mk = FEMORA()
 
       # Access the TimeSeriesManager through the .timeSeries property
       mk.timeSeries.create_time_series(...)
 
-The second approach is recommended as it provides a unified interface to all of MeshMaker's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
 
 How TimeSeriesManager Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,7 +58,7 @@ When a time series is created, the TimeSeriesManager:
 TimeSeriesManager API Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: meshmaker.components.TimeSeries.timeSeriesBase.TimeSeriesManager
+.. autoclass:: femora.components.TimeSeries.timeSeriesBase.TimeSeriesManager
    :members:
    :undoc-members:
    :show-inheritance:
@@ -142,10 +142,10 @@ Usage Example
 
 .. code-block:: python
 
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.FEMORA import FEMORA
 
-   # Create a MeshMaker instance
-   mk = MeshMaker()
+   # Create a FEMORA instance
+   mk = FEMORA()
 
    # Create a constant time series
    constant_ts = mk.timeSeries.create_time_series(
@@ -190,7 +190,7 @@ Available Time Series Types
    timeseries/trig
    timeseries/pulsetrain
 
-The time series types available in MeshMaker provide various ways to define time-dependent behavior. Follow the links above to explore the different time series types available.
+The time series types available in FEMORA provide various ways to define time-dependent behavior. Follow the links above to explore the different time series types available.
 
 Each time series type has its own documentation page with detailed parameter descriptions and usage examples.
 

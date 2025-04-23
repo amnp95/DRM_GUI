@@ -37,10 +37,10 @@ There are two ways to access the Assembler:
 
    .. code-block:: python
       
-      from meshmaker.components.MeshMaker import MeshMaker
+      from femora.components.FEMORA import FEMORA
       
-      # Create a MeshMaker instance
-      mk = MeshMaker()
+      # Create a FEMORA instance
+      mk = FEMORA()
       
       # Access the Assembler through MeshMaker
       assembler = mk.assembler

@@ -13,8 +13,8 @@ Before you begin, make sure you have:
 
 .. code-block:: python
 
-   from meshmaker.components.MeshMaker import MeshMaker
-   from meshmaker.components.Geometry.geometryBase import Point, Line, Surface
+   from femora.components.FEMORA import FEMORA
+   from femora.components.Geometry.geometryBase import Point, Line, Surface
    import numpy as np
 
 Creating Your First Model
@@ -27,8 +27,8 @@ Step 1: Initialize MeshMaker
 
 .. code-block:: python
 
-   # Create a MeshMaker instance
-   mk = MeshMaker()
+   # Create a FEMORA instance
+   mk = FEMORA()
 
 Step 2: Define Materials
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -143,12 +143,12 @@ Here's the complete code for this quick start example:
 
 .. code-block:: python
 
-   from meshmaker.components.MeshMaker import MeshMaker
-   from meshmaker.components.Geometry.geometryBase import Point, Line, Surface
+   from femora.components.FEMORA import FEMORA
+   from femora.components.Geometry.geometryBase import Point, Line, Surface
    import numpy as np
    
-   # Create a MeshMaker instance
-   mk = MeshMaker()
+   # Create a FEMORA instance
+   mk = FEMORA()
    
    # Create material
    mk.material.create_material(

@@ -13,10 +13,10 @@ Learn how to create and analyze a simple beam model:
 
 .. code-block:: python
    
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.FEMORA import FEMORA
    
    # Initialize MeshMaker
-   mk = MeshMaker()
+   mk = FEMORA()
    
    # Create material
    mk.material.create_material(
@@ -33,7 +33,7 @@ Learn how to create and analyze a simple beam model:
    height = 0.3
    
    # Create a line for the beam
-   from meshmaker.components.Geometry.geometryBase import Point, Line
+   from femora.components.Geometry.geometryBase import Point, Line
    p1 = Point(0.0, 0.0, 0.0)
    p2 = Point(length, 0.0, 0.0)
    beam_line = Line(p1, p2)
@@ -78,12 +78,12 @@ Create a 2D plane stress model:
 .. code-block:: python
    
    # Import required libraries
-   from meshmaker.components.MeshMaker import MeshMaker
-   from meshmaker.components.Geometry.geometryBase import Point, Line, Surface
+   from femora.components.FEMORA import FEMORA
+   from femora.components.Geometry.geometryBase import Point, Line, Surface
    import numpy as np
    
    # Initialize MeshMaker
-   mk = MeshMaker()
+   mk = FEMORA()
    
    # Create material
    mk.material.create_material(
@@ -151,11 +151,11 @@ This example demonstrates how to perform a basic seismic analysis with MeshMaker
 
 .. code-block:: python
    
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.FEMORA import FEMORA
    import numpy as np
    
    # Initialize MeshMaker
-   mk = MeshMaker()
+   mk = FEMORA()
    
    # Define materials
    mk.material.create_material(

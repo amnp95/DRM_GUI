@@ -42,7 +42,7 @@ Parameters:
     .. code-block:: python
 
         # Using direct values
-        from meshmaker.components.TimeSeries.timeSeriesBase import TimeSeriesManager
+        from femora.components.TimeSeries.timeSeriesBase import TimeSeriesManager
         
         ts_manager = TimeSeriesManager()
         pathtime_ts = ts_manager.create_time_series(
@@ -61,10 +61,10 @@ Parameters:
             useLast=True
         )
 
-        # Via MeshMaker
-        from meshmaker.components.MeshMaker import MeshMaker
+        # Via FEMORA
+        from femora.components.FEMORA import FEMORA
         
-        mk = MeshMaker()
+        mk = FEMORA()
         pathtime_ts = mk.timeSeries.create_time_series(
             'PathTime',
             time=[0, 1, 2, 3],

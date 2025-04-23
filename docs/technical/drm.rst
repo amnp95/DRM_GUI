@@ -26,10 +26,10 @@ The DRM component can only be accessed through the MeshMaker class's analysis.dr
 
 .. code-block:: python
    
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.FEMORA import FEMORA
    
    # Create a MeshMaker instance
-   mk = MeshMaker()
+   mk = FEMORA()
    
    # Access the DRM component through the analysis.drm property
    mk.analysis.drm.createDefaultProcess(dT=0.01, finalTime=10.0)
@@ -107,10 +107,10 @@ Example of creating a DRM analysis:
 
 .. code-block:: python
 
-   from meshmaker.components.MeshMaker import MeshMaker
+   from femora.components.FEMORA import FEMORA
    
    # Create a MeshMaker instance
-   mk = MeshMaker()
+   mk = FEMORA()
    
    # Assume a model has been set up already...
    
@@ -232,7 +232,7 @@ When using the DRM component, consider the following performance aspects:
 API Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: meshmaker.components.DRM.DRM.DRM 
+.. autoclass:: femora.components.DRM.DRM.DRM 
    :members: createDefaultProcess, addAbsorbingLayer, set_pattern, set_meshmaker
    :undoc-members:
    :show-inheritance: 

@@ -1,7 +1,7 @@
 Region Types
 ============
 
-This section provides detailed documentation for the different region types available in MeshMaker.
+This section provides detailed documentation for the different region types available in FEMORA.
 
 .. toctree::
    :maxdepth: 1
