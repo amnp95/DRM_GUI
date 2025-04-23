@@ -11,11 +11,13 @@ setup(
         "pyvistaqt",
         "qtconsole",
         "tqdm",
-        "h5py"
+        "h5py",
+        "pykdtree",
+        "tapipy",
     ],
     entry_points={
         "console_scripts": [
-            "meshmaker=meshmaker.main:main",
+            "femora=femora.main:main",
         ],
     },
 )
