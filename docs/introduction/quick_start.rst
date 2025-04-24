@@ -6,16 +6,21 @@ This quick start guide will help you create your first 3D soil layer model using
 Setting Up Your Environment
 ---------------------------
 
-Before you begin, make sure you have:
+Before you begin, make sure you have installed FEMORA (see :doc:`installation` for details)
 
-1. Installed FEMORA (see :doc:`installation` for details)
-2. Imported the necessary components:
+Step 1: Initialize FEMORA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First, we need to import the FEMORA library and set up our working environment:
 
 .. code-block:: python
 
    import os
    import femora as fm
-   import numpy as np
+   
+   # Set working directory to the location of your model files
+   # This ensures that output files (like mesh.tcl) will be saved in the same directory as your script
+   os.chdir(os.path.dirname(__file__))
 
 Creating Your First 3D Soil Layer Model
 ---------------------------------------
@@ -29,14 +34,6 @@ The model consists of a 20m × 20m soil column (-10m to 10m in both X and Y dire
 3. One layer of "Dense Montrey" sand (2m thick) at the surface
 
 This stratified soil profile allows for realistic modeling of wave propagation through different soil materials during seismic events.
-
-Step 1: Initialize FEMORA
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-   # Set working directory to the location of your model files
-   os.chdir(os.path.dirname(__file__))
 
 Step 2: Define Materials
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -201,8 +198,6 @@ In this step, we define the dimensions and discretization of our 3D soil profile
                                   'Z Min': Zmin, 'Z Max': Zmin + thick5, 
                                   'Nx Cells': Nx, 'Ny Cells': Ny, 'Nz Cells': int(thick5/dz5)})
 
-**Note**: This creates a 3D soil column with different mesh refinement in the vertical direction for each layer. The lower layers (which are deeper) have coarser mesh (dz1=1.3m, dz2=1.2m, dz3=1.0m), while the upper layers have finer mesh (dz4=dz5=0.5m). This is a common practice in geotechnical modeling to have finer mesh near the surface where more detailed results are typically needed.
-
 Step 5: Assemble Mesh Parts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -222,6 +217,25 @@ Now we need to assemble the five mesh parts into a complete model for analysis:
 
    # Assemble the mesh parts into a complete mesh
    fm.assembler.Assemble()
+
+**Understanding Assembly in FEMORA**:
+
+The assembly process is a critical step in FEMORA that serves multiple purposes:
+
+1. **What are Sections?** Sections are logical groupings of mesh parts that allow for efficient parallel processing. They organize mesh parts that share similar characteristics (like material properties) for computational optimization.
+
+2. **Why do we need Assembly?** The assembly process:
+   - Connects individual mesh parts into a unified computational model
+   - Creates node and element numbering across the entire model
+   - Establishes connectivity between adjoining layers
+   - Prepares the model for parallel computation by organizing the domain decomposition
+   
+3. **Assembly Process**:
+   - `create_section()` defines which mesh parts belong together in computational groups
+   - Each section can have a specified number of partitions for parallel processing
+   - `Assemble()` performs the actual assembly, creating the unified mesh with proper node connections between all parts
+
+Without the assembly step, the mesh parts would remain isolated, and analysis couldn't properly simulate the interaction between different soil layers during earthquake shaking.
 
 Step 6: Define Time Series and Patterns
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -255,7 +269,23 @@ Next, we apply appropriate boundary conditions for a seismic analysis:
    # Fix the bottom of the model
    fm.constraint.sp.fixMacroZmin(dofs=[1,2,3])
 
-**Note**: The laminar boundary conditions ensure that nodes at the same elevation (z-coordinate) will move together in the horizontal directions (dofs=[1,2]), which simulates the behavior of soil in a shear box test. The `fixMacroZmin` function fixes all degrees of freedom (x, y, z translations) at the bottom of the model, effectively creating a rigid base where the earthquake motion will be applied.
+**Understanding Boundary Conditions**:
+
+1. **Laminar Boundary Conditions**:
+   - The `create_laminar_boundary(dofs=[1,2], direction=3)` function imposes a constraint that forces all nodes at the same elevation (z-coordinate) to move together in the horizontal directions (x and y).
+   - This simulates a laminar shear box condition, which is essential for proper wave propagation in seismic analysis of soil columns.
+   - Without these boundary conditions, the model would allow unrealistic deformation patterns that don't represent how soil actually behaves during earthquakes.
+
+2. **Why we use fixMacroZmin**:
+   - The `fixMacroZmin(dofs=[1,2,3])` function fixes all degrees of freedom at the bottom boundary of the model.
+   - The term "Macro" in this function refers to a macro-level operation that applies to the entire model boundary, rather than individual nodes.
+   - Using "Macro" commands is more efficient and less error-prone than manually selecting and fixing individual nodes at the bottom of the model.
+   - This creates a rigid base at the bottom of the soil column where the earthquake motion will be applied.
+
+3. **Why these specific boundary conditions**:
+   - These boundary conditions are standard for 1D site response analysis converted to a 3D model.
+   - They ensure that the seismic waves propagate properly from the base through all soil layers.
+   - They prevent unrealistic lateral spreading or other deformation modes that wouldn't occur in the field.
 
 Step 8: Create Recorders and Analysis Steps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -280,7 +310,25 @@ Now we define how to record the results and set up the analysis:
    fm.process.add_step(recorder, description="Recorder of the whole model")
    fm.process.add_step(gravity, description="Gravity Analysis Step")
 
-**Note**: The recorder captures displacements, velocities, accelerations, and 3D stresses and strains at 0.02-second intervals. The gravity analysis applies the gravitational forces gradually over 50 time steps (0.5 seconds total) to establish the initial stress state before applying the earthquake excitation.
+**Understanding Steps in FEMORA**:
+
+1. **The Concept of Steps**:
+   - In FEMORA, steps are components that define the sequence and flow of the analysis procedure.
+   - Steps can be loading patterns, recorders, analysis procedures, or other components.
+   - They are added to the process in the order they should be executed or applied.
+
+2. **Types of Steps in Example1**:
+   - **Pattern Step**: The Kobe earthquake uniform excitation pattern (`kobe`) defines the loading applied to the model.
+   - **Recorder Step**: The recorder (`recorder`) defines what response quantities to save and how often.
+   - **Analysis Step**: The gravity analysis (`gravity`) defines the actual solution strategy and time stepping.
+
+3. **Sequence of Steps**:
+   - The order of steps matters in `process.add_step()`.
+   - First, we add the excitation pattern to be applied during analysis.
+   - Then, we add the recorder to capture results during analysis.
+   - Finally, we add the gravity analysis procedure that will actually solve the model.
+
+This step-by-step approach allows for maximum flexibility in defining complex analysis procedures.
 
 Step 9: Export and Visualize the Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -293,6 +341,31 @@ Step 9: Export and Visualize the Model
    # Launch the GUI for visualization
    fm.gui()
 
+**Understanding TCL Export and Visualization**:
+
+1. **Why Export to TCL?**
+   - The `export_to_tcl("mesh.tcl")` command generates an OpenSees Tcl script file that contains all the commands needed to recreate and run your model in OpenSees.
+   - This exported file serves as both documentation of your model and a standalone script that can be executed in OpenSees.
+   - By using `os.chdir(os.path.dirname(__file__))` at the beginning of our script, we ensure that the mesh.tcl file is created in the same directory as our Python script, making it easy to locate.
+
+2. **GUI Visualization**:
+   - The `fm.gui()` command launches FEMORA's graphical user interface, allowing you to:
+      - Visualize the 3D model geometry and mesh
+      - Verify material assignments and layer arrangement
+      - Check boundary conditions
+      - Review and modify model properties
+      - Inspect the model before running analysis
+   
+3. **Working with the GUI**:
+   - You can create models entirely through the GUI interface instead of Python scripting
+   - The GUI provides intuitive tools for model creation, material definition, and analysis setup
+   - You can also load existing models created with Python scripts to review or modify them
+   - The GUI is particularly useful for:
+      - Verifying complex geometries
+      - Checking node and element connectivity
+      - Troubleshooting model issues
+      - Making quick modifications to existing models
+
 Complete Example
 ----------------
 
@@ -302,9 +375,9 @@ Here's the complete code for this quick start example:
 
    import os
    import femora as fm
-   import numpy as np
    
    # Set working directory to the location of your model files
+   # This ensures that output files (like mesh.tcl) will be saved in the same directory as your script
    os.chdir(os.path.dirname(__file__))
    
    # Define materials
