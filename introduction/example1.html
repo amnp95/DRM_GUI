@@ -1,0 +1,226 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example 1: 3D Layered Soil Profile for Seismic Analysis &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=ec27a85b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Example 2: Multi-layer Soil Model with Absorbing Boundaries" href="example2.html" />
+    <link rel="prev" title="Examples and Tutorials" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/Simcenter_Femora2.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples and Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="examples.html#available-examples">Available Examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="quick_start.html">Quick Start Example (Layered Soil Profile)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Example 1: 3D Layered Soil Profile for Seismic Analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#model-description">Model Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-access">Code Access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detailed-tutorial">Detailed Tutorial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#results-and-visualization">Results and Visualization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-concepts-demonstrated">Key Concepts Demonstrated</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="example2.html">Example 2: Multi-layer Soil Model with Absorbing Boundaries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Technical Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../technical/index.html">Technical Documentation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer/index.html">Developer Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="examples.html">Examples and Tutorials</a></li>
+      <li class="breadcrumb-item active">Example 1: 3D Layered Soil Profile for Seismic Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/introduction/example1.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="example-1-3d-layered-soil-profile-for-seismic-analysis">
+<h1>Example 1: 3D Layered Soil Profile for Seismic Analysis<a class="headerlink" href="#example-1-3d-layered-soil-profile-for-seismic-analysis" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This example demonstrates how to create a 3D soil profile model with multiple layers for seismic analysis. It illustrates the workflow for creating a realistic multi-layered soil column subjected to earthquake excitation, simulating wave propagation through different soil materials.</p>
+<p>The model created in this example consists of:</p>
+<ul class="simple">
+<li><p>Five distinct soil layers with different properties</p></li>
+<li><p>3D brick elements with gravitational body forces</p></li>
+<li><p>Earthquake excitation using the Kobe earthquake record</p></li>
+<li><p>Appropriate boundary conditions for site response analysis</p></li>
+</ul>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/Femora_logo.png"><img alt="3D Layered Soil Model Visualization" src="../_images/Femora_logo.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Conceptual visualization of the 3D layered soil model</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="model-description">
+<h2>Model Description<a class="headerlink" href="#model-description" title="Link to this heading"></a></h2>
+<p><strong>Soil Profile:</strong></p>
+<ul class="simple">
+<li><p>20m × 20m soil column (-10m to 10m in both X and Y directions)</p></li>
+<li><p>Total depth of 18m</p></li>
+<li><p>Five distinct soil layers:
+* Three layers of “Dense Ottawa” sand (bottom, total 10m thick)
+* One layer of “Loose Ottawa” sand (middle, 6m thick)
+* One layer of “Dense Montrey” sand (top, 2m thick)</p></li>
+</ul>
+<p><strong>Materials:</strong></p>
+<ul class="simple">
+<li><p>Dense Ottawa Sand: ElasticIsotropic material with E=2.0e7 Pa, nu=0.3, rho=2.02 ton/m³</p></li>
+<li><p>Loose Ottawa Sand: ElasticIsotropic material with E=2.0e7 Pa, nu=0.3, rho=1.94 ton/m³</p></li>
+<li><p>Dense Montrey Sand: ElasticIsotropic material with E=2.0e7 Pa, nu=0.3, rho=2.018 ton/m³</p></li>
+</ul>
+<p><strong>Mesh:</strong></p>
+<ul class="simple">
+<li><p>Element sizes: 1.0m × 1.0m horizontally</p></li>
+<li><p>Variable vertical discretization:
+* Deeper layers: 1.0-1.3m element height
+* Upper layers: 0.5m element height</p></li>
+</ul>
+<p><strong>Loading:</strong></p>
+<ul class="simple">
+<li><p>Kobe earthquake record applied as uniform excitation in X-direction</p></li>
+</ul>
+</section>
+<section id="code-access">
+<h2>Code Access<a class="headerlink" href="#code-access" title="Link to this heading"></a></h2>
+<p>The full source code for this example is available in the FEMORA repository:</p>
+<ul class="simple">
+<li><p>Example directory: <code class="docutils literal notranslate"><span class="pre">examples/Example1/</span></code></p></li>
+<li><p>Python script: <code class="docutils literal notranslate"><span class="pre">examples/Example1/meshmakermodel.py</span></code></p></li>
+<li><p>Data files: <code class="docutils literal notranslate"><span class="pre">kobe.acc</span></code> and <code class="docutils literal notranslate"><span class="pre">kobe.time</span></code></p></li>
+</ul>
+</section>
+<section id="detailed-tutorial">
+<h2>Detailed Tutorial<a class="headerlink" href="#detailed-tutorial" title="Link to this heading"></a></h2>
+<p>For a step-by-step walkthrough of this example, see the <a class="reference internal" href="quick_start.html"><span class="doc">Quick Start Guide</span></a>.</p>
+<p>The Quick Start Guide provides:</p>
+<ul class="simple">
+<li><p>Detailed explanation of each step in the model creation process</p></li>
+<li><p>In-depth discussion of concepts like assembly, boundary conditions, and analysis setup</p></li>
+<li><p>Complete code listing with explanatory comments</p></li>
+</ul>
+</section>
+<section id="results-and-visualization">
+<h2>Results and Visualization<a class="headerlink" href="#results-and-visualization" title="Link to this heading"></a></h2>
+<p>After running the example, you can:</p>
+<ol class="arabic simple">
+<li><p>Visualize the mesh in the FEMORA GUI</p></li>
+<li><p>Open the generated result files in ParaView to analyze:
+* Displacements, velocities, and accelerations
+* Stresses and strains in each soil layer
+* Wave propagation patterns through the soil column</p></li>
+</ol>
+</section>
+<section id="key-concepts-demonstrated">
+<h2>Key Concepts Demonstrated<a class="headerlink" href="#key-concepts-demonstrated" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Creating a 3D multi-layered soil model</p></li>
+<li><p>Applying material properties to different soil types</p></li>
+<li><p>Setting up proper boundary conditions for seismic analysis</p></li>
+<li><p>Recording and analyzing dynamic response quantities</p></li>
+<li><p>Exporting to OpenSees TCL format for further analysis</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples and Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example2.html" class="btn btn-neutral float-right" title="Example 2: Multi-layer Soil Model with Absorbing Boundaries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Amin Pakzad.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
