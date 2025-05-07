@@ -146,16 +146,52 @@ When you call ``createDefaultProcess``, the DRM component sets up a complete ana
 3. **Analysis Sequence Setup**: Creates a sequence of analysis steps:
    - Gravity-Elastic analysis (initial equilibrium)
    - Gravity-Plastic analysis (material stabilization)
+   - Time reset to zero
    - Dynamic analysis (seismic simulation)
 
 The default process uses a range of pre-configured solvers and algorithms:
 
 - **Constraint Handler**: Plain constraint handler
-- **Numberer**: RCM (Reverse Cuthill-McKee) for optimized node numbering
-- **System**: MUMPS sparse solver with optimized parameters
+- **Numberer**: ParallelRCM for optimized node numbering
+- **System**: MUMPS sparse solver with optimized parameters (icntl14=200, icntl7=7)
 - **Algorithm**: Modified Newton algorithm with initial factorization
-- **Test**: Relative energy increment test with specified tolerance
-- **Integrator**: Newmark method for time integration
+- **Test**: Energy increment test with specified tolerance (default 1e-4)
+- **Integrator**: Newmark method for time integration (gamma=0.5, beta=0.25)
+
+The process is fully customizable through option dictionaries:
+
+.. code-block:: python
+
+   import femora as fm
+
+   # Custom configuration for gravity elastic phase
+   elastic_options = {
+       "constraint_handler": my_custom_constraint,
+       "numberer": my_custom_numberer,
+       "system": my_custom_system,
+       "algorithm": my_custom_algorithm,
+       "test": my_custom_test,
+       "integrator": my_custom_integrator,
+       "dt": 0.005,
+       "num_steps": 30
+   }
+
+   # Custom configuration for dynamic analysis
+   dynamic_options = {
+       "system": my_custom_system,
+       "algorithm": my_custom_algorithm,
+       "final_time": 15.0
+   }
+
+   # Create process with custom options
+   fm.drm.createDefaultProcess(
+       dT=0.01, 
+       finalTime=15.0,
+       vtkhdfrecorder_delta_t=0.05,
+       vtkhdfrecorder_resp_types=["disp", "vel", "accel"],
+       GravityElasticOptions=elastic_options,
+       DynamicAnalysisOptions=dynamic_options
+   )
 
 Absorbing Layer Implementation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -235,4 +271,4 @@ API Reference
 .. autoclass:: femora.components.DRM.DRM.DRM 
    :members: createDefaultProcess, addAbsorbingLayer, set_pattern, set_meshmaker
    :undoc-members:
-   :show-inheritance: 
+   :show-inheritance:

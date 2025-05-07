@@ -249,17 +249,51 @@
 <li><p><strong>Analysis Sequence Setup</strong>: Creates a sequence of analysis steps:
 - Gravity-Elastic analysis (initial equilibrium)
 - Gravity-Plastic analysis (material stabilization)
+- Time reset to zero
 - Dynamic analysis (seismic simulation)</p></li>
 </ol>
 <p>The default process uses a range of pre-configured solvers and algorithms:</p>
 <ul class="simple">
 <li><p><strong>Constraint Handler</strong>: Plain constraint handler</p></li>
-<li><p><strong>Numberer</strong>: RCM (Reverse Cuthill-McKee) for optimized node numbering</p></li>
-<li><p><strong>System</strong>: MUMPS sparse solver with optimized parameters</p></li>
+<li><p><strong>Numberer</strong>: ParallelRCM for optimized node numbering</p></li>
+<li><p><strong>System</strong>: MUMPS sparse solver with optimized parameters (icntl14=200, icntl7=7)</p></li>
 <li><p><strong>Algorithm</strong>: Modified Newton algorithm with initial factorization</p></li>
-<li><p><strong>Test</strong>: Relative energy increment test with specified tolerance</p></li>
-<li><p><strong>Integrator</strong>: Newmark method for time integration</p></li>
+<li><p><strong>Test</strong>: Energy increment test with specified tolerance (default 1e-4)</p></li>
+<li><p><strong>Integrator</strong>: Newmark method for time integration (gamma=0.5, beta=0.25)</p></li>
 </ul>
+<p>The process is fully customizable through option dictionaries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
+
+<span class="c1"># Custom configuration for gravity elastic phase</span>
+<span class="n">elastic_options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;constraint_handler&quot;</span><span class="p">:</span> <span class="n">my_custom_constraint</span><span class="p">,</span>
+    <span class="s2">&quot;numberer&quot;</span><span class="p">:</span> <span class="n">my_custom_numberer</span><span class="p">,</span>
+    <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">my_custom_system</span><span class="p">,</span>
+    <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span> <span class="n">my_custom_algorithm</span><span class="p">,</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">my_custom_test</span><span class="p">,</span>
+    <span class="s2">&quot;integrator&quot;</span><span class="p">:</span> <span class="n">my_custom_integrator</span><span class="p">,</span>
+    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="s2">&quot;num_steps&quot;</span><span class="p">:</span> <span class="mi">30</span>
+<span class="p">}</span>
+
+<span class="c1"># Custom configuration for dynamic analysis</span>
+<span class="n">dynamic_options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">my_custom_system</span><span class="p">,</span>
+    <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span> <span class="n">my_custom_algorithm</span><span class="p">,</span>
+    <span class="s2">&quot;final_time&quot;</span><span class="p">:</span> <span class="mf">15.0</span>
+<span class="p">}</span>
+
+<span class="c1"># Create process with custom options</span>
+<span class="n">fm</span><span class="o">.</span><span class="n">drm</span><span class="o">.</span><span class="n">createDefaultProcess</span><span class="p">(</span>
+    <span class="n">dT</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">finalTime</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+    <span class="n">vtkhdfrecorder_delta_t</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">vtkhdfrecorder_resp_types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span> <span class="s2">&quot;vel&quot;</span><span class="p">,</span> <span class="s2">&quot;accel&quot;</span><span class="p">],</span>
+    <span class="n">GravityElasticOptions</span><span class="o">=</span><span class="n">elastic_options</span><span class="p">,</span>
+    <span class="n">DynamicAnalysisOptions</span><span class="o">=</span><span class="n">dynamic_options</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="absorbing-layer-implementation">
 <h2>Absorbing Layer Implementation<a class="headerlink" href="#absorbing-layer-implementation" title="Link to this heading"></a></h2>
