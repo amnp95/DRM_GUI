@@ -350,6 +350,7 @@ Step 9: Export and Visualize the Model
 
 2. **GUI Visualization**:
    - The `fm.gui()` command launches FEMORA's graphical user interface, allowing you to:
+
       - Visualize the 3D model geometry and mesh
       - Verify material assignments and layer arrangement
       - Check boundary conditions
@@ -361,6 +362,7 @@ Step 9: Export and Visualize the Model
    - The GUI provides intuitive tools for model creation, material definition, and analysis setup
    - You can also load existing models created with Python scripts to review or modify them
    - The GUI is particularly useful for:
+   
       - Verifying complex geometries
       - Checking node and element connectivity
       - Troubleshooting model issues
