@@ -482,7 +482,6 @@ The full source code for this example is available in the FEMORA repository:
    :language: python
    :caption: Example 2 - Multi-layer Soil Model with Absorbing Boundaries
    :name: example2-code
-   :linenos:
 
 * Example directory: ``examples/Example2/``
 * Python script: ``examples/Example2/femoramodel.py``

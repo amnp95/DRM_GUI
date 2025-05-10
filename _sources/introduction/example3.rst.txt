@@ -172,6 +172,16 @@ Unlike Example 2 which used consistent material properties throughout each layer
     softMat_damp = fm.damping.create_damping("frequency rayleigh", dampingFactor=softMat_xi_s, f1=3, f2=15)
     softMat_reg = fm.region.create_region("elementRegion", damping=softMat_damp)
 
+.. note::
+   This example uses elastic isotropic material for the soft basin soil. In real seismic events, soft soils with such low shear wave velocities (Vs=150 m/s) would likely experience nonlinear behavior and enter the plastic region even at moderate shaking intensities. The elastic material assumption may exaggerate wave amplification effects since it doesn't account for:
+   
+   1. **Energy dissipation through hysteresis** - In reality, soft soils dissipate energy through plastic deformation, which reduces amplification
+   2. **Strain-dependent stiffness reduction** - Soft soils experience significant stiffness degradation at relatively low strain levels
+   3. **Permanent deformation** - Plastic response can lead to permanent settlement and lateral spreading
+   4. **Damping increase with strain level** - Material damping typically increases as the soil enters the nonlinear range
+   
+   In a subsequent example, we will implement more realistic elastoplastic constitutive models for the soft basin material to demonstrate how nonlinear behavior affects seismic wave amplification and basin response.
+
 The soft material definition demonstrates several important geotechnical principles:
 
 1. **Wave Velocity Relationship**: The code maintains a specific relationship between P-wave (Vp) and S-wave (Vs) velocities, with Vp/Vs = 2.0. This ratio is typical for water-saturated sediments and corresponds to a Poisson's ratio (ν) of approximately 0.33, which is calculated using the formula:
@@ -436,42 +446,77 @@ This approach demonstrates how FEMORA allows for flexible process flow managemen
 .. note::
    This pattern of inserting preparation steps before calling `createDefaultProcess` is particularly important in parametric studies where the same model is run with different configurations. It ensures that the output organization is properly established before simulation begins.
 
-Key Concepts Demonstrated
--------------------------
+Results and Analysis
+--------------------
 
-Example 3 demonstrates several advanced concepts in FEMORA:
+The basin model demonstrates several important seismic wave phenomena that are visualized in the acceleration comparison plots:
 
-1. **External Mesh Integration**: 
-   The integration between PyVista's mesh handling capabilities and FEMORA's finite element framework demonstrates a powerful approach to complex geometry modeling. This approach allows users to:
-   - Create complex geological features that traditional structured grids cannot represent
-   - Directly import meshes from external sources or CAD software
-   - Manipulate mesh structures programmatically for parametric studies
-   - Perform mesh quality assessments and optimizations before simulation
+1. **Amplification Effects**: Soft basin materials typically amplify seismic waves, leading to higher accelerations at the surface compared to regular soil profiles.
 
-2. **Complex Domain Modeling**: 
-   The semi-hemispherical basin represents a simplified but realistic geological feature. The techniques shown can be extended to model:
-   - Irregularly shaped basins common in real geological settings
-   - Fault zones and rupture surfaces
-   - Underground structures and tunnels
-   - Complex topography and surface features
+2. **Wave Trapping**: Basins can trap seismic energy, leading to longer duration of shaking and resonance effects.
 
-3. **Selective Material Assignment**: 
-   The approach of conditionally assigning different material properties to specific regions demonstrates:
-   - How to represent lateral and vertical heterogeneity in geological models
-   - Methods for implementing material contrasts and impedance boundaries
-   - Techniques for parameterized material property assignment
-   - Approaches for systematic investigation of material property effects
+3. **Lateral Variations**: The curved geometry of the basin creates complex wave patterns including focusing and defocusing effects.
 
-4. **Comparative Analysis Setup**: 
-   The model is designed to enable systematic comparison studies through:
-   - Parameterized basin properties (presence/absence, material properties)
-   - Consistent output organization for different model configurations
-   - Standardized simulation parameters across different model variants
-   - Direct visualization of response differences
+4. **Frequency-Dependent Response**: Softer basins (Vs=150 m/s) respond differently to different frequency components of seismic waves than stiffer basins (Vs=200 m/s).
 
-5. **Performance Optimization**:
-   The model demonstrates several computational optimization strategies:
-   - Selective use of complex mesh techniques only where needed
-   - Strategic partitioning based on model component characteristics
-   - Balanced domain decomposition for parallel computing efficiency
-   - Economical use of mesh refinement in areas of interest
+Comparisons between the regular soil profile and basin models with different shear wave velocities illustrate these phenomena:
+
+.. figure:: images/Example3/acceleration_comparison_Regular_Vs150.png
+   :width: 600px
+   :align: center
+   :alt: Acceleration comparison between regular soil and basin model with Vs=150m/s
+
+   Comparison of surface acceleration between regular soil profile and a model with a Vs=150m/s basin
+
+.. figure:: images/Example3/acceleration_comparison_Regular_Vs200.png
+   :width: 600px
+   :align: center
+   :alt: Acceleration comparison between regular soil and basin model with Vs=200m/s
+
+   Comparison of surface acceleration between regular soil profile and a model with a Vs=200m/s basin
+
+The plots clearly show:
+
+* **Enhanced amplification in the softest basin model**: The Vs=150 m/s model shows significantly greater amplification compared to both the regular soil profile and the Vs=200 m/s model. This demonstrates the inverse relationship between shear wave velocity and amplification - as shear wave velocity decreases, amplification increases. This relationship is governed by the impedance contrast between the basin and surrounding material.
+
+* **Velocity-dependent resonance periods**: The Vs=150 m/s basin exhibits longer predominant periods of oscillation compared to the Vs=200 m/s basin, consistent with the relationship between material stiffness and natural period (T ∝ 1/√G, where G is shear modulus).
+
+* **Longer duration of significant shaking**: Both basin models show extended duration of strong motion compared to the regular soil profile, with the Vs=150 m/s model showing the longest duration due to greater energy trapping.
+
+* **Phase shifts in wave arrivals**: The basin models show delayed arrivals of peak acceleration compared to the regular soil model, with the Vs=150 m/s model showing more significant delay due to the slower wave propagation speeds.
+
+These results demonstrate that basins with very soft materials (Vs=150 m/s) can significantly amplify ground motion, sometimes by factors of 2-3 compared to surrounding areas, highlighting the importance of site-specific analysis in regions with basin structures and soft soil deposits.
+
+Data Visualization and Post-Processing
+--------------------------------------
+
+The response data from the FEMORA simulations is stored in VTKHDF format, which requires post-processing for visualization and analysis. Example3 includes a Python script (plot.py) that processes these files and creates the comparison plots shown above.
+
+.. literalinclude:: ../../examples/Example3/plot.py
+   :language: python
+   :name: example3-plot
+   :caption: Python script for post-processing and visualization of simulation results
+
+Code Access
+-----------
+
+The full source code for this example is available in the FEMORA repository:
+
+* Example directory: ``examples/Example3/``
+* Python script: ``examples/Example3/femoramodel.py``
+* Data file: ``drmload.h5drm`` (required for running the example)
+
+Below is the complete code for Example3's femoramodel.py:
+
+.. literalinclude:: ../../examples/Example3/femoramodel.py
+   :language: python
+   :name: example3-code
+   :caption: Complete code for Example3 model
+
+To run this example, ensure that:
+
+1. You have a working installation of FEMORA
+2. The ``drmload.h5drm`` file is in the example directory
+3. You execute the script from the Example3 directory to maintain correct paths
+
+This will generate the model and create output files in the appropriate directory (Vs150 for the basin model or Regular for the control model) for post-processing and visualization.
