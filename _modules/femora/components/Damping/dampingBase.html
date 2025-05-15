@@ -88,8 +88,26 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DampingBase</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all damping models in structural analysis.</span>
+<span class="sd">    </span>
+<span class="sd">    This abstract class provides the foundation for implementing different types of damping</span>
+<span class="sd">    models in structural dynamics. It manages damping instances through a class-level registry</span>
+<span class="sd">    and provides common functionality for all derived damping classes.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str): Descriptive name of the damping instance, automatically generated</span>
+<span class="sd">        tag (int): Unique identifier for the damping instance</span>
+<span class="sd">        _dampings (dict): Class-level registry of all damping instances</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_dampings</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a new damping instance.</span>
+<span class="sd">        </span>
+<span class="sd">        Automatically assigns a unique tag and name to the damping instance and</span>
+<span class="sd">        registers it in the class-level registry.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_next_tag</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;damping</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span>
@@ -97,12 +115,28 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_next_tag</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the next available tag for a new damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the next available tag for a new damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Tags are assigned sequentially starting from 1.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The next available tag number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_dampings</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
     
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_damping</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes a damping from the list of dampings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a damping from the list of dampings.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tag (int): The tag of the damping to remove</span>
+<span class="sd">            </span>
+<span class="sd">        Note:</span>
+<span class="sd">            After removal, all remaining dampings have their tags updated</span>
+<span class="sd">            to maintain sequential numbering.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dampings</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dampings</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_update_tags</span><span class="p">()</span>
@@ -110,12 +144,28 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_damping</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the damping with the given tag&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the damping with the given tag.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            tag (int): The tag of the damping to retrieve</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DampingBase: The damping instance with the specified tag</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyError: If no damping with the given tag exists</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">DampingBase</span><span class="o">.</span><span class="n">_dampings</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span>
     
 
     <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes the damping from the list of dampings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes the damping from the list of dampings.</span>
+<span class="sd">        </span>
+<span class="sd">        This instance method removes the current damping object from the</span>
+<span class="sd">        registry and updates the tags of all remaining damping instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">refrences</span> <span class="o">=</span> <span class="n">gc</span><span class="o">.</span><span class="n">get_referrers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">remove_damping</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
@@ -124,7 +174,13 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_tags</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the tags of all dampings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the tags of all dampings.</span>
+<span class="sd">        </span>
+<span class="sd">        This method ensures that damping tags remain sequential after</span>
+<span class="sd">        a damping has been removed. It renumbers all tags and updates</span>
+<span class="sd">        the corresponding damping names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dampings</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
         <span class="n">new_dampings</span> <span class="o">=</span> <span class="p">{}</span>
@@ -135,6 +191,12 @@
         <span class="bp">cls</span><span class="o">.</span><span class="n">_dampings</span> <span class="o">=</span> <span class="n">new_dampings</span>
         
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of the damping object.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: A formatted string showing the damping class name, name, and tag</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Damping Class:</span><span class="se">\t</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Tag: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -142,48 +204,99 @@
     
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">print_dampings</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prints all the dampings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints all the dampings currently registered.</span>
+<span class="sd">        </span>
+<span class="sd">        Outputs a formatted representation of each damping instance</span>
+<span class="sd">        to the console, showing their class, name, tag, and parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Printing all dampings:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dampings</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_dampings</span><span class="p">[</span><span class="n">tag</span><span class="p">])</span>
 
-   
-
-        
-
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Parameters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the parameters of the damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Tuple[str, str]]: List of parameter name-description pairs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Notes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the notes of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the notes of the damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Dictionary containing notes and references</span>
+<span class="sd">                about the damping model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
     
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the values of the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the values of the parameters of the damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, int, float, list]]: Dictionary containing the</span>
+<span class="sd">                current parameter values of the damping instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the values of the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the values of the parameters of the damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to update</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameter validation fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tcl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the TCL code of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the TCL code of the damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: OpenSees TCL command string for defining this damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
-        
-
-
-
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">RayleighDamping</span><span class="p">(</span><span class="n">DampingBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of Rayleigh damping model.</span>
+<span class="sd">    </span>
+<span class="sd">    Rayleigh damping is a classical damping model used in structural dynamics,</span>
+<span class="sd">    defined as a linear combination of mass and stiffness matrices.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        alphaM (float): Factor applied to mass matrix</span>
+<span class="sd">        betaK (float): Factor applied to current stiffness matrix</span>
+<span class="sd">        betaKInit (float): Factor applied to initial stiffness matrix</span>
+<span class="sd">        betaKComm (float): Factor applied to committed stiffness matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Rayleigh damping instance.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Keyword arguments defining the damping properties:</span>
+<span class="sd">                alphaM (float): Factor applied to mass matrix (default=0.0)</span>
+<span class="sd">                betaK (float): Factor applied to current stiffness matrix (default=0.0)</span>
+<span class="sd">                betaKInit (float): Factor applied to initial stiffness matrix (default=0.0)</span>
+<span class="sd">                betaKComm (float): Factor applied to committed stiffness matrix (default=0.0)</span>
+<span class="sd">                </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameters are invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alphaM</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;alphaM&quot;</span><span class="p">]</span>
@@ -191,8 +304,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">betaKInit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;betaKInit&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">betaKComm</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;betaKComm&quot;</span><span class="p">]</span>
 
-    
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of the Rayleigh damping object.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: A formatted string showing the damping class, name, tag, and parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">alphaM: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alphaM</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">betaK: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">betaK</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -200,11 +318,14 @@
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">betaKComm: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">betaKComm</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">res</span>
 
-
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Parameters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the parameters of the Rayleigh damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Tuple[str, str]]: List of parameter name-description pairs for Rayleigh damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;alphaM&quot;</span><span class="p">,</span> <span class="s2">&quot;factor applied to elements or nodes mass matrix (optional, default=0.0)&quot;</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;betaK&quot;</span><span class="p">,</span> <span class="s2">&quot;factor applied to elements or nodes stiffness matrix (optional, default=0.0)&quot;</span><span class="p">),</span>
@@ -214,7 +335,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Notes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the notes of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the notes of the Rayleigh damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Dictionary containing explanatory notes and references</span>
+<span class="sd">                about Rayleigh damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Notes&quot;</span><span class="p">:</span> <span class="p">[</span>
             <span class="s2">&quot;The damping matrix is calculated as: C = α&lt;sub&gt;M&lt;/sub&gt; M + β&lt;sub&gt;K&lt;/sub&gt;  K + β&lt;sub&gt;KInit&lt;/sub&gt; Kinit + β&lt;sub&gt;KComm&lt;/sub&gt;  Kcomm&quot;</span><span class="p">,</span>
@@ -228,7 +355,18 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the Rayleigh damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to validate</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Validated parameters</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If any parameter is invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">newkwargs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;alphaM&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
             <span class="s2">&quot;betaK&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
@@ -236,14 +374,12 @@
             <span class="s2">&quot;betaKComm&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
         <span class="p">}</span>
 
-
         <span class="c1">#  check if the values are floats and are between 0 and 1</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">newkwargs</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">newkwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> should be a float&quot;</span><span class="p">)</span>
-
 
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">newkwargs</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -262,6 +398,13 @@
         <span class="k">return</span> <span class="n">newkwargs</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current values of the Rayleigh damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, int, float, list]]: Dictionary containing the</span>
+<span class="sd">                current parameter values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;alphaM&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphaM</span><span class="p">,</span>
             <span class="s2">&quot;betaK&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">betaK</span><span class="p">,</span>
@@ -270,7 +413,15 @@
         <span class="p">}</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">update_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the values of the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the values of the Rayleigh damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to update</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameter validation fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alphaM</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;alphaM&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">betaK</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;betaK&quot;</span><span class="p">]</span>
@@ -278,23 +429,61 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">betaKComm</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;betaKComm&quot;</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tcl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the TCL code of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the TCL code for the Rayleigh damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: OpenSees TCL command string for defining Rayleigh damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;# damping rayleigh </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alphaM</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">betaK</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">betaKInit</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">betaKComm</span><span class="si">}</span><span class="s2"> (normal rayleigh damping)&quot;</span>
         <span class="k">return</span> <span class="n">res</span>
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Type</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the type identifier for Rayleigh damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The string &quot;Rayleigh&quot; identifying this damping type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Rayleigh&quot;</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ModalDamping</span><span class="p">(</span><span class="n">DampingBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of Modal damping model.</span>
+<span class="sd">    </span>
+<span class="sd">    Modal damping allows specifying different damping ratios for different</span>
+<span class="sd">    vibration modes of a structure.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        numberofModes (int): Number of modes to consider for modal damping</span>
+<span class="sd">        dampingFactors (list): List of damping ratios for each mode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Modal damping instance.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Keyword arguments defining the modal damping properties:</span>
+<span class="sd">                numberofModes (int): Number of modes to consider</span>
+<span class="sd">                dampingFactors (str or list): Comma-separated string or list of damping ratios</span>
+<span class="sd">                </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameters are invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">numberofModes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;numberofModes&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dampingFactors</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dampingFactors&quot;</span><span class="p">]</span>
     
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of the Modal damping object.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: A formatted string showing the damping class, name, tag, and parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Number of Modes: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">numberofModes</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Damping Factors: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dampingFactors</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -302,7 +491,12 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Parameters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the parameters of the Modal damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Tuple[str, str]]: List of parameter name-description pairs for Modal damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;numberofModes&quot;</span><span class="p">,</span> <span class="s2">&quot;number of modes to consider for modal damping (integer greater than 0)&quot;</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;dampingFactors&quot;</span><span class="p">,</span> <span class="s2">&quot;damping factors for each mode (list of comma separated floats between 0 and 1)&quot;</span><span class="p">),</span>
@@ -310,7 +504,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Notes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the notes of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the notes of the Modal damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Dictionary containing explanatory notes and references</span>
+<span class="sd">                about Modal damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;References&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;https://opensees.github.io/OpenSeesDocumentation/user/manual/model/damping/modalDamping.html&quot;</span><span class="p">,</span>
                        <span class="s2">&quot;https://portwooddigital.com/2019/09/12/be-careful-with-modal-damping/&quot;</span><span class="p">,</span>
@@ -320,7 +520,18 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the Modal damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to validate</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Validated parameters</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If any parameter is invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">numberofModes</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">dampingFactors</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -361,29 +572,79 @@
         <span class="p">}</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current values of the Modal damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, int, float, list]]: Dictionary containing the</span>
+<span class="sd">                current parameter values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;numberofModes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">numberofModes</span><span class="p">,</span>
             <span class="s2">&quot;dampingFactors&quot;</span><span class="p">:</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dampingFactors</span><span class="p">])</span>
         <span class="p">}</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">update_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the values of the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the values of the Modal damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to update</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameter validation fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">numberofModes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;numberofModes&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dampingFactors</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dampingFactors&quot;</span><span class="p">]</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tcl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the TCL code of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the TCL code for the Modal damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: OpenSees TCL command string for defining Modal damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;-modalDamping </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">dampingFactors</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">res</span>
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Type</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the type identifier for Modal damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The string &quot;Modal&quot; identifying this damping type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Modal&quot;</span>
                 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">FrequencyRayleighDamping</span><span class="p">(</span><span class="n">RayleighDamping</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of Frequency-dependent Rayleigh damping model.</span>
+<span class="sd">    </span>
+<span class="sd">    This class extends RayleighDamping by allowing specification of target</span>
+<span class="sd">    frequencies and a damping ratio, from which the Rayleigh coefficients</span>
+<span class="sd">    are automatically calculated.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        f1 (float): Lower bound target frequency</span>
+<span class="sd">        f2 (float): Upper bound target frequency</span>
+<span class="sd">        dampingFactor (float): Target damping ratio</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Frequency Rayleigh damping instance.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Keyword arguments defining the damping properties:</span>
+<span class="sd">                f1 (float): Lower bound target frequency (default=0.2 Hz)</span>
+<span class="sd">                f2 (float): Upper bound target frequency (default=20 Hz)</span>
+<span class="sd">                dampingFactor (float): Target damping ratio (required)</span>
+<span class="sd">                </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameters are invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">f1</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;f1&quot;</span><span class="p">]</span>
@@ -397,6 +658,12 @@
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of the Frequency Rayleigh damping object.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: A formatted string showing the damping class, name, tag, and parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">f1: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">f2: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">f2</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -405,7 +672,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Parameters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the parameters of the Frequency Rayleigh damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Tuple[str, str]]: List of parameter name-description pairs for </span>
+<span class="sd">                Frequency Rayleigh damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;dampingFactor&quot;</span><span class="p">,</span> <span class="s2">&quot;damping factor for the frequency range (float between 0 and 1) (required)&quot;</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="s2">&quot;lower bound Target Frequency (float greater than 0) (optional, default=0.2)&quot;</span><span class="p">),</span>
@@ -414,7 +687,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Notes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the notes of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the notes of the Frequency Rayleigh damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Dictionary containing explanatory notes and references</span>
+<span class="sd">                about Frequency Rayleigh damping including mathematical formulation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Notes&quot;</span><span class="p">:</span> <span class="p">[</span>
 <span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
@@ -431,7 +710,21 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the Frequency Rayleigh damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Converts frequency and damping specifications into Rayleigh coefficients.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to validate</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Validated parameters with calculated</span>
+<span class="sd">                Rayleigh coefficients</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If any parameter is invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f1</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="c1"># Hz </span>
         <span class="n">f2</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># Hz</span>
         <span class="n">dampingFactor</span> <span class="o">=</span> <span class="mi">0</span>
@@ -483,6 +776,13 @@
         <span class="p">}</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current values of the Frequency Rayleigh damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, int, float, list]]: Dictionary containing the</span>
+<span class="sd">                current parameter values (frequency and damping specifications)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;dampingFactor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dampingFactor</span><span class="p">,</span>
             <span class="s2">&quot;f1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="p">,</span>
@@ -491,7 +791,18 @@
     
 
     <span class="k">def</span><span class="w"> </span><span class="nf">update_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the values of the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the values of the Frequency Rayleigh damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Recalculates the Rayleigh coefficients based on the new frequency and</span>
+<span class="sd">        damping specifications.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to update</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameter validation fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">f1</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;f1&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">f2</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;f2&quot;</span><span class="p">]</span>
@@ -503,17 +814,56 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Type</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the type identifier for Frequency Rayleigh damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The string &quot;Frequency Rayleigh&quot; identifying this damping type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Frequency Rayleigh&quot;</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tcl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the TCL code of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the TCL code for the Frequency Rayleigh damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: OpenSees TCL command string for defining Frequency Rayleigh damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;# damping rayleigh </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alphaM</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">betaK</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">betaKInit</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">betaKComm</span><span class="si">}</span><span class="s2"> (frequency rayleigh damping with f1 = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="si">}</span><span class="s2"> and f2 = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">f2</span><span class="si">}</span><span class="s2"> and damping factor = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dampingFactor</span><span class="si">}</span><span class="s2">)&quot;</span>
         <span class="k">return</span> <span class="n">res</span>
 
 
-
 <span class="k">class</span><span class="w"> </span><span class="nc">UniformDamping</span><span class="p">(</span><span class="n">DampingBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of Uniform damping model.</span>
+<span class="sd">    </span>
+<span class="sd">    Uniform damping provides a constant damping ratio across a specified</span>
+<span class="sd">    frequency range for all elements in a model.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        dampingRatio (float): Target equivalent viscous damping ratio</span>
+<span class="sd">        freql (float): Lower bound of the frequency range</span>
+<span class="sd">        freq2 (float): Upper bound of the frequency range</span>
+<span class="sd">        Ta (float, optional): Activation time for damping</span>
+<span class="sd">        Td (float, optional): Deactivation time for damping</span>
+<span class="sd">        tsTagScaleFactorVsTime (int, optional): Time series tag for damping scaling</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Uniform damping instance.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Keyword arguments defining the uniform damping properties:</span>
+<span class="sd">                dampingRatio (float): Target equivalent viscous damping ratio (required)</span>
+<span class="sd">                freql (float): Lower bound of the frequency range (required)</span>
+<span class="sd">                freq2 (float): Upper bound of the frequency range (required)</span>
+<span class="sd">                Ta (float, optional): Activation time for damping</span>
+<span class="sd">                Td (float, optional): Deactivation time for damping</span>
+<span class="sd">                tsTagScaleFactorVsTime (int, optional): Time series tag for damping scaling</span>
+<span class="sd">                </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameters are invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dampingRatio</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dampingRatio&quot;</span><span class="p">]</span>
@@ -524,6 +874,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tsTagScaleFactorVsTime</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tsTagScaleFactorVsTime&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of the Uniform damping object.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: A formatted string showing the damping class, name, tag, and parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Damping Ratio: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dampingRatio</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Lower Frequency: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freql</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -533,10 +889,14 @@
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">tsTagScaleFactorVsTime: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tsTagScaleFactorVsTime</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">tsTagScaleFactorVsTime</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No time series&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">res</span>
     
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Parameters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the parameters of the Uniform damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Tuple[str, str]]: List of parameter name-description pairs for Uniform damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;dampingRatio&quot;</span><span class="p">,</span> <span class="s2">&quot;target equivalent viscous damping ratio (float between 0 and 1) (required)&quot;</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;freql&quot;</span><span class="p">,</span> <span class="s2">&quot;lower bound of the frequency range (in units of T^-1) (float greater than 0) (required)&quot;</span><span class="p">),</span>
@@ -548,7 +908,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Notes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the notes of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the notes of the Uniform damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Dictionary containing explanatory notes and references</span>
+<span class="sd">                about Uniform damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;References&quot;</span><span class="p">:</span> <span class="p">[</span>
                 <span class="s2">&quot;https://opensees.github.io/OpenSeesDocumentation/user/manual/model/damping/elementalDamping/UniformDamping.html&quot;</span><span class="p">,</span>
@@ -557,7 +923,18 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the Uniform damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to validate</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Validated parameters</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If any parameter is invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># make them float</span>
         <span class="k">try</span> <span class="p">:</span>
@@ -592,6 +969,13 @@
         <span class="k">return</span> <span class="n">kwargs</span>
         
     <span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current values of the Uniform damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, int, float, list]]: Dictionary containing the</span>
+<span class="sd">                current parameter values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;dampingRatio&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dampingRatio</span><span class="p">,</span>
             <span class="s2">&quot;freql&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">freql</span><span class="p">,</span>
@@ -604,7 +988,15 @@
         <span class="p">}</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">update_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the values of the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the values of the Uniform damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to update</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameter validation fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dampingRatio</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dampingRatio&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">freql</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;freql&quot;</span><span class="p">]</span>
@@ -616,7 +1008,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tsTagScaleFactorVsTime</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tsTagScaleFactorVsTime&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="c1"># tsTagScaleFactorVsTime is optional so we use get</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tcl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the TCL code of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the TCL code for the Uniform damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: OpenSees TCL command string for defining Uniform damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;damping Uniform </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dampingRatio</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freql</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freq2</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -activateTime  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Ta</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -629,14 +1026,42 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Type</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the type identifier for Uniform damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The string &quot;Uniform&quot; identifying this damping type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Uniform&quot;</span>
 
 
-
-
-
 <span class="k">class</span><span class="w"> </span><span class="nc">SecantStiffnessProportional</span> <span class="p">(</span><span class="n">DampingBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of Secant Stiffness Proportional damping model.</span>
+<span class="sd">    </span>
+<span class="sd">    This damping model applies damping proportional to the secant stiffness</span>
+<span class="sd">    of elements, which is useful for nonlinear analysis.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        dampingFactor (float): Coefficient used in the secant stiffness-proportional damping</span>
+<span class="sd">        Ta (float, optional): Activation time for damping</span>
+<span class="sd">        Td (float, optional): Deactivation time for damping</span>
+<span class="sd">        tsTagScaleFactorVsTime (int, optional): Time series tag for damping scaling</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Secant Stiffness Proportional damping instance.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Keyword arguments defining the damping properties:</span>
+<span class="sd">                dampingFactor (float): Coefficient used in damping (required)</span>
+<span class="sd">                Ta (float, optional): Activation time for damping</span>
+<span class="sd">                Td (float, optional): Deactivation time for damping</span>
+<span class="sd">                tsTagScaleFactorVsTime (int, optional): Time series tag for damping scaling</span>
+<span class="sd">                </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameters are invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dampingFactor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dampingFactor&quot;</span><span class="p">]</span>
@@ -645,6 +1070,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tsTagScaleFactorVsTime</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tsTagScaleFactorVsTime&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of the Secant Stiffness Proportional damping object.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: A formatted string showing the damping class, name, tag, and parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Damping Factor: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dampingFactor</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Ta: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Ta</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">Ta</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;default&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -654,7 +1085,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Parameters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the parameters of the Secant Stiffness Proportional damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Tuple[str, str]]: List of parameter name-description pairs for</span>
+<span class="sd">                Secant Stiffness Proportional damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;dampingFactor&quot;</span><span class="p">,</span> <span class="s2">&quot;coefficient used in the secant stiffness-proportional damping (float between 0 and 1) (required)&quot;</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;Ta&quot;</span><span class="p">,</span> <span class="s2">&quot;time when the damping is activated (float) (optional)&quot;</span><span class="p">),</span>
@@ -664,7 +1101,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Notes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the notes of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the notes of the Secant Stiffness Proportional damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Dictionary containing explanatory notes and references</span>
+<span class="sd">                about Secant Stiffness Proportional damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;Notes&quot;</span><span class="p">:</span> <span class="p">[</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;The formulation of the damping matrix is:</span>
@@ -679,7 +1122,18 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the Secant Stiffness Proportional damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to validate</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, list]]: Validated parameters</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If any parameter is invalid or out of range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># make them float</span>
         <span class="k">try</span> <span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;dampingFactor&quot;</span><span class="p">,</span> <span class="s2">&quot;Ta&quot;</span><span class="p">,</span> <span class="s2">&quot;Td&quot;</span><span class="p">]:</span>
@@ -705,6 +1159,13 @@
         <span class="k">return</span> <span class="n">kwargs</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current values of the Secant Stiffness Proportional damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Union[str, int, float, list]]: Dictionary containing the</span>
+<span class="sd">                current parameter values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;dampingFactor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dampingFactor</span><span class="p">,</span>
             <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">{</span>
@@ -715,7 +1176,15 @@
         <span class="p">}</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">update_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the values of the parameters of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the values of the Secant Stiffness Proportional damping parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Parameter name-value pairs to update</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If parameter validation fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dampingFactor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dampingFactor&quot;</span><span class="p">]</span>
 
@@ -725,7 +1194,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tsTagScaleFactorVsTime</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tsTagScaleFactorVsTime&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tcl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the TCL code of the damping&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the TCL code for the Secant Stiffness Proportional damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: OpenSees TCL command string for defining Secant Stiffness Proportional damping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;damping SecStiff </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dampingFactor</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -activateTime  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Ta</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -738,8 +1212,13 @@
     
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Type</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the type identifier for Secant Stiffness Proportional damping.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The string &quot;Secant Stiffness Proportional&quot; identifying this damping type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Secant Stiffness Proportional&quot;</span>
-
 
 
 <div class="viewcode-block" id="DampingManager">
@@ -780,6 +1259,23 @@
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">DampingManager</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
+    
+<div class="viewcode-block" id="DampingManager.__init__">
+<a class="viewcode-back" href="../../../../technical/damping.html#femora.components.Damping.dampingBase.DampingManager.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the DampingManager.</span>
+<span class="sd">        </span>
+<span class="sd">        This method is called only once when the first instance of DampingManager is created.</span>
+<span class="sd">        It sets up the necessary attributes and prepares the manager for use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize any required attributes here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rayleigh</span> <span class="o">=</span> <span class="n">RayleighDamping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modal</span> <span class="o">=</span> <span class="n">ModalDamping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequencyRayleigh</span> <span class="o">=</span> <span class="n">FrequencyRayleighDamping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span> <span class="o">=</span> <span class="n">UniformDamping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secantStiffnessProportional</span> <span class="o">=</span> <span class="n">SecantStiffnessProportional</span></div>
+
 
 <div class="viewcode-block" id="DampingManager.get_instance">
 <a class="viewcode-back" href="../../../../technical/damping.html#femora.components.Damping.dampingBase.DampingManager.get_instance">[docs]</a>
@@ -894,10 +1390,18 @@
         <span class="k">return</span> <span class="n">DampingRegistry</span><span class="o">.</span><span class="n">get_available_types</span><span class="p">()</span></div>
 </div>
 
-    
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DampingRegistry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Registry of available damping types for dynamic structural analysis.</span>
+<span class="sd">    </span>
+<span class="sd">    The DampingRegistry maintains a dictionary of damping types and their corresponding</span>
+<span class="sd">    classes, allowing for dynamic registration and creation of damping objects.</span>
+<span class="sd">    </span>
+<span class="sd">    This class uses class methods exclusively and is not intended to be instantiated.</span>
+<span class="sd">    It serves as a factory for creating damping instances of various types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_damping_types</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;frequency rayleigh&#39;</span><span class="p">:</span> <span class="n">FrequencyRayleighDamping</span><span class="p">,</span>
         <span class="s1">&#39;rayleigh&#39;</span><span class="p">:</span> <span class="n">RayleighDamping</span><span class="p">,</span>
@@ -908,25 +1412,54 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_damping</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">damping_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DampingBase</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new damping instance of the specified type.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            damping_type (str): The type of damping to create (case insensitive)</span>
+<span class="sd">            **kwargs: Parameter name-value pairs for the damping type</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DampingBase: A new instance of the requested damping type</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the damping type is unknown</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">damping_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_damping_types</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown damping type: </span><span class="si">{</span><span class="n">damping_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_damping_types</span><span class="p">[</span><span class="n">damping_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()](</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_available_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of available damping types that can be created.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: A list of damping type names that can be used with create_damping()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_damping_types</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">register_damping_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">damping_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DampingBase</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a new damping type.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The name to use for this damping type (will be converted to lowercase)</span>
+<span class="sd">            damping_class (Type[DampingBase]): The class to instantiate for this damping type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_damping_types</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">damping_class</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_damping_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a registered damping type.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The name of the damping type to remove</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_damping_types</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_damping_types</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-
- 
-
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -939,8 +1472,6 @@
     <span class="n">RayleighDamping2</span> <span class="o">=</span> <span class="n">RayleighDamping</span><span class="p">(</span><span class="n">alphaM</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">betaK</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">betaKInit</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">betaKComm</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
     <span class="n">ModalDamping1</span> <span class="o">=</span> <span class="n">ModalDamping</span><span class="p">(</span><span class="n">numberofModes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dampingFactors</span><span class="o">=</span><span class="s2">&quot;0.1,0.2&quot;</span><span class="p">)</span>
     <span class="n">ModalDamping2</span> <span class="o">=</span> <span class="n">ModalDamping</span><span class="p">(</span><span class="n">numberofModes</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dampingFactors</span><span class="o">=</span><span class="s2">&quot;0.3,0.4,0.5&quot;</span><span class="p">)</span>
-
-
 
     <span class="n">DampingBase</span><span class="o">.</span><span class="n">print_dampings</span><span class="p">()</span>
 
