@@ -277,7 +277,7 @@ Next, we apply appropriate boundary conditions for a seismic analysis:
    - Without these boundary conditions, the model would allow unrealistic deformation patterns that don't represent how soil actually behaves during earthquakes.
 
 2. **Why we use fixMacroZmin**:
-   - The `fixMacroZmin(dofs=[1,2,3])` function fixes all degrees of freedom at the bottom boundary of the model.
+   - The `fixMacroZmin(dofs=[1,1,1])` function fixes all degrees of freedom at the bottom boundary of the model.
    - The term "Macro" in this function refers to a macro-level operation that applies to the entire model boundary, rather than individual nodes.
    - Using "Macro" commands is more efficient and less error-prone than manually selecting and fixing individual nodes at the bottom of the model.
    - This creates a rigid base at the bottom of the soil column where the earthquake motion will be applied.

@@ -369,7 +369,7 @@
 - This simulates a laminar shear box condition, which is essential for proper wave propagation in seismic analysis of soil columns.
 - Without these boundary conditions, the model would allow unrealistic deformation patterns that don’t represent how soil actually behaves during earthquakes.</p></li>
 <li><p><strong>Why we use fixMacroZmin</strong>:
-- The <cite>fixMacroZmin(dofs=[1,2,3])</cite> function fixes all degrees of freedom at the bottom boundary of the model.
+- The <cite>fixMacroZmin(dofs=[1,1,1])</cite> function fixes all degrees of freedom at the bottom boundary of the model.
 - The term “Macro” in this function refers to a macro-level operation that applies to the entire model boundary, rather than individual nodes.
 - Using “Macro” commands is more efficient and less error-prone than manually selecting and fixing individual nodes at the bottom of the model.
 - This creates a rigid base at the bottom of the soil column where the earthquake motion will be applied.</p></li>
