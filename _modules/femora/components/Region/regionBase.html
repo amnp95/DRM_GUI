@@ -220,6 +220,21 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">damping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the damping behavior from this region.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_damping_ref</span> <span class="o">=</span> <span class="kc">None</span> 
+        
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_damping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">damping_instance</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">DampingBase</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the damping behavior of this region.</span>
+<span class="sd">        </span>
+<span class="sd">        This method provides an alternative way to assign damping to a region,</span>
+<span class="sd">        with the same functionality as the damping property setter.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            damping_instance (Type[DampingBase], required): The damping instance to assign</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If damping_instance is not a subclass of DampingBase</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">damping</span> <span class="o">=</span> <span class="n">damping_instance</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -998,7 +1013,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">elementRegion</span> <span class="o">=</span> <span class="n">ElementRegion</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodeRegion</span> <span class="o">=</span> <span class="n">NodeRegion</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">globalRegion</span> <span class="o">=</span> <span class="n">GlobalRegion</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">globalRegion</span> <span class="o">=</span> <span class="n">GlobalRegion</span><span class="p">()</span></div>
 
 
     <span class="nd">@property</span>
