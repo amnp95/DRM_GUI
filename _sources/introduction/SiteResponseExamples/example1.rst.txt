@@ -13,7 +13,7 @@ This example demonstrates how to create a 1D site response analysis model using 
 
 The example showcases FEMORA's ability to perform traditional site response analyses with 3D elements while maintaining comparability with analytical solutions. This serves as an excellent verification case for more complex models.
 
-.. figure:: images/Example1/FrequencySweep.jpg
+.. figure:: ../images/SiteResponse/Example1/FrequencySweep.jpg
    :width: 600px
    :align: center
    :alt: Frequency Sweep Input Motion
@@ -270,7 +270,7 @@ Response Time Histories
 
 The following figure shows the comparison between input motion at the base and output motion at the surface:
 
-.. figure:: images/Example1/TimehistoriesCompare.png
+.. figure:: ../images/SiteResponse/Example1/TimehistoriesCompare.png
    :width: 600px
    :align: center
    :alt: Comparison of acceleration time histories
@@ -284,7 +284,7 @@ Transfer Function Comparison
 
 The frequency domain comparison between numerical and analytical transfer functions provides validation of the model:
             
-.. figure:: images/Example1/TFCompare.png
+.. figure:: ../images/SiteResponse/Example1/TFCompare.png
    :width: 600px
    :align: center
    :alt: Transfer Function Comparison
@@ -311,7 +311,7 @@ Effect of Damping Type on Transfer Function
 
 The choice of damping model significantly affects the transfer function shape:
 
-.. figure:: images/Example1/TFAnalytical.png
+.. figure:: ../images/SiteResponse/Example1/TFAnalytical.png
    :width: 600px
    :align: center
    :alt: Effect of Different Damping Types
@@ -328,7 +328,7 @@ The simulation results can be visualized as an animation showing the wave propag
 .. raw:: html
 
    <video width="600" controls>
-     <source src="images/Example1/movie.mp4" type="video/mp4">
+     <source src="../images/SiteResponse/Example1/movie.mp4" type="video/mp4">
      Your browser does not support the video tag.
    </video>
 
@@ -358,15 +358,15 @@ Code Access
 
 The full source code for this example is available in the FEMORA repository:
 
-* Example directory: ``examples/Example1/``
-* Python script: ``examples/Example1/femoramodel.py``
+* Example directory: ``examples/SiteResponse/Example1/``
+* Python script: ``examples/SiteResponse/Example1/femoramodel.py``
 * Data files: ``FrequencySweep.acc`` and ``FrequencySweep.time``
-* Post-processing script: ``examples/Example1/plot.py``
-* Animation script: ``examples/Example1/movie.py`` (for creating the simulation movie)
+* Post-processing script: ``examples/SiteResponse/Example1/plot.py``
+* Animation script: ``examples/SiteResponse/Example1/movie.py`` (for creating the simulation movie)
 
 Here's a snippet of the Python code used to create the model:
 
-.. literalinclude:: ../../examples/Example1/femoramodel.py
+.. literalinclude:: ../../../examples/SiteResponse/Example1/femoramodel.py
    :language: python
    :caption: Example 1 - Single-Column Site Response Analysis
    :name: example1-code

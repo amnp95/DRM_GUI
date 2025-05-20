@@ -10,7 +10,7 @@ Available Examples
    :maxdepth: 1
 
    Quick Start Example (Layered Soil Profile) <quick_start>
-   example1
+   SiteResponseExamples/SiteResponse
    example2
    example3
 
