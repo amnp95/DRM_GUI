@@ -164,7 +164,7 @@ The expanded domain allows for better visualization of wave propagation through 
 .. raw:: html
 
    <video width="600" controls>
-     <source src="../images/SiteResponse/Example3/movie3D.mp4" type="video/mp4">
+     <source src="../images/SiteResponse/Example3/movie.mp4" type="video/mp4">
      Your browser does not support the video tag.
    </video>
 
