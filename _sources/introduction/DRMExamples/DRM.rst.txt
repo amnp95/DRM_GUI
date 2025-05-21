@@ -1,13 +1,16 @@
 Domain Reduction Method (DRM) Examples
 ======================================
 
-Introduction
--------------
+.. raw:: html
+
+    <h1>Introduction</h1>
 
 The Domain Reduction Method (DRM) is a powerful technique for modeling seismic wave propagation in a computationally efficient manner. This section provides a series of examples demonstrating how to use FEMORA's DRM capabilities to model increasingly complex scenarios.
 
-Key Concepts of Domain Reduction Method
-----------------------------------------
+.. raw:: html
+
+    <h2>Key Concepts of Domain Reduction Method</h2>
+
 
 The Domain Reduction Method, first proposed by Bielak et al. (2003), is a two-step approach for modeling wave propagation problems:
 
@@ -21,8 +24,9 @@ This approach offers several advantages:
 * **Flexibility**: Works with various wave types, source mechanisms, and site conditions
 * **Enhanced Resolution**: Allows for detailed analysis of local site effects and structure-soil interaction
 
-Example Overview
------------------
+.. raw:: html
+
+    <span style="font-size: 1.5em;"><b>Example Overview</b></span>
 
 This section includes multiple examples demonstrating DRM applications of increasing complexity:
 

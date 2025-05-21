@@ -3,11 +3,9 @@ Examples and Tutorials
 
 This section provides links to examples that demonstrate how to use FEMORA for various applications.
 
-Available Examples
-------------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    Quick Start Example (Layered Soil Profile) <quick_start>
    SiteResponseExamples/SiteResponse

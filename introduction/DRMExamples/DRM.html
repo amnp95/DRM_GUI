@@ -52,16 +52,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples and Tutorials</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../examples.html#available-examples">Available Examples</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../quick_start.html">Quick Start Example (Layered Soil Profile)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../SiteResponseExamples/SiteResponse.html">Site Response Examples</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Domain Reduction Method (DRM) Examples</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#key-concepts-of-domain-reduction-method">Key Concepts of Domain Reduction Method</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#example-overview">Example Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html">Quick Start Example (Layered Soil Profile)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../SiteResponseExamples/SiteResponse.html">Site Response Examples</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Domain Reduction Method (DRM) Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="example2.html">Example 2: Multi-layer Soil Model with Absorbing Boundaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example3.html">Example 3: Seismic Wave Basin Effects Model with External Mesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -103,13 +99,8 @@
              
   <section id="domain-reduction-method-drm-examples">
 <h1>Domain Reduction Method (DRM) Examples<a class="headerlink" href="#domain-reduction-method-drm-examples" title="Link to this heading"></a></h1>
-<section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
-<p>The Domain Reduction Method (DRM) is a powerful technique for modeling seismic wave propagation in a computationally efficient manner. This section provides a series of examples demonstrating how to use FEMORA’s DRM capabilities to model increasingly complex scenarios.</p>
-</section>
-<section id="key-concepts-of-domain-reduction-method">
-<h2>Key Concepts of Domain Reduction Method<a class="headerlink" href="#key-concepts-of-domain-reduction-method" title="Link to this heading"></a></h2>
-<p>The Domain Reduction Method, first proposed by Bielak et al. (2003), is a two-step approach for modeling wave propagation problems:</p>
+<h1>Introduction</h1><p>The Domain Reduction Method (DRM) is a powerful technique for modeling seismic wave propagation in a computationally efficient manner. This section provides a series of examples demonstrating how to use FEMORA’s DRM capabilities to model increasingly complex scenarios.</p>
+<h2>Key Concepts of Domain Reduction Method</h2><p>The Domain Reduction Method, first proposed by Bielak et al. (2003), is a two-step approach for modeling wave propagation problems:</p>
 <ol class="arabic simple">
 <li><p><strong>Background Analysis</strong>: A large-scale analysis (often simplified) to capture regional wave propagation from source to site.</p></li>
 <li><p><strong>Local Analysis</strong>: A detailed analysis of a smaller domain of interest, using the results from step 1 as boundary conditions.</p></li>
@@ -121,10 +112,7 @@
 <li><p><strong>Flexibility</strong>: Works with various wave types, source mechanisms, and site conditions</p></li>
 <li><p><strong>Enhanced Resolution</strong>: Allows for detailed analysis of local site effects and structure-soil interaction</p></li>
 </ul>
-</section>
-<section id="example-overview">
-<h2>Example Overview<a class="headerlink" href="#example-overview" title="Link to this heading"></a></h2>
-<p>This section includes multiple examples demonstrating DRM applications of increasing complexity:</p>
+<span style="font-size: 1.5em;"><b>Example Overview</b></span><p>This section includes multiple examples demonstrating DRM applications of increasing complexity:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="example2.html">Example 2: Multi-layer Soil Model with Absorbing Boundaries</a></li>
@@ -132,7 +120,6 @@
 </ul>
 </div>
 <p>These examples progress from simple configurations to more complex geological settings, demonstrating FEMORA’s capabilities in handling realistic seismic wave propagation problems.</p>
-</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
