@@ -11,7 +11,6 @@ Available Examples
 
    Quick Start Example (Layered Soil Profile) <quick_start>
    SiteResponseExamples/SiteResponse
-   example2
-   example3
+   DRMExamples/DRM
 
 Each example includes a detailed walkthrough with fully documented code, explanation of concepts, and visualization of results.

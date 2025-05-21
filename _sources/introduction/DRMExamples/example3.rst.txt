@@ -25,7 +25,7 @@ Before implementing the detailed basin model, let's first understand the concept
 .. raw:: html
 
     <div style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto; border: 1px solid #ddd;">
-        <iframe src="images/Example3/schematic_model.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        <iframe src="../images/DRM/Example3/schematic_model.html" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
 
 This schematic visualization illustrates the geometric construction of the semi-hemispherical basin:
@@ -108,7 +108,7 @@ The semi-hemispherical basin split into two parts (basin1 and basin2) correspond
 .. raw:: html
 
     <div style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto; border: 1px solid #ddd;">
-        <iframe src="images/Example3/basin.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        <iframe src="../images/DRM/Example3/basin.html" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
 
 In this interactive visualization, we can see basin1 (intersecting with Layer 1) in red and basin2 (intersecting with Layer 2) in blue. The semi-hemispherical shape is clearly visible, showing how the basin structure is defined in the model. This division into two parts is not just for visualization purposes – it reflects how the basin is physically modeled in the simulation, with each part potentially assigned different material properties. The curved boundary of the semi-hemisphere is particularly important for capturing realistic wave propagation behaviors including focusing effects that would not be present with simpler geometries.
@@ -122,7 +122,7 @@ The six soil layers each shown with a different color:
 .. raw:: html
 
     <div style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto; border: 1px solid #ddd;">
-        <iframe src="images/Example3/layers.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        <iframe src="../images/DRM/Example3/layers.html" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
 
 This visualization shows the six soil layers of the model, each with a distinct color to illustrate the layered structure. You can rotate, zoom, and pan the model to examine the layer boundaries. Note how each layer has a uniform thickness and horizontal extent – this represents the idealized soil profile. In real geological settings, these layers would rarely be perfectly uniform, but this simplification allows us to isolate the basin effects from other potential variables.
@@ -133,7 +133,7 @@ The combined visualization showing the basin embedded within the layered soil:
 .. raw:: html
 
     <div style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto; border: 1px solid #ddd;">
-        <iframe src="images/Example3/layers_basin.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        <iframe src="../images/DRM/Example3/layers_basin.html" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
 
 This comprehensive visualization displays the complete model with regular soil layers (blue) and basin components (red). It illustrates how the semi-hemispherical basin is integrated into the soil profile, affecting only the top two layers. This visualization is particularly valuable for understanding the relationship between the basin geometry and the surrounding soil structure. Note that the mesh elements maintain their regular pattern outside the basin but conform to the curved basin boundary where they intersect – this is a key advantage of the external mesh approach used in this example.
@@ -461,14 +461,14 @@ The basin model demonstrates several important seismic wave phenomena that are v
 
 Comparisons between the regular soil profile and basin models with different shear wave velocities illustrate these phenomena:
 
-.. figure:: images/Example3/acceleration_comparison_Regular_Vs150.png
+.. figure:: ../images/DRM/Example3/acceleration_comparison_Regular_Vs150.png
    :width: 600px
    :align: center
    :alt: Acceleration comparison between regular soil and basin model with Vs=150m/s
 
    Comparison of surface acceleration between regular soil profile and a model with a Vs=150m/s basin
 
-.. figure:: images/Example3/acceleration_comparison_Regular_Vs200.png
+.. figure:: ../images/DRM/Example3/acceleration_comparison_Regular_Vs200.png
    :width: 600px
    :align: center
    :alt: Acceleration comparison between regular soil and basin model with Vs=200m/s
@@ -492,7 +492,7 @@ Data Visualization and Post-Processing
 
 The response data from the FEMORA simulations is stored in VTKHDF format, which requires post-processing for visualization and analysis. Example3 includes a Python script (plot.py) that processes these files and creates the comparison plots shown above.
 
-.. literalinclude:: ../../examples/Example3/plot.py
+.. literalinclude:: ../../../examples/DRM/Example3/plot.py
    :language: python
    :name: example3-plot
    :caption: Python script for post-processing and visualization of simulation results
@@ -502,13 +502,13 @@ Code Access
 
 The full source code for this example is available in the FEMORA repository:
 
-* Example directory: ``examples/Example3/``
-* Python script: ``examples/Example3/femoramodel.py``
+* Example directory: ``examples/DRM/Example3/``
+* Python script: ``examples/DRM/Example3/femoramodel.py``
 * Data file: ``drmload.h5drm`` (required for running the example)
 
 Below is the complete code for Example3's femoramodel.py:
 
-.. literalinclude:: ../../examples/Example3/femoramodel.py
+.. literalinclude:: ../../../examples/DRM/Example3/femoramodel.py
    :language: python
    :name: example3-code
    :caption: Complete code for Example3 model

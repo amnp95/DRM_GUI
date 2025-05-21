@@ -1,28 +1,28 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Example 3: Seismic Wave Basin Effects Model with External Mesh &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=bbbd0671" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=bbbd0671" />
 
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1dd76d02"></script>
-      <script src="../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=1dd76d02"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      <script src="../_static/js/copy-button.js?v=47d38097"></script>
-    <script src="../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Technical Documentation" href="../technical/index.html" />
+      <script src="../../_static/js/copy-button.js?v=47d38097"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Technical Documentation" href="../../technical/index.html" />
     <link rel="prev" title="Example 2: Multi-layer Soil Model with Absorbing Boundaries" href="example2.html" /> 
 </head>
 
@@ -34,12 +34,12 @@
 
           
           
-          <a href="../index.html">
+          <a href="../../index.html">
             
-              <img src="../_static/Femoralogo.png" class="logo" alt="Logo"/>
+              <img src="../../_static/Femoralogo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -48,22 +48,18 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with FEMORA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples and Tutorials</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="examples.html#available-examples">Available Examples</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="quick_start.html">Quick Start Example (Layered Soil Profile)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SiteResponseExamples/SiteResponse.html">Site Response Examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example2.html">Example 2: Multi-layer Soil Model with Absorbing Boundaries</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Example 3: Seismic Wave Basin Effects Model with External Mesh</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#schematic-model-representation">Schematic Model Representation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#model-description">Model Description</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#step-by-step-model-development">Step-by-Step Model Development</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#results-and-analysis">Results and Analysis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-visualization-and-post-processing">Data Visualization and Post-Processing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#code-access">Code Access</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples and Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../examples.html#available-examples">Available Examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../quick_start.html">Quick Start Example (Layered Soil Profile)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../SiteResponseExamples/SiteResponse.html">Site Response Examples</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="DRM.html">Domain Reduction Method (DRM) Examples</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="DRM.html#introduction">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DRM.html#key-concepts-of-domain-reduction-method">Key Concepts of Domain Reduction Method</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="DRM.html#example-overview">Example Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="DRM.html#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -73,11 +69,11 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Technical Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../technical/index.html">Technical Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../technical/index.html">Technical Documentation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
 </ul>
 
         </div>
@@ -86,18 +82,19 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="examples.html">Examples and Tutorials</a></li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../examples.html">Examples and Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="DRM.html">Domain Reduction Method (DRM) Examples</a></li>
       <li class="breadcrumb-item active">Example 3: Seismic Wave Basin Effects Model with External Mesh</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/introduction/example3.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/introduction/DRMExamples/example3.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -124,7 +121,7 @@
 <h2>Schematic Model Representation<a class="headerlink" href="#schematic-model-representation" title="Link to this heading"></a></h2>
 <p>Before implementing the detailed basin model, let’s first understand the conceptual geometry. The basin is created by intersecting a half-sphere with a rectangular ground layer box:</p>
 <div style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto; border: 1px solid #ddd;">
-    <iframe src="images/Example3/schematic_model.html" style="width: 100%; height: 100%; border: none;"></iframe>
+    <iframe src="../images/DRM/Example3/schematic_model.html" style="width: 100%; height: 100%; border: none;"></iframe>
 </div><p>This schematic visualization illustrates the geometric construction of the semi-hemispherical basin:</p>
 <ul class="simple">
 <li><p><strong>Blue Box</strong>: Represents the ground layer box (the soil domain)</p></li>
@@ -198,7 +195,7 @@
 <p><strong>Basin Components Visualization</strong>:
 The semi-hemispherical basin split into two parts (basin1 and basin2) corresponding to its intersection with Layer 1 and Layer 2:</p>
 <div style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto; border: 1px solid #ddd;">
-    <iframe src="images/Example3/basin.html" style="width: 100%; height: 100%; border: none;"></iframe>
+    <iframe src="../images/DRM/Example3/basin.html" style="width: 100%; height: 100%; border: none;"></iframe>
 </div><p>In this interactive visualization, we can see basin1 (intersecting with Layer 1) in red and basin2 (intersecting with Layer 2) in blue. The semi-hemispherical shape is clearly visible, showing how the basin structure is defined in the model. This division into two parts is not just for visualization purposes – it reflects how the basin is physically modeled in the simulation, with each part potentially assigned different material properties. The curved boundary of the semi-hemisphere is particularly important for capturing realistic wave propagation behaviors including focusing effects that would not be present with simpler geometries.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -207,12 +204,12 @@ The semi-hemispherical basin split into two parts (basin1 and basin2) correspond
 <p><strong>Layer Structure Visualization</strong>:
 The six soil layers each shown with a different color:</p>
 <div style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto; border: 1px solid #ddd;">
-    <iframe src="images/Example3/layers.html" style="width: 100%; height: 100%; border: none;"></iframe>
+    <iframe src="../images/DRM/Example3/layers.html" style="width: 100%; height: 100%; border: none;"></iframe>
 </div><p>This visualization shows the six soil layers of the model, each with a distinct color to illustrate the layered structure. You can rotate, zoom, and pan the model to examine the layer boundaries. Note how each layer has a uniform thickness and horizontal extent – this represents the idealized soil profile. In real geological settings, these layers would rarely be perfectly uniform, but this simplification allows us to isolate the basin effects from other potential variables.</p>
 <p><strong>Complete Model Visualization</strong>:
 The combined visualization showing the basin embedded within the layered soil:</p>
 <div style="width: 100%; max-width: 800px; height: 500px; margin: 0 auto; border: 1px solid #ddd;">
-    <iframe src="images/Example3/layers_basin.html" style="width: 100%; height: 100%; border: none;"></iframe>
+    <iframe src="../images/DRM/Example3/layers_basin.html" style="width: 100%; height: 100%; border: none;"></iframe>
 </div><p>This comprehensive visualization displays the complete model with regular soil layers (blue) and basin components (red). It illustrates how the semi-hemispherical basin is integrated into the soil profile, affecting only the top two layers. This visualization is particularly valuable for understanding the relationship between the basin geometry and the surrounding soil structure. Note that the mesh elements maintain their regular pattern outside the basin but conform to the curved basin boundary where they intersect – this is a key advantage of the external mesh approach used in this example.</p>
 </section>
 <section id="soft-material-definition-for-the-basin">
@@ -500,14 +497,14 @@ By programmatically constructing the workflow, we can adapt to different simulat
 </ol>
 <p>Comparisons between the regular soil profile and basin models with different shear wave velocities illustrate these phenomena:</p>
 <figure class="align-center" id="id1">
-<a class="reference internal image-reference" href="../_images/acceleration_comparison_Regular_Vs150.png"><img alt="Acceleration comparison between regular soil and basin model with Vs=150m/s" src="../_images/acceleration_comparison_Regular_Vs150.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../../_images/acceleration_comparison_Regular_Vs150.png"><img alt="Acceleration comparison between regular soil and basin model with Vs=150m/s" src="../../_images/acceleration_comparison_Regular_Vs150.png" style="width: 600px;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Comparison of surface acceleration between regular soil profile and a model with a Vs=150m/s basin</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id2">
-<a class="reference internal image-reference" href="../_images/acceleration_comparison_Regular_Vs200.png"><img alt="Acceleration comparison between regular soil and basin model with Vs=200m/s" src="../_images/acceleration_comparison_Regular_Vs200.png" style="width: 600px;" />
+<a class="reference internal image-reference" href="../../_images/acceleration_comparison_Regular_Vs200.png"><img alt="Acceleration comparison between regular soil and basin model with Vs=200m/s" src="../../_images/acceleration_comparison_Regular_Vs200.png" style="width: 600px;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Comparison of surface acceleration between regular soil profile and a model with a Vs=200m/s basin</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
@@ -687,8 +684,8 @@ By programmatically constructing the workflow, we can adapt to different simulat
 <h2>Code Access<a class="headerlink" href="#code-access" title="Link to this heading"></a></h2>
 <p>The full source code for this example is available in the FEMORA repository:</p>
 <ul class="simple">
-<li><p>Example directory: <code class="docutils literal notranslate"><span class="pre">examples/Example3/</span></code></p></li>
-<li><p>Python script: <code class="docutils literal notranslate"><span class="pre">examples/Example3/femoramodel.py</span></code></p></li>
+<li><p>Example directory: <code class="docutils literal notranslate"><span class="pre">examples/DRM/Example3/</span></code></p></li>
+<li><p>Python script: <code class="docutils literal notranslate"><span class="pre">examples/DRM/Example3/femoramodel.py</span></code></p></li>
 <li><p>Data file: <code class="docutils literal notranslate"><span class="pre">drmload.h5drm</span></code> (required for running the example)</p></li>
 </ul>
 <p>Below is the complete code for Example3’s femoramodel.py:</p>
@@ -1086,7 +1083,7 @@ By programmatically constructing the workflow, we can adapt to different simulat
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="example2.html" class="btn btn-neutral float-left" title="Example 2: Multi-layer Soil Model with Absorbing Boundaries" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../technical/index.html" class="btn btn-neutral float-right" title="Technical Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../technical/index.html" class="btn btn-neutral float-right" title="Technical Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
