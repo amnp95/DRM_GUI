@@ -137,11 +137,15 @@ The soil column is modeled as a stack of three layers with varying properties:
 Using the TransferFunction Class for Analytical Solutions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A key feature of this example is the use of Femora's built-in ``TransferFunction`` class to calculate analytical solutions:
+A key feature of this example is the use of Femora's built-in ``TransferFunction`` class to calculate analytical solutions. This helper class, located in the ``femora.tools`` module, provides a convenient way to compute the theoretical transfer function for layered soil profiles.
+
+In Example 1, we manually calculated the analytical transfer function using mathematical formulas. In this example, we leverage the ``TransferFunction`` class to handle the complexity of multi-layered calculations:
 
 .. code-block:: python
 
-    # Soil profile definition for transfer function
+    from femora.tools.transferFunction import TransferFunction
+    
+    # Define soil profile from top to bottom
     soil = [
         {"h": 2,  "vs": 144.2535646321813, "rho": 19.8*1000/9.81, "damping": 0.03, 
          "damping_type":"rayleigh", "f1": 2.76, "f2": 13.84},
@@ -151,22 +155,34 @@ A key feature of this example is the use of Femora's built-in ``TransferFunction
          "damping_type":"rayleigh", "f1": 2.76, "f2": 13.84},
     ]
     
-    # Rock half-space properties
+    # Define rock half-space properties
     rock = {"vs": 8000, "rho": 2000.0, "damping": 0.00}
     
     # Create transfer function object and compute
     tf = TransferFunction(soil_profile=soil, rock=rock, f_max=22)
     f, TF, _ = tf.compute()
+    
+    # Plot the results
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.figure(figsize=(10, 5))
+    plt.plot(f, np.abs(TF))
+    plt.xlabel("Frequency (Hz)")
+    plt.show()
 
-This approach allows for a direct comparison between the numerical solution from Femora and the analytical solution based on the same soil profile parameters.
+The beauty of this approach is that we can use exactly the same soil properties in both our numerical model and analytical calculation. This ensures an apples-to-apples comparison between the Femora finite element solution and the theoretical transfer function.
+
+The ``TransferFunction`` class handles all the complex mathematics of the transfer matrix method, including:
+
+1. Calculating the complex impedance for each layer
+2. Applying the appropriate damping model (constant or Rayleigh)
+3. Computing wave propagation through multiple interfaces
+4. Accounting for frequency-dependent behavior
+
+This tool makes it easy to verify numerical results against theoretical solutions, which is particularly valuable when developing more complex models.
 
 Results and Analysis
 --------------------
-
-The key difference in the results analysis is the comparison between numerical and analytical transfer functions for a multi-layered soil profile.
-
-Transfer Function Comparison
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The transfer function comparison for this example demonstrates the accuracy of Femora in modeling wave propagation through multiple soil layers with different properties:
 
@@ -182,7 +198,7 @@ The analytical transfer function is calculated using the ``TransferFunction`` cl
 Effect of Layer Properties on Site Response
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The multi-layered soil profile results in a more complex transfer function compared to the uniform soil column in Example 1:
+The multi-layered soil profile results in greater amplification and shifts in resonance frequencies compared to the uniform soil column in Example 1:
 
 .. figure:: ../images/SiteResponse/Example2/LayerComparison.png
    :width: 600px
@@ -209,48 +225,6 @@ This animation demonstrates:
 2. The reflection and refraction of waves at layer interfaces
 3. The complex resonance patterns resulting from the impedance contrasts between layers
 
-Using the TransferFunction Tool
--------------------------------
-
-The ``TransferFunction`` class in Femora provides a simple way to calculate analytical transfer functions for layered soil profiles. The basic usage is demonstrated in ``TransferFunction.py``:
-
-.. code-block:: python
-
-    from femora.tools.transferFunction import TransferFunction
-    
-    # Define soil profile from top to bottom
-    soil = [
-        {"h": 2,  "vs": 144.2535646321813, "rho": 19.8*1000/9.81, "damping": 0.03, 
-         "damping_type":"rayleigh", "f1": 2.76, "f2": 13.84},
-        {"h": 6,  "vs": 196.2675276462639, "rho": 19.1*1000/9.81, "damping": 0.03, 
-         "damping_type":"rayleigh", "f1": 2.76, "f2": 13.84},
-        {"h": 10, "vs": 262.5199305117452, "rho": 19.9*1000/9.81, "damping": 0.03, 
-         "damping_type":"rayleigh", "f1": 2.76, "f2": 13.84},
-    ]
-    
-    # Define rock half-space properties
-    rock = {"vs": 8000, "rho": 2000.0, "damping": 0.00}
-    
-    # Create and compute transfer function
-    tf = TransferFunction(soil_profile=soil, rock=rock, f_max=22)
-    f, TF, _ = tf.compute()
-    
-    # Plot the transfer function
-    import matplotlib.pyplot as plt
-    import numpy as np
-    plt.figure(figsize=(10, 5))
-    plt.plot(f, np.abs(TF))
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Amplification")
-    plt.title("Transfer Function for Multi-layered Soil")
-    plt.show()
-
-Key parameters for the ``TransferFunction`` class include:
-
-- ``soil_profile``: List of dictionaries with properties for each layer (top to bottom)
-- ``rock``: Dictionary with properties of the underlying half-space
-- ``f_max``: Maximum frequency for calculation
-- ``damping_type``: Can be "constant" or "rayleigh" (frequency-dependent)
 
 Conclusion
 ----------
