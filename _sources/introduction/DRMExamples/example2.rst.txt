@@ -14,7 +14,7 @@ The model created in this example consists of:
 * PML absorbing boundaries to prevent wave reflections
 * DRM loading applied from an external file
 
-.. figure:: ../images/Femora_logo.png
+.. figure:: ../images/femora_logo.png
    :width: 600px
    :align: center
    :alt: Multi-layer Soil Model with PML Boundaries
@@ -210,7 +210,7 @@ The ``addAbsorbingLayer`` method creates boundary regions that absorb outgoing w
 
 In this example, PML is chosen because it provides superior absorption characteristics for seismic wave propagation problems, particularly when waves may approach the boundary at various angles. However, if you experience numerical instabilities, switching to "Rayleigh" type may help stabilize the solution at the cost of some absorption efficiency.
 
-Frequency Rayleigh Damping in FEMORA
+Frequency Rayleigh Damping in Femora
 ------------------------------------
 
 In this example, each soil layer is assigned its own frequency-dependent Rayleigh damping:
@@ -239,7 +239,7 @@ Where:
 - [K] is the stiffness matrix
 - αₘ and βₖ are the mass and stiffness proportional coefficients
 
-Traditional Rayleigh damping requires specifying αₘ and βₖ directly, which is not intuitive. In frequency Rayleigh damping, FEMORA automatically calculates these coefficients from more practical inputs:
+Traditional Rayleigh damping requires specifying αₘ and βₖ directly, which is not intuitive. In frequency Rayleigh damping, Femora automatically calculates these coefficients from more practical inputs:
 
 .. math::
 
@@ -249,7 +249,7 @@ Traditional Rayleigh damping requires specifying αₘ and βₖ directly, which
 
     \beta_K = \frac{2}{\omega_1 + \omega_2}\xi
 
-This approach is implemented in FEMORA because:
+This approach is implemented in Femora because:
 
 * It's more intuitive for geotechnical engineers who think in terms of frequency ranges and damping ratios
 * It automatically ensures the damping ratio equals the target value exactly at the two specified frequencies
@@ -300,18 +300,18 @@ This workflow allows for:
 2. **Depth-dependent behavior**: Properties can vary with depth, reflecting real soil conditions
 3. **Independent energy dissipation**: Each region's response to dynamic loading is calibrated separately
 
-Global Region and Region Management in FEMORA
+Global Region and Region Management in Femora
 ---------------------------------------------
 
-All FEMORA models have a "global region" that serves as the default assignment when no explicit region is provided. 
+All Femora models have a "global region" that serves as the default assignment when no explicit region is provided. 
 
-**Region System Architecture in FEMORA:**
+**Region System Architecture in Femora:**
 
-FEMORA implements a sophisticated region management system with these key components:
+Femora implements a sophisticated region management system with these key components:
 
 1. **Global Region**: 
 
-   * Automatically created when FEMORA initializes
+   * Automatically created when Femora initializes
    * Has tag 0 and name "GlobalRegion"
    * Serves as a fallback when no specific region is assigned
    * Can have its own damping properties that apply model-wide
@@ -363,7 +363,7 @@ In our soil model example, explicit region creation ensures that each soil layer
 
 Then all soil layers would have inherited the same damping properties from the global region, which would not accurately represent the depth-varying damping characteristics of real soil profiles.
 
-This region-based approach allows FEMORA to implement element-level, region-level, or global-level damping in a consistent way, giving users flexibility to model complex systems with varying properties in different zones while maintaining a simple default behavior through the global region.
+This region-based approach allows Femora to implement element-level, region-level, or global-level damping in a consistent way, giving users flexibility to model complex systems with varying properties in different zones while maintaining a simple default behavior through the global region.
 
 Step-by-Step Code Walkthrough
 -----------------------------
@@ -386,7 +386,7 @@ Let's examine the key components of the Example 2 code:
            # ... more layers
        ]
 
-   The code begins by importing the FEMORA library and defining six soil layers with varying properties:
+   The code begins by importing the Femora library and defining six soil layers with varying properties:
    
    - ``rho``: Material density (kg/m³)
    - ``vp``: P-wave velocity (m/s)
@@ -471,14 +471,14 @@ Let's examine the key components of the Example 2 code:
        fm.export_to_tcl(filename="model.tcl")
        fm.gui()
    
-   Finally, the code sets up DRM loading from an H5DRM file, configures the time-domain analysis (30s duration with 0.01s steps), exports the model to a TCL file for analysis, and launches the FEMORA GUI for visualization.
+   Finally, the code sets up DRM loading from an H5DRM file, configures the time-domain analysis (30s duration with 0.01s steps), exports the model to a TCL file for analysis, and launches the Femora GUI for visualization.
 
 Code Access
 -----------
 
-The full source code for this example is available in the FEMORA repository:
+The full source code for this example is available in the Femora repository:
 
-.. literalinclude:: ../../examples/Example2/femoramodel.py
+.. literalinclude:: ../../../examples/DRM/Example2/femoramodel.py
    :language: python
    :caption: Example 2 - Multi-layer Soil Model with Absorbing Boundaries
    :name: example2-code
@@ -497,4 +497,4 @@ Key Concepts Demonstrated
 * Applying DRM loading for seismic wave propagation analysis
 * Organizing a large-scale soil domain for efficient computation
 * Assigning regions with specific damping properties
-* Understanding global region functionality in FEMORA
+* Understanding global region functionality in Femora

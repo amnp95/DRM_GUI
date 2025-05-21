@@ -4,9 +4,9 @@ TimeSeries
 Understanding the TimeSeriesManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The `TimeSeriesManager` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing time series objects. It implements the Singleton pattern to ensure a single, consistent point of time series management across the entire application.
+The `TimeSeriesManager` is a core component of the Femora library that serves as a centralized system for creating, retrieving, tracking, and managing time series objects. It implements the Singleton pattern to ensure a single, consistent point of time series management across the entire application.
 
-Time series defined in FEMORA are automatically tracked, tagged, and organized by the TimeSeriesManager, simplifying the process of creating dynamic models with time-varying loads, displacements, or boundary conditions.
+Time series defined in Femora are automatically tracked, tagged, and organized by the TimeSeriesManager, simplifying the process of creating dynamic models with time-varying loads, displacements, or boundary conditions.
 
 Accessing the TimeSeriesManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,19 +25,19 @@ There are two ways to access the TimeSeriesManager in your code:
       # Use the time series manager directly
       timeseries_manager.create_time_series(...)
 
-2. **Through FEMORA** (Recommended): Access via the FEMORA class's .timeSeries property
+2. **Through Femora** (Recommended): Access via the Femora class's .timeSeries property
 
    .. code-block:: python
 
       import femora as fm
 
-      # Create a FEMORA instance
+      # Create a Femora instance
        
 
       # Access the TimeSeriesManager through the .timeSeries property
       fm.timeSeries.create_time_series(...)
 
-The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of Femora's components and ensures proper initialization of all dependencies.
 
 How TimeSeriesManager Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -144,7 +144,7 @@ Usage Example
 
    import femora as fm
 
-   # Create a FEMORA instance
+   # Create a femora instance
     
 
    # Create a constant time series
@@ -190,7 +190,7 @@ Available Time Series Types
    timeseries/trig
    timeseries/pulsetrain
 
-The time series types available in FEMORA provide various ways to define time-dependent behavior. Follow the links above to explore the different time series types available.
+The time series types available in Femora provide various ways to define time-dependent behavior. Follow the links above to explore the different time series types available.
 
 Each time series type has its own documentation page with detailed parameter descriptions and usage examples.
 

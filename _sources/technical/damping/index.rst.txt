@@ -1,7 +1,7 @@
 Damping Models
 ==============
 
-This section provides detailed documentation for the different damping models available in FEMORA.
+This section provides detailed documentation for the different damping models available in Femora.
 
 .. toctree::
    :maxdepth: 1

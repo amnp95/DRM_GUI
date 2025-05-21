@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Example 3: Seismic Wave Basin Effects Model with External Mesh &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>Example 3: Seismic Wave Basin Effects Model with External Mesh &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=bbbd0671" />
@@ -48,7 +48,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples and Tutorials</a><ul class="current">
@@ -87,7 +87,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -116,11 +116,11 @@
 <p>The model enhancements in this example include:</p>
 <ul class="simple">
 <li><p>A semi-hemispherical basin embedded in the soil profile, representing a simplified version of real-world geological basin structures</p></li>
-<li><p>Use of external mesh for complex geometry modeling, demonstrating FEMORA’s capability to handle non-rectangular geometries</p></li>
+<li><p>Use of external mesh for complex geometry modeling, demonstrating Femora’s capability to handle non-rectangular geometries</p></li>
 <li><p>Soft soil materials in the basin with varying shear wave velocities (Vs=150 m/s and Vs=200 m/s) to study velocity contrast effects</p></li>
 <li><p>Comparative analysis of seismic response with different basin properties to quantify amplification factors</p></li>
 </ul>
-<p>This example demonstrates FEMORA’s capability to model complex subsurface geometries and analyze their effects on seismic wave propagation, which is essential for site-specific seismic hazard assessment in regions with complex geological conditions.</p>
+<p>This example demonstrates Femora’s capability to model complex subsurface geometries and analyze their effects on seismic wave propagation, which is essential for site-specific seismic hazard assessment in regions with complex geological conditions.</p>
 </section>
 <section id="schematic-model-representation">
 <h2>Schematic Model Representation<a class="headerlink" href="#schematic-model-representation" title="Link to this heading"></a></h2>
@@ -233,7 +233,7 @@ The combined visualization showing the basin embedded within the layered soil:</
 <span class="n">softMat_nu</span> <span class="o">=</span> <span class="p">(</span><span class="n">softMat_vs_vp_ratio</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">softMat_vs_vp_ratio</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 <span class="n">softMat_E</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">softMat_rho</span> <span class="o">*</span> <span class="p">(</span><span class="n">softMat_vs</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">softMat_nu</span><span class="p">)</span>
 
-<span class="c1"># Create FEMORA material, element, damping, and region for soft material</span>
+<span class="c1"># Create Femora material, element, damping, and region for soft material</span>
 <span class="n">sofmat</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">create_material</span><span class="p">(</span><span class="s2">&quot;nDMaterial&quot;</span><span class="p">,</span> <span class="s2">&quot;ElasticIsotropic&quot;</span><span class="p">,</span>
                                 <span class="n">user_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;softMaterial&quot;</span><span class="p">,</span>
                                 <span class="n">E</span><span class="o">=</span><span class="n">softMat_E</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="n">softMat_nu</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="n">softMat_rho</span><span class="p">)</span>
@@ -302,7 +302,7 @@ The combined visualization showing the basin embedded within the layered soil:</
 <span class="n">semihemisphere</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">extract_cells</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>  <span class="c1"># Basin part</span>
 <span class="n">boxwithhole</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">extract_cells</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">)</span>    <span class="c1"># Regular soil part</span>
 
-<span class="c1"># Add regular soil part to FEMORA</span>
+<span class="c1"># Add regular soil part to Femora</span>
 <span class="n">fm</span><span class="o">.</span><span class="n">meshPart</span><span class="o">.</span><span class="n">create_mesh_part</span><span class="p">(</span><span class="s2">&quot;General mesh&quot;</span><span class="p">,</span> <span class="s2">&quot;External mesh&quot;</span><span class="p">,</span>
                         <span class="n">user_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Layer</span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                         <span class="n">element</span><span class="o">=</span><span class="n">ele</span><span class="p">,</span>
@@ -337,7 +337,7 @@ The implementation uses a mathematical distance calculation to identify which ce
 <li><p><strong>Boolean Masking for Mesh Extraction</strong>:
 The PyVista library’s <cite>extract_cells()</cite> method with a boolean mask provides an efficient way to separate the mesh into two complementary components without needing to recreate the geometry. This preserves the original cell quality and maintains exact matching at the basin-soil interface.</p></li>
 <li><p><strong>Material Assignment Strategy</strong>:
-The conditional structure using the <cite>BASIN</cite> flag demonstrates how to create parametric studies in FEMORA. This single variable controls whether the basin contains soft material (realistic scenario) or normal soil material (control scenario), enabling precise quantification of basin effects.</p></li>
+The conditional structure using the <cite>BASIN</cite> flag demonstrates how to create parametric studies in Femora. This single variable controls whether the basin contains soft material (realistic scenario) or normal soil material (control scenario), enabling precise quantification of basin effects.</p></li>
 </ol>
 <p>For layers 3-6 which don’t intersect with the basin, the implementation remains the same as in Example 2, using regular uniform rectangular grids. This hybrid approach—using external meshes only where geometric complexity demands it—optimizes computational resources while maintaining model accuracy.</p>
 </section>
@@ -359,9 +359,9 @@ The conditional structure using the <cite>BASIN</cite> flag demonstrates how to 
 </div>
 <p>This organization strategy demonstrates advanced parallel computing concepts:</p>
 <ol class="arabic simple">
-<li><p><strong>Domain Decomposition</strong>: By separating the model into distinct sections (regular layers and basin components), FEMORA can perform domain decomposition, a key technique in parallel computing where different parts of the model are assigned to different processors.</p></li>
+<li><p><strong>Domain Decomposition</strong>: By separating the model into distinct sections (regular layers and basin components), Femora can perform domain decomposition, a key technique in parallel computing where different parts of the model are assigned to different processors.</p></li>
 <li><p><strong>Load Balancing</strong>: The different number of partitions for regular layers (8) versus basin components (2) reflects the relative computational demand and size of these regions. This balanced partitioning helps optimize computational resources.</p></li>
-<li><p><strong>Interface Management</strong>: During assembly, FEMORA automatically handles the interfaces between different sections, ensuring proper connectivity between the basin and surrounding soil at their shared boundaries.</p></li>
+<li><p><strong>Interface Management</strong>: During assembly, Femora automatically handles the interfaces between different sections, ensuring proper connectivity between the basin and surrounding soil at their shared boundaries.</p></li>
 <li><p><strong>Scalability</strong>: This partitioning approach improves the model’s scalability, allowing it to efficiently utilize available computational resources whether running on a laptop or high-performance computing cluster.</p></li>
 </ol>
 </section>
@@ -421,13 +421,13 @@ The conditional structure using the <cite>BASIN</cite> flag demonstrates how to 
 - Time-step size (dT=0.01s) - appropriate for capturing frequencies up to 50 Hz
 - Output file configuration (vtkhdfrecorder_file) with dynamic path assignment
 - Multi-step gravity initialization (elastic followed by plastic steps) - crucial for establishing proper initial stress states</p></li>
-<li><p><strong>TCL Command Integration</strong>: The use of <cite>fm.actions.tcl</cite> demonstrates FEMORA’s ability to interact directly with the underlying OpenSees TCL interpreter. This allows for direct filesystem operations (creating directories) that would otherwise be more complex to implement.</p></li>
-<li><p><strong>Process Workflow Modification</strong>: The <cite>insert_step</cite> method shows how FEMORA’s process can be modified programmatically, inserting the directory creation step at the beginning (index=0) of the simulation process.</p></li>
+<li><p><strong>TCL Command Integration</strong>: The use of <cite>fm.actions.tcl</cite> demonstrates Femora’s ability to interact directly with the underlying OpenSees TCL interpreter. This allows for direct filesystem operations (creating directories) that would otherwise be more complex to implement.</p></li>
+<li><p><strong>Process Workflow Modification</strong>: The <cite>insert_step</cite> method shows how Femora’s process can be modified programmatically, inserting the directory creation step at the beginning (index=0) of the simulation process.</p></li>
 </ol>
 </section>
 <section id="custom-drm-simulation-process">
 <h3>8. Custom DRM Simulation Process<a class="headerlink" href="#custom-drm-simulation-process" title="Link to this heading"></a></h3>
-<p>The example demonstrates how to customize the default DRM simulation process provided by FEMORA to suit specific modeling needs. The <cite>createDefaultProcess</cite> method in the DRM module offers extensive customization options:</p>
+<p>The example demonstrates how to customize the default DRM simulation process provided by Femora to suit specific modeling needs. The <cite>createDefaultProcess</cite> method in the DRM module offers extensive customization options:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Customizing the DRM simulation process</span>
 <span class="n">fm</span><span class="o">.</span><span class="n">drm</span><span class="o">.</span><span class="n">createDefaultProcess</span><span class="p">(</span>
     <span class="n">finalTime</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>                                      <span class="c1"># Total simulation time</span>
@@ -473,7 +473,7 @@ These customizations make the simulation workflow more efficient by:
 <p>This code demonstrates several important concepts:</p>
 <ol class="arabic simple">
 <li><p><strong>Direct TCL Command Execution</strong>:
-The <cite>fm.actions.tcl()</cite> function allows direct execution of TCL commands, providing access to the full power of the underlying OpenSees TCL interpreter. In this case, we use it to create a directory - a filesystem operation not directly available through FEMORA’s Python API.</p></li>
+The <cite>fm.actions.tcl()</cite> function allows direct execution of TCL commands, providing access to the full power of the underlying OpenSees TCL interpreter. In this case, we use it to create a directory - a filesystem operation not directly available through Femora’s Python API.</p></li>
 <li><p><strong>Process Step Insertion</strong>:
 The <cite>insert_step</cite> method is used to place the directory creation step at the beginning (index=0) of the process flow. This ensures the directory exists before any recorders attempt to write to it.</p></li>
 <li><p><strong>Execution Order Management</strong>:
@@ -484,7 +484,7 @@ The sequence is critical because:
 <li><p><strong>Adaptive Workflow Creation</strong>:
 By programmatically constructing the workflow, we can adapt to different simulation configurations (Regular, Vs150, Vs200) without manual intervention.</p></li>
 </ol>
-<p>This approach demonstrates how FEMORA allows for flexible process flow management, combining the power of Python for logic and decision-making with direct TCL access for operations not yet exposed through the Python API.</p>
+<p>This approach demonstrates how Femora allows for flexible process flow management, combining the power of Python for logic and decision-making with direct TCL access for operations not yet exposed through the Python API.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This pattern of inserting preparation steps before calling <cite>createDefaultProcess</cite> is particularly important in parametric studies where the same model is run with different configurations. It ensures that the output organization is properly established before simulation begins.</p>
@@ -526,7 +526,7 @@ By programmatically constructing the workflow, we can adapt to different simulat
 </section>
 <section id="data-visualization-and-post-processing">
 <h2>Data Visualization and Post-Processing<a class="headerlink" href="#data-visualization-and-post-processing" title="Link to this heading"></a></h2>
-<p>The response data from the FEMORA simulations is stored in VTKHDF format, which requires post-processing for visualization and analysis. Example3 includes a Python script (plot.py) that processes these files and creates the comparison plots shown above.</p>
+<p>The response data from the Femora simulations is stored in VTKHDF format, which requires post-processing for visualization and analysis. Example3 includes a Python script (plot.py) that processes these files and creates the comparison plots shown above.</p>
 <div class="literal-block-wrapper docutils container" id="example3-plot">
 <div class="code-block-caption"><span class="caption-text">Python script for post-processing and visualization of simulation results</span><a class="headerlink" href="#example3-plot" title="Link to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -687,7 +687,7 @@ By programmatically constructing the workflow, we can adapt to different simulat
 </section>
 <section id="code-access">
 <h2>Code Access<a class="headerlink" href="#code-access" title="Link to this heading"></a></h2>
-<p>The full source code for this example is available in the FEMORA repository:</p>
+<p>The full source code for this example is available in the Femora repository:</p>
 <ul class="simple">
 <li><p>Example directory: <code class="docutils literal notranslate"><span class="pre">examples/DRM/Example3/</span></code></p></li>
 <li><p>Python script: <code class="docutils literal notranslate"><span class="pre">examples/DRM/Example3/femoramodel.py</span></code></p></li>
@@ -695,7 +695,7 @@ By programmatically constructing the workflow, we can adapt to different simulat
 </ul>
 <p>Below is the complete code for Example3’s femoramodel.py:</p>
 <div class="literal-block-wrapper docutils container" id="example3-code">
-<div class="code-block-caption"><span class="caption-text">Complete code for Example3 model</span><a class="headerlink" href="#example3-code" title="Link to this code"></a></div>
+<div class="code-block-caption"><span class="caption-text">Example3 - Seismic Wave Basin Effects Model with External Mesh</span><a class="headerlink" href="#example3-code" title="Link to this code"></a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -1075,7 +1075,7 @@ By programmatically constructing the workflow, we can adapt to different simulat
 </div>
 <p>To run this example, ensure that:</p>
 <ol class="arabic simple">
-<li><p>You have a working installation of FEMORA</p></li>
+<li><p>You have a working installation of Femora</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">drmload.h5drm</span></code> file is in the example directory</p></li>
 <li><p>You execute the script from the Example3 directory to maintain correct paths</p></li>
 </ol>

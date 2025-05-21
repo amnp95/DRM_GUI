@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DRM &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>DRM &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=bbbd0671" />
@@ -47,7 +47,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/examples.html">Examples and Tutorials</a></li>
@@ -96,7 +96,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -119,7 +119,7 @@
 <h1>DRM<a class="headerlink" href="#drm" title="Link to this heading"></a></h1>
 <section id="understanding-the-drm-component">
 <h2>Understanding the DRM Component<a class="headerlink" href="#understanding-the-drm-component" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">DRM</span></code> (Domain Reduction Method) component is a specialized part of the FEMORA library designed for seismic wave propagation analysis. It provides functionality for implementing the Domain Reduction Method, which is used to efficiently model seismic wave propagation in large domains by reducing the computational domain size.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">DRM</span></code> (Domain Reduction Method) component is a specialized part of the Femora library designed for seismic wave propagation analysis. It provides functionality for implementing the Domain Reduction Method, which is used to efficiently model seismic wave propagation in large domains by reducing the computational domain size.</p>
 <p>The DRM component provides functionality to:
 - Create default analysis processes for DRM simulations
 - Add absorbing layers to the model boundary
@@ -134,10 +134,10 @@
 </section>
 <section id="accessing-the-drm-component">
 <h2>Accessing the DRM Component<a class="headerlink" href="#accessing-the-drm-component" title="Link to this heading"></a></h2>
-<p>The DRM component can only be accessed through the FEMORA class’s analysis.drm property:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
+<p>The DRM component can only be accessed through the Femora class’s analysis.drm property:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">Femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a Femora instance</span>
 
 
 <span class="c1"># Access the DRM component through the analysis.drm property</span>
@@ -154,7 +154,7 @@
 <li><p><strong>Absorbing Boundaries</strong>: Preventing artificial wave reflections at domain boundaries</p></li>
 <li><p><strong>Efficient Analysis</strong>: Enabling more detailed analysis of the region of interest</p></li>
 </ol>
-<p>The DRM component in FEMORA provides tools to set up:</p>
+<p>The DRM component in Femora provides tools to set up:</p>
 <ol class="arabic simple">
 <li><p><strong>Absorbing Layers</strong>: Add PML (Perfectly Matched Layer) or Rayleigh-damped absorbing boundaries</p></li>
 <li><p><strong>Analysis Process</strong>: Create preconfigured analysis processes for DRM simulations</p></li>
@@ -164,7 +164,7 @@
 </section>
 <section id="technical-implementation">
 <h2>Technical Implementation<a class="headerlink" href="#technical-implementation" title="Link to this heading"></a></h2>
-<p>The DRM component is implemented as a singleton class to ensure consistent state throughout an analysis. This means that only one instance of the DRM class exists at any time, accessible through the FEMORA’s analysis property.</p>
+<p>The DRM component is implemented as a singleton class to ensure consistent state throughout an analysis. This means that only one instance of the DRM class exists at any time, accessible through the Femora’s analysis property.</p>
 <p>The implementation includes several key aspects:</p>
 <ol class="arabic">
 <li><p><strong>Singleton Pattern</strong>: The DRM class uses a singleton pattern to maintain a single, consistent state across all references:</p>
@@ -210,9 +210,9 @@
 <li><p><strong>Create the analysis process</strong>: Generate the complete analysis process</p></li>
 </ol>
 <p>Example of creating a DRM analysis:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">Femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a Femora instance</span>
 
 
 <span class="c1"># Assume a model has been set up already...</span>
@@ -263,7 +263,7 @@
 <li><p><strong>Integrator</strong>: Newmark method for time integration (gamma=0.5, beta=0.25)</p></li>
 </ul>
 <p>The process is fully customizable through option dictionaries:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">Femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
 <span class="c1"># Custom configuration for gravity elastic phase</span>
 <span class="n">elastic_options</span> <span class="o">=</span> <span class="p">{</span>

@@ -1,17 +1,17 @@
 Quick Start Guide
 =================
 
-This quick start guide will help you create your first 3D soil layer model using FEMORA. We'll walk through Example1, which demonstrates how to create a multi-layered soil profile for seismic analysis.
+This quick start guide will help you create your first 3D soil layer model using Femora. We'll walk through Example1, which demonstrates how to create a multi-layered soil profile for seismic analysis.
 
 Setting Up Your Environment
 ---------------------------
 
-Before you begin, make sure you have installed FEMORA (see :doc:`installation` for details)
+Before you begin, make sure you have installed Femora (see :doc:`installation` for details)
 
-Step 1: Initialize FEMORA
+Step 1: Initialize Femora
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, we need to import the FEMORA library and set up our working environment:
+First, we need to import the Femora library and set up our working environment:
 
 .. code-block:: python
 
@@ -218,9 +218,9 @@ Now we need to assemble the five mesh parts into a complete model for analysis:
    # Assemble the mesh parts into a complete mesh
    fm.assembler.Assemble()
 
-**Understanding Assembly in FEMORA**:
+**Understanding Assembly in Femora**:
 
-The assembly process is a critical step in FEMORA that serves multiple purposes:
+The assembly process is a critical step in Femora that serves multiple purposes:
 
 1. **What are Sections?** Sections are logical groupings of mesh parts that allow for efficient parallel processing. They organize mesh parts that share similar characteristics (like material properties) for computational optimization.
 
@@ -310,10 +310,10 @@ Now we define how to record the results and set up the analysis:
    fm.process.add_step(recorder, description="Recorder of the whole model")
    fm.process.add_step(gravity, description="Gravity Analysis Step")
 
-**Understanding Steps in FEMORA**:
+**Understanding Steps in Femora**:
 
 1. **The Concept of Steps**:
-   - In FEMORA, steps are components that define the sequence and flow of the analysis procedure.
+   - In Femora, steps are components that define the sequence and flow of the analysis procedure.
    - Steps can be loading patterns, recorders, analysis procedures, or other components.
    - They are added to the process in the order they should be executed or applied.
 
@@ -349,7 +349,7 @@ Step 9: Export and Visualize the Model
    - By using `os.chdir(os.path.dirname(__file__))` at the beginning of our script, we ensure that the mesh.tcl file is created in the same directory as our Python script, making it easy to locate.
 
 2. **GUI Visualization**:
-   - The `fm.gui()` command launches FEMORA's graphical user interface, allowing you to:
+   - The `fm.gui()` command launches Femora's graphical user interface, allowing you to:
 
       - Visualize the 3D model geometry and mesh
       - Verify material assignments and layer arrangement
@@ -574,7 +574,7 @@ Here's the complete code for this quick start example:
 Next Steps
 ----------
 
-Now that you've created your first model with FEMORA, you can:
+Now that you've created your first model with Femora, you can:
 
 * Explore more complex geometries
 * Try different materials 

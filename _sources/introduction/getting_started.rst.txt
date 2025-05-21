@@ -1,15 +1,15 @@
-Getting Started with FEMORA
+Getting Started with Femora
 ==============================
 
-What is FEMORA?
+What is Femora?
 ------------------
 
-FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) is a specialized Python framework designed for creating and managing finite element meshes for structural and geotechnical engineering simulations using OpenSees. It addresses a critical gap in high-performance computing workflows for civil engineering applications.
+Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) is a specialized Python framework designed for creating and managing finite element meshes for structural and geotechnical engineering simulations using OpenSees. It addresses a critical gap in high-performance computing workflows for civil engineering applications.
 
 Core Purpose and Philosophy
 ---------------------------
 
-FEMORA provides a dual-mode workflow that serves both expert users working on supercomputers and modelers who prefer visual feedback:
+Femora provides a dual-mode workflow that serves both expert users working on supercomputers and modelers who prefer visual feedback:
 
 1. **Headless Library Mode**: Create complex meshes through pure Python scripting without requiring a graphical interface, making it suitable for supercomputing environments where GUI access is limited or unavailable.
 
@@ -20,7 +20,7 @@ Key Features and Capabilities
 
 Advanced Mesh Partitioning
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-FEMORA can partition different sections of a mesh using various algorithms (like kd-tree) and combine them in customizable ways to optimize for parallel processing.
+Femora can partition different sections of a mesh using various algorithms (like kd-tree) and combine them in customizable ways to optimize for parallel processing.
 
 Material and Element Management
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -28,7 +28,7 @@ The library includes comprehensive systems for defining materials and elements w
 
 Domain Customization
 ^^^^^^^^^^^^^^^^^^^^
-FEMORA includes systems for regions, constraints, damping models, and boundary conditions specific to civil engineering needs.
+Femora includes systems for regions, constraints, damping models, and boundary conditions specific to civil engineering needs.
 
 Visualization Without GUI Dependency
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -40,12 +40,12 @@ Generate TCL script output specifically formatted for the OpenSees finite elemen
 
 Component-Based Architecture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FEMORA uses a modular design with managers for materials, elements, regions, damping, assembly, and other aspects of mesh generation.
+Femora uses a modular design with managers for materials, elements, regions, damping, assembly, and other aspects of mesh generation.
 
 Exceptional Extensibility
 -------------------------
 
-FEMORA is designed with extensibility as a core principle, making it remarkably easy to expand and customize:
+Femora is designed with extensibility as a core principle, making it remarkably easy to expand and customize:
 
 * **Registry-Based Component System**: Uses registry patterns for materials, elements, and mesh parts that allow new components to be added with minimal code changes.
 
@@ -64,16 +64,16 @@ FEMORA is designed with extensibility as a core principle, making it remarkably 
 Target Users
 ------------
 
-FEMORA serves two primary user groups:
+Femora serves two primary user groups:
 
 1. **Computational Researchers**: Engineers and scientists who need to create complex meshes for supercomputer simulations without GUI tools.
 
 2. **Structural/Geotechnical Modelers**: Civil engineers who want to create and visualize models interactively before running simulations.
 
-What Makes FEMORA Unique
+What Makes Femora Unique
 ---------------------------
 
-What distinguishes FEMORA from other mesh generation tools is its specific focus on:
+What distinguishes Femora from other mesh generation tools is its specific focus on:
 
 * **Civil Engineering Applications**: Tailored for soil-structure interaction and other civil engineering simulations.
 
@@ -85,4 +85,4 @@ What distinguishes FEMORA from other mesh generation tools is its specific focus
 
 * **Extensibility First**: Designed from the ground up to be extended with new elements, materials, and analysis components.
 
-FEMORA fills an important niche for OpenSees users who need to create complex models for high-performance computing environments while maintaining the ability to visualize and verify their models throughout the creation process.
+Femora fills an important niche for OpenSees users who need to create complex models for high-performance computing environments while maintaining the ability to visualize and verify their models throughout the creation process.

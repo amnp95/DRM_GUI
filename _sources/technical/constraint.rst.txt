@@ -1,7 +1,7 @@
 Constraints
 ===========
 
-FEMORA provides a comprehensive constraint system to apply boundary conditions and enforce specific behaviors in your model. This documentation covers the different types of constraints available in FEMORA.
+Femora provides a comprehensive constraint system to apply boundary conditions and enforce specific behaviors in your model. This documentation covers the different types of constraints available in Femora.
 
 The constraint system includes two main categories:
 

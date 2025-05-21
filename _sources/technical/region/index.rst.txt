@@ -1,7 +1,7 @@
 Region Types
 ============
 
-This section provides detailed documentation for the different region types available in FEMORA.
+This section provides detailed documentation for the different region types available in Femora.
 
 .. toctree::
    :maxdepth: 1

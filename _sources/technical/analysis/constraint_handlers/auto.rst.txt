@@ -32,7 +32,7 @@ Usage Example
 
 .. code-block:: python
 
-    # Create a FEMORA instance
+    # Create a Femora instance
      
     
     # Create an Auto constraint handler with default settings

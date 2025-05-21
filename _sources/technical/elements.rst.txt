@@ -4,9 +4,9 @@ Element
 Understanding the ElementRegistry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``ElementRegistry`` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing element objects throughout the mesh generation process. Similar to the MaterialManager, it implements the Singleton pattern to ensure a single, consistent point of element management across the entire application.
+The ``ElementRegistry`` is a core component of the Femora library that serves as a centralized system for creating, retrieving, tracking, and managing element objects throughout the mesh generation process. Similar to the MaterialManager, it implements the Singleton pattern to ensure a single, consistent point of element management across the entire application.
 
-Elements defined in FEMORA are automatically tracked, tagged, and organized by the ElementRegistry, simplifying the process of creating complex models with multiple element types.
+Elements defined in Femora are automatically tracked, tagged, and organized by the ElementRegistry, simplifying the process of creating complex models with multiple element types.
 
 Accessing the ElementRegistry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,20 +25,20 @@ There are two ways to access the ElementRegistry in your code:
       # Create an element using the registry
       my_element = ElementRegistry.create_element(...)
 
-2. **Through FEMORA** (Recommended): Access via the FEMORA class's .element property
+2. **Through Femora** (Recommended): Access via the Femora class's .element property
    
    .. code-block:: python
       
       import femora as fm
       
-      # Create a FEMORA instance
+      # Create a Femora instance
        
       
       # Access the ElementRegistry through the .element property
       element_types = fm.element.get_element_types()
       my_element = fm.element.create_element(...)
 
-The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of Femora's components and ensures proper initialization of all dependencies.
 
 How ElementRegistry Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -96,7 +96,7 @@ Available Element Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-The element types available in FEMORA are organized by their geometric dimensionality and characteristics. Follow the links above to explore the various element models available in each category.
+The element types available in Femora are organized by their geometric dimensionality and characteristics. Follow the links above to explore the various element models available in each category.
 
 * **3D Elements**: For three-dimensional continuum modeling
 * **2D Elements**: For two-dimensional plane stress/strain problems

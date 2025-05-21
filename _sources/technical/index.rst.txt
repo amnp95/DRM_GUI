@@ -1,7 +1,7 @@
 Technical Documentation
 ========================
 
-This section provides detailed technical documentation for all components of the FEMORA software.
+This section provides detailed technical documentation for all components of the Femora software.
 
 .. toctree::
    :maxdepth: 1
@@ -20,7 +20,7 @@ This section provides detailed technical documentation for all components of the
    drm
 
 
-Each section covers detailed information about specific components of the FEMORA system, including:
+Each section covers detailed information about specific components of the Femora system, including:
 
 * **Materials**: Material definitions, properties, and management
 * **Elements**: Element types, configurations, and properties

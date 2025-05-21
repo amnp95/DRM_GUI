@@ -6,7 +6,7 @@ The ``rigidLink`` constraint creates a rigid connection between nodes, where sla
 Description
 -----------
 
-The rigidLink constraint establishes a rigid connection between a master node and one or more slave nodes. This constraint ensures that the constrained nodes move as if they were connected by an infinitely stiff link. FEMORA supports two types of rigid links:
+The rigidLink constraint establishes a rigid connection between a master node and one or more slave nodes. This constraint ensures that the constrained nodes move as if they were connected by an infinitely stiff link. Femora supports two types of rigid links:
 
 1. **bar**: Constrains only the translational degrees of freedom
 2. **beam**: Constrains both translational and rotational degrees of freedom
@@ -25,7 +25,7 @@ Usage
 
    import femora as fm
    
-   # Create FEMORA instance
+   # Create Femora instance
     
    
    # First assemble the mesh

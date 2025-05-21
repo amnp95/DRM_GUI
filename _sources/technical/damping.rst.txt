@@ -4,9 +4,9 @@ Damping
 Understanding the DampingManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``DampingManager`` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing damping objects. It implements the Singleton pattern to ensure a single, consistent point of damping management across the entire application.
+The ``DampingManager`` is a core component of the Femora library that serves as a centralized system for creating, retrieving, tracking, and managing damping objects. It implements the Singleton pattern to ensure a single, consistent point of damping management across the entire application.
 
-Damping models defined in FEMORA are automatically tracked, tagged, and organized by the DampingManager, simplifying the process of creating models with appropriate energy dissipation mechanisms.
+Damping models defined in Femora are automatically tracked, tagged, and organized by the DampingManager, simplifying the process of creating models with appropriate energy dissipation mechanisms.
 
 Accessing the DampingManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -17,7 +17,7 @@ There are two ways to access the DampingManager in your code:
    
    .. code-block:: python
       
-      from femora.components.Damping import DampingManager
+      from Femora.components.Damping import DampingManager
       
       # Get the singleton instance
       damping_manager = DampingManager()
@@ -25,19 +25,19 @@ There are two ways to access the DampingManager in your code:
       # Use the damping manager directly
       damping_manager.create_damping(...)
 
-2. **Through FEMORA** (Recommended): Access via the FEMORA class's .damping property
+2. **Through Femora** (Recommended): Access via the Femora class's .damping property
    
    .. code-block:: python
       
-      import femora as fm
+      import Femora as fm
       
-      # Create a FEMORA instance
+      # Create a Femora instance
        
       
       # Access the DampingManager through the .damping property
       fm.damping.create_damping(...)
 
-The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of Femora's components and ensures proper initialization of all dependencies.
 
 How DampingManager Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +93,7 @@ Usage Example
 
 .. code-block:: python
 
-   from femora.components.Damping import DampingManager
+   from Femora.components.Damping import DampingManager
    
    # Get the damping manager instance
    damping_manager = DampingManager()
@@ -132,6 +132,6 @@ Available Damping Types
    
    damping/index
 
-The damping models available in FEMORA provide various approaches to energy dissipation in dynamic analysis. Follow the link above to explore the different damping models available.
+The damping models available in Femora provide various approaches to energy dissipation in dynamic analysis. Follow the link above to explore the different damping models available.
 
 Each damping type has its own documentation page with detailed parameter descriptions and usage examples.

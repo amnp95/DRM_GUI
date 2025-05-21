@@ -4,7 +4,7 @@ Analysis
 Understanding the Analysis Component
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``Analysis`` component is a core part of the FEMORA library that manages the configuration and execution of OpenSees analyses. It implements a comprehensive system for defining and controlling various types of structural analyses, including static, transient, and variable transient analyses.
+The ``Analysis`` component is a core part of the Femora library that manages the configuration and execution of OpenSees analyses. It implements a comprehensive system for defining and controlling various types of structural analyses, including static, transient, and variable transient analyses.
 
 The Analysis component combines several key subcomponents to define how an analysis is performed:
 - Constraint Handler: Manages how constraints are handled in the analysis
@@ -31,19 +31,19 @@ There are two ways to access the Analysis component in your code:
       # Use the analysis manager directly
       analysis_manager.create_analysis(...)
 
-2. **Through FEMORA** (Recommended): Access via the FEMORA class's .analysis property
+2. **Through Femora** (Recommended): Access via the Femora class's .analysis property
    
    .. code-block:: python
       
       import femora as fm
       
-      # Create a FEMORA instance
+      # Create a Femora instance
        
       
       # Access the AnalysisManager through the .analysis property
       fm.analysis.create_analysis(...)
 
-The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of Femora's components and ensures proper initialization of all dependencies.
 
 How Analysis Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

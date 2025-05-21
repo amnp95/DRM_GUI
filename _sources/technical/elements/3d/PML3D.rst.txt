@@ -81,7 +81,7 @@ Parameters:
             R=1e-8
         )
 
-        # Via FEMORA
+        # Via femora
         import femora as fm
          
 

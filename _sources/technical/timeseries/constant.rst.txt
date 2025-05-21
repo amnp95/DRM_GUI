@@ -31,7 +31,7 @@ Parameters:
             factor=2.0
         )
 
-        # Via FEMORA
+        # Via Femora
         import femora as fm
         
          

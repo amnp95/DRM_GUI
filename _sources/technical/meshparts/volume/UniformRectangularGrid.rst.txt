@@ -54,7 +54,7 @@ The following example demonstrates how to create a simple 3D rectangular domain 
 
    import femora as fm
    
-   # Create a FEMORA instance
+   # Create a Femora instance
     
    
    # Create a material

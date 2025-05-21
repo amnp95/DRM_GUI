@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Process &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>Process &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=bbbd0671" />
@@ -47,7 +47,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/examples.html">Examples and Tutorials</a></li>
@@ -89,7 +89,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -112,7 +112,7 @@
 <h1>Process<a class="headerlink" href="#process" title="Link to this heading"></a></h1>
 <section id="understanding-the-process-component">
 <h2>Understanding the Process Component<a class="headerlink" href="#understanding-the-process-component" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">Process</span></code> component is a core part of the FEMORA library that manages the sequence of operations in a structural analysis. It implements a system for defining, organizing, and executing analysis steps in a coherent order.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Process</span></code> component is a core part of the Femora library that manages the sequence of operations in a structural analysis. It implements a system for defining, organizing, and executing analysis steps in a coherent order.</p>
 <p>The Process component provides functionality to:
 - Add steps to the analysis process
 - Insert steps at specific positions
@@ -136,10 +136,10 @@
 </pre></div>
 </div>
 </li>
-<li><p><strong>Through FEMORA</strong> (Recommended): Access via the FEMORA class’s .process property</p>
+<li><p><strong>Through Femora</strong> (Recommended): Access via the Femora class’s .process property</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a Femora instance</span>
 
 
 <span class="c1"># Access the ProcessManager through the .process property</span>
@@ -148,7 +148,7 @@
 </div>
 </li>
 </ol>
-<p>The second approach is recommended as it provides a unified interface to all of FEMORA’s components and ensures proper initialization of all dependencies.</p>
+<p>The second approach is recommended as it provides a unified interface to all of Femora’s components and ensures proper initialization of all dependencies.</p>
 </section>
 <section id="how-process-works">
 <h2>How Process Works<a class="headerlink" href="#how-process-works" title="Link to this heading"></a></h2>
@@ -203,7 +203,7 @@
 <p>Example of creating and managing a process:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a Femora instance</span>
 
 
 <span class="c1"># Create components for the process</span>

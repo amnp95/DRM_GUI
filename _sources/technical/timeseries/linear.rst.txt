@@ -33,7 +33,7 @@ The linear time series creates a function that increases linearly with time, mul
             factor=2.0
         )
 
-        # Via FEMORA
+        # Via Femora
         import femora as fm
         
          

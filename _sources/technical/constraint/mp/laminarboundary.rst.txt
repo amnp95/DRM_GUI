@@ -27,7 +27,7 @@ Usage
 
    import femora as fm
    
-   # Create FEMORA instance
+   # Create Femora instance
     
    
    # First assemble the mesh

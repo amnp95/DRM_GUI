@@ -4,9 +4,9 @@ Region
 Understanding the RegionManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``RegionManager`` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing region objects. It implements the Singleton pattern to ensure a single, consistent point of region management across the entire application.
+The ``RegionManager`` is a core component of the Femora library that serves as a centralized system for creating, retrieving, tracking, and managing region objects. It implements the Singleton pattern to ensure a single, consistent point of region management across the entire application.
 
-Regions defined in FEMORA are automatically tracked, tagged, and organized by the RegionManager, simplifying the process of defining specific parts of your model for targeted analysis and damping assignments.
+Regions defined in Femora are automatically tracked, tagged, and organized by the RegionManager, simplifying the process of defining specific parts of your model for targeted analysis and damping assignments.
 
 Accessing the RegionManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,19 +25,19 @@ There are two ways to access the RegionManager in your code:
       # Use the region manager directly
       region_manager.create_region(...)
 
-2. **Through FEMORA** (Recommended): Access via the FEMORA class's .region property
+2. **Through femora** (Recommended): Access via the Femora class's .region property
    
    .. code-block:: python
       
       import femora as fm
       
-      # Create a FEMORA instance
+      # Create a Femora instance
        
       
       # Access the RegionManager through the .region property
       fm.region.create_region(...)
 
-The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of Femora's components and ensures proper initialization of all dependencies.
 
 How RegionManager Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -149,6 +149,6 @@ Available Region Types
    
    region/index
 
-The region types available in FEMORA provide different ways to define specific parts of your model for targeted analysis and configuration. Follow the link above to explore the different region types available.
+The region types available in Femora provide different ways to define specific parts of your model for targeted analysis and configuration. Follow the link above to explore the different region types available.
 
 Each region type has its own documentation page with detailed parameter descriptions and usage examples.

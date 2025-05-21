@@ -4,9 +4,9 @@ Material
 Understanding the MaterialManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``MaterialManager`` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing material objects throughout the mesh generation process. It implements the Singleton pattern to ensure a single, consistent point of material management across the entire application.
+The ``MaterialManager`` is a core component of the Femora library that serves as a centralized system for creating, retrieving, tracking, and managing material objects throughout the mesh generation process. It implements the Singleton pattern to ensure a single, consistent point of material management across the entire application.
 
-Materials defined in FEMORA are automatically tracked, tagged, and organized by the MaterialManager, simplifying the process of creating complex models with multiple material definitions.
+Materials defined in Femora are automatically tracked, tagged, and organized by the MaterialManager, simplifying the process of creating complex models with multiple material definitions.
 
 Accessing the MaterialManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,19 +25,19 @@ There are two ways to access the MaterialManager in your code:
       # Use the material manager directly
       material_manager.create_material(...)
 
-2. **Through FEMORA** (Recommended): Access via the FEMORA class's .material property
+2. **Through Femora** (Recommended): Access via the Femora class's .material property
    
    .. code-block:: python
       
       import femora as fm
       
-      # Create a FEMORA instance
+      # Create a Femora instance
        
       
       # Access the MaterialManager through the .material property
       fm.material.create_material(...)
 
-The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of Femora's components and ensures proper initialization of all dependencies.
 
 How MaterialManager Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -111,7 +111,7 @@ Available Material Types
    materials/nd/index
    materials/uniaxial/index
 
-The material types available in FEMORA are organized by category. Follow the links above to explore the various material models available in each category.
+The material types available in Femora are organized by category. Follow the links above to explore the various material models available in each category.
 
 * **nDMaterial**: Multi-dimensional materials for 2D and 3D analysis
 * **uniaxialMaterial**: One-dimensional materials for truss, beam, and spring elements

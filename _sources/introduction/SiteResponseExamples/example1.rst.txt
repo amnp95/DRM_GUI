@@ -4,14 +4,14 @@ Example 1: Single-Column Site Response Analysis with Frequency Sweep
 Overview
 --------
 
-This example demonstrates how to create a 1D site response analysis model using a single column of 3D elements in FEMORA. Unlike the multi-material layered model in the Quick Start guide, this example focuses on:
+This example demonstrates how to create a 1D site response analysis model using a single column of 3D elements in Femora. Unlike the multi-material layered model in the Quick Start guide, this example focuses on:
 
 1. Creating a simplified single-material layered soil profile
 2. Using frequency sweep input motion to test a wide frequency range
 3. Comparing numerical results with analytical transfer functions
 4. Running the analysis on a single processor (non-parallel execution)
 
-The example showcases FEMORA's ability to perform traditional site response analyses with 3D elements while maintaining comparability with analytical solutions. This serves as an excellent verification case for more complex models.
+The example showcases Femora's ability to perform traditional site response analyses with 3D elements while maintaining comparability with analytical solutions. This serves as an excellent verification case for more complex models.
 
 .. figure:: ../images/SiteResponse/Example1/FrequencySweep.jpg
    :width: 600px
@@ -304,7 +304,7 @@ Where:
 - :math:`V_s` is the shear wave velocity
 - :math:`R_{damp}` is a damping coefficient based on Rayleigh damping parameters
 
-The good agreement between numerical and analytical results validates the FEMORA implementation for site response analysis.
+The good agreement between numerical and analytical results validates the Femora implementation for site response analysis.
 
 Effect of Damping Type on Transfer Function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -346,8 +346,8 @@ Conclusion
 
 This example demonstrates:
 
-1. How to create a simplified single-column model for site response analysis in FEMORA
-2. How to configure FEMORA for single-processor analysis
+1. How to create a simplified single-column model for site response analysis in Femora
+2. How to configure Femora for single-processor analysis
 3. The validation of numerical results against analytical solutions
 4. The importance of proper damping modeling in site response analysis
 
@@ -356,7 +356,7 @@ These concepts provide a foundation for more complex seismic analyses, including
 Code Access
 -----------
 
-The full source code for this example is available in the FEMORA repository:
+The full source code for this example is available in the Femora repository:
 
 * Example directory: ``examples/SiteResponse/Example1/``
 * Python script: ``examples/SiteResponse/Example1/femoramodel.py``

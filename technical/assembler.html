@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assembler &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>Assembler &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=bbbd0671" />
@@ -47,7 +47,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/examples.html">Examples and Tutorials</a></li>
@@ -100,7 +100,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -123,7 +123,7 @@
 <h1>Assembler<a class="headerlink" href="#assembler" title="Link to this heading"></a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">Assembler</span></code> component in FEMORA is responsible for combining multiple mesh parts into a unified model, partitioning the model for parallel computing, and managing the combined mesh. It provides a centralized system for creating and managing assembly sections, which are groups of mesh parts that are combined into a single mesh.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Assembler</span></code> component in Femora is responsible for combining multiple mesh parts into a unified model, partitioning the model for parallel computing, and managing the combined mesh. It provides a centralized system for creating and managing assembly sections, which are groups of mesh parts that are combined into a single mesh.</p>
 <p>The Assembler system consists of two main classes:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Assembler</span></code>: A singleton class that manages multiple <code class="docutils literal notranslate"><span class="pre">AssemblySection</span></code> instances</p></li>
@@ -148,13 +148,13 @@
 </pre></div>
 </div>
 </li>
-<li><p><strong>Through FEMORA</strong> (recommended):</p>
+<li><p><strong>Through Femora</strong> (recommended):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a Femora instance</span>
 
 
-<span class="c1"># Access the Assembler through FEMORA</span>
+<span class="c1"># Access the Assembler through femora</span>
 <span class="n">assembler</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">assembler</span>
 </pre></div>
 </div>

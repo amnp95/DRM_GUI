@@ -52,7 +52,7 @@ Parameters:
             b2=-9.81  # Gravity in y-direction
         )
 
-        # Via FEMORA
+        # Via Femora
         import femora as fm
          
 

@@ -61,7 +61,7 @@ Parameters:
             useLast=True
         )
 
-        # Via FEMORA
+        # Via Femora
         import femora as fm
         
          

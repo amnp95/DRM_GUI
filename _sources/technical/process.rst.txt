@@ -4,7 +4,7 @@ Process
 Understanding the Process Component
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``Process`` component is a core part of the FEMORA library that manages the sequence of operations in a structural analysis. It implements a system for defining, organizing, and executing analysis steps in a coherent order.
+The ``Process`` component is a core part of the Femora library that manages the sequence of operations in a structural analysis. It implements a system for defining, organizing, and executing analysis steps in a coherent order.
 
 The Process component provides functionality to:
 - Add steps to the analysis process
@@ -32,19 +32,19 @@ There are two ways to access the Process component in your code:
       # Use the process manager directly
       process_manager.add_step(...)
 
-2. **Through FEMORA** (Recommended): Access via the FEMORA class's .process property
+2. **Through Femora** (Recommended): Access via the Femora class's .process property
    
    .. code-block:: python
       
       import femora as fm
       
-      # Create a FEMORA instance
+      # Create a Femora instance
        
       
       # Access the ProcessManager through the .process property
       fm.process.add_step(...)
 
-The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of Femora's components and ensures proper initialization of all dependencies.
 
 How Process Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -109,7 +109,7 @@ Example of creating and managing a process:
 
    import femora as fm
    
-   # Create a FEMORA instance
+   # Create a Femora instance
     
    
    # Create components for the process

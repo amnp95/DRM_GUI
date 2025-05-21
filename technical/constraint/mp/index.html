@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MP Constraints &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>MP Constraints &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=bbbd0671" />
@@ -47,7 +47,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../introduction/getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction/installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction/examples.html">Examples and Tutorials</a></li>
@@ -93,7 +93,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../../../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -118,7 +118,7 @@
 <p>Multi-point constraints create relationships between multiple nodes in your mesh, allowing you to create master-slave relationships, rigid links, rigid diaphragms, and laminar boundary conditions.</p>
 <section id="understanding-the-mp-constraint-manager">
 <h2>Understanding the MP Constraint Manager<a class="headerlink" href="#understanding-the-mp-constraint-manager" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">MPConstraintManager</span></code> is a core component of FEMORA that provides a centralized system for creating, managing, and applying multi-point constraints to your model. It implements the Singleton pattern to ensure a single, consistent point of constraint management across the entire application.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">MPConstraintManager</span></code> is a core component of Femora that provides a centralized system for creating, managing, and applying multi-point constraints to your model. It implements the Singleton pattern to ensure a single, consistent point of constraint management across the entire application.</p>
 <p>MP constraints define relationships between multiple nodes in your mesh, allowing you to:</p>
 <ol class="arabic simple">
 <li><p>Create master-slave relationships between nodes</p></li>
@@ -143,10 +143,10 @@
 </pre></div>
 </div>
 </li>
-<li><p><strong>Through FEMORA</strong> (Recommended): Access via the FEMORA class and the Constraint module</p>
+<li><p><strong>Through Femora</strong> (Recommended): Access via the Femora class and the Constraint module</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a Femora instance</span>
 
 
 <span class="c1"># Access the MPConstraintManager through the constraint property</span>
@@ -158,7 +158,7 @@
 </div>
 </li>
 </ol>
-<p>The second approach is recommended as it provides a unified interface to all of FEMORA’s components and ensures proper initialization of all dependencies.</p>
+<p>The second approach is recommended as it provides a unified interface to all of Femora’s components and ensures proper initialization of all dependencies.</p>
 </section>
 <section id="managing-mp-constraints">
 <h2>Managing MP Constraints<a class="headerlink" href="#managing-mp-constraints" title="Link to this heading"></a></h2>
@@ -191,7 +191,7 @@
 </section>
 <section id="available-mp-constraint-types">
 <h2>Available MP Constraint Types<a class="headerlink" href="#available-mp-constraint-types" title="Link to this heading"></a></h2>
-<p>FEMORA provides several types of MP constraints:</p>
+<p>Femora provides several types of MP constraints:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="equaldof.html">EqualDOF Constraint</a></li>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TimeSeries &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>TimeSeries &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=bbbd0671" />
@@ -47,7 +47,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/examples.html">Examples and Tutorials</a></li>
@@ -103,7 +103,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -126,8 +126,8 @@
 <h1>TimeSeries<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h1>
 <section id="understanding-the-timeseriesmanager">
 <h2>Understanding the TimeSeriesManager<a class="headerlink" href="#understanding-the-timeseriesmanager" title="Link to this heading"></a></h2>
-<p>The <cite>TimeSeriesManager</cite> is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing time series objects. It implements the Singleton pattern to ensure a single, consistent point of time series management across the entire application.</p>
-<p>Time series defined in FEMORA are automatically tracked, tagged, and organized by the TimeSeriesManager, simplifying the process of creating dynamic models with time-varying loads, displacements, or boundary conditions.</p>
+<p>The <cite>TimeSeriesManager</cite> is a core component of the Femora library that serves as a centralized system for creating, retrieving, tracking, and managing time series objects. It implements the Singleton pattern to ensure a single, consistent point of time series management across the entire application.</p>
+<p>Time series defined in Femora are automatically tracked, tagged, and organized by the TimeSeriesManager, simplifying the process of creating dynamic models with time-varying loads, displacements, or boundary conditions.</p>
 </section>
 <section id="accessing-the-timeseriesmanager">
 <h2>Accessing the TimeSeriesManager<a class="headerlink" href="#accessing-the-timeseriesmanager" title="Link to this heading"></a></h2>
@@ -144,10 +144,10 @@
 </pre></div>
 </div>
 </li>
-<li><p><strong>Through FEMORA</strong> (Recommended): Access via the FEMORA class’s .timeSeries property</p>
+<li><p><strong>Through Femora</strong> (Recommended): Access via the Femora class’s .timeSeries property</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a Femora instance</span>
 
 
 <span class="c1"># Access the TimeSeriesManager through the .timeSeries property</span>
@@ -156,7 +156,7 @@
 </div>
 </li>
 </ol>
-<p>The second approach is recommended as it provides a unified interface to all of FEMORA’s components and ensures proper initialization of all dependencies.</p>
+<p>The second approach is recommended as it provides a unified interface to all of Femora’s components and ensures proper initialization of all dependencies.</p>
 </section>
 <section id="how-timeseriesmanager-works">
 <h2>How TimeSeriesManager Works<a class="headerlink" href="#how-timeseriesmanager-works" title="Link to this heading"></a></h2>
@@ -428,7 +428,7 @@ reassigns sequential tags to all remaining time series objects.</p>
 <h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a femora instance</span>
 
 
 <span class="c1"># Create a constant time series</span>
@@ -475,7 +475,7 @@ reassigns sequential tags to all remaining time series objects.</p>
 <li class="toctree-l1"><a class="reference internal" href="timeseries/pulsetrain.html">PulseTrain</a></li>
 </ul>
 </div>
-<p>The time series types available in FEMORA provide various ways to define time-dependent behavior. Follow the links above to explore the different time series types available.</p>
+<p>The time series types available in Femora provide various ways to define time-dependent behavior. Follow the links above to explore the different time series types available.</p>
 <p>Each time series type has its own documentation page with detailed parameter descriptions and usage examples.</p>
 </section>
 <section id="applying-time-series">

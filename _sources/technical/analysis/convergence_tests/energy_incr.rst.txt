@@ -40,7 +40,7 @@ Usage Example
 
 .. code-block:: python
 
-    # Create a FEMORA instance
+    # Create a Femora instance
      
     
     # Create an Energy Incr convergence test

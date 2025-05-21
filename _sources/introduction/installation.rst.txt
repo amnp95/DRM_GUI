@@ -4,7 +4,7 @@ Installation Guide
 System Requirements
 -------------------
 
-Before installing FEMORA, ensure your system meets the following requirements:
+Before installing Femora, ensure your system meets the following requirements:
 
 * **Operating System**: Windows, macOS, or Linux
 * **Python**: Version 3.8 or higher
@@ -14,12 +14,12 @@ Before installing FEMORA, ensure your system meets the following requirements:
 Installation Methods
 --------------------
 
-There are several ways to install FEMORA:
+There are several ways to install Femora:
 
 Using pip
 ~~~~~~~~~
 
-The easiest way to install FEMORA is using pip:
+The easiest way to install Femora is using pip:
 
 .. code-block:: bash
 
@@ -34,8 +34,8 @@ To install from source:
 
    .. code-block:: bash
 
-      git clone https://github.com/yourusername/femora.git
-      cd femora
+      git clone https://github.com/yourusername/Femora.git
+      cd Femora
 
 2. Install the package:
 
@@ -46,29 +46,29 @@ To install from source:
 Using Conda
 ~~~~~~~~~~~
 
-FEMORA can also be installed using conda:
+Femora can also be installed using conda:
 
 .. code-block:: bash
 
    conda env create -f environment.yml
-   conda activate femora
+   conda activate Femora
 
 Verifying Installation
 ----------------------
 
-To verify that FEMORA has been installed correctly, run:
+To verify that Femora has been installed correctly, run:
 
 .. code-block:: python
 
    import femora
    print(femora.__version__)
 
-This should display the version number of your FEMORA installation.
+This should display the version number of your Femora installation.
 
 Dependencies
 ------------
 
-FEMORA depends on several Python packages:
+Femora depends on several Python packages:
 
 * **NumPy**: For numerical operations
 * **SciPy**: For scientific computing
@@ -96,8 +96,8 @@ Common Installation Issues
    
    .. code-block:: bash
    
-      python -m venv femora_env
-      source femora_env/bin/activate  # On Windows: femora_env\Scripts\activate
+      python -m venv Femora_env
+      source Femora_env/bin/activate  # On Windows: Femora_env\Scripts\activate
       pip install femora
 
 3. **Permission Errors**:

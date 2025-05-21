@@ -61,7 +61,7 @@ Parameters:
 
         or 
 
-        # Via FEMORA
+        # Via Femora
         import femora as fm
          
         fm.material.create_material(

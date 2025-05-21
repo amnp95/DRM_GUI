@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>Quick Start Guide &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=bbbd0671" />
@@ -47,11 +47,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#setting-up-your-environment">Setting Up Your Environment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#step-1-initialize-femora">Step 1: Initialize FEMORA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-initialize-femora">Step 1: Initialize Femora</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-your-first-3d-soil-layer-model">Creating Your First 3D Soil Layer Model</a><ul>
@@ -72,7 +72,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples and Tutorials</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Quick Start Example (Layered Soil Profile)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#setting-up-your-environment">Setting Up Your Environment</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#step-1-initialize-femora">Step 1: Initialize FEMORA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-1-initialize-femora">Step 1: Initialize Femora</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-your-first-3d-soil-layer-model">Creating Your First 3D Soil Layer Model</a><ul>
@@ -110,7 +110,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -130,13 +130,13 @@
              
   <section id="quick-start-guide">
 <h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Link to this heading"></a></h1>
-<p>This quick start guide will help you create your first 3D soil layer model using FEMORA. We’ll walk through Example1, which demonstrates how to create a multi-layered soil profile for seismic analysis.</p>
+<p>This quick start guide will help you create your first 3D soil layer model using Femora. We’ll walk through Example1, which demonstrates how to create a multi-layered soil profile for seismic analysis.</p>
 <section id="setting-up-your-environment">
 <h2>Setting Up Your Environment<a class="headerlink" href="#setting-up-your-environment" title="Link to this heading"></a></h2>
-<p>Before you begin, make sure you have installed FEMORA (see <a class="reference internal" href="installation.html"><span class="doc">Installation Guide</span></a> for details)</p>
+<p>Before you begin, make sure you have installed Femora (see <a class="reference internal" href="installation.html"><span class="doc">Installation Guide</span></a> for details)</p>
 <section id="step-1-initialize-femora">
-<h3>Step 1: Initialize FEMORA<a class="headerlink" href="#step-1-initialize-femora" title="Link to this heading"></a></h3>
-<p>First, we need to import the FEMORA library and set up our working environment:</p>
+<h3>Step 1: Initialize Femora<a class="headerlink" href="#step-1-initialize-femora" title="Link to this heading"></a></h3>
+<p>First, we need to import the Femora library and set up our working environment:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
@@ -329,8 +329,8 @@
 <span class="n">fm</span><span class="o">.</span><span class="n">assembler</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Understanding Assembly in FEMORA</strong>:</p>
-<p>The assembly process is a critical step in FEMORA that serves multiple purposes:</p>
+<p><strong>Understanding Assembly in Femora</strong>:</p>
+<p>The assembly process is a critical step in Femora that serves multiple purposes:</p>
 <ol class="arabic simple">
 <li><p><strong>What are Sections?</strong> Sections are logical groupings of mesh parts that allow for efficient parallel processing. They organize mesh parts that share similar characteristics (like material properties) for computational optimization.</p></li>
 <li><p><strong>Why do we need Assembly?</strong> The assembly process:
@@ -408,10 +408,10 @@
 <span class="n">fm</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="n">gravity</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Gravity Analysis Step&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Understanding Steps in FEMORA</strong>:</p>
+<p><strong>Understanding Steps in Femora</strong>:</p>
 <ol class="arabic simple">
 <li><p><strong>The Concept of Steps</strong>:
-- In FEMORA, steps are components that define the sequence and flow of the analysis procedure.
+- In Femora, steps are components that define the sequence and flow of the analysis procedure.
 - Steps can be loading patterns, recorders, analysis procedures, or other components.
 - They are added to the process in the order they should be executed or applied.</p></li>
 <li><p><strong>Types of Steps in Example1</strong>:
@@ -442,7 +442,7 @@
 - This exported file serves as both documentation of your model and a standalone script that can be executed in OpenSees.
 - By using <cite>os.chdir(os.path.dirname(__file__))</cite> at the beginning of our script, we ensure that the mesh.tcl file is created in the same directory as our Python script, making it easy to locate.</p></li>
 <li><p><strong>GUI Visualization</strong>:
-- The <cite>fm.gui()</cite> command launches FEMORA’s graphical user interface, allowing you to:</p>
+- The <cite>fm.gui()</cite> command launches Femora’s graphical user interface, allowing you to:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Visualize the 3D model geometry and mesh</p></li>
@@ -673,7 +673,7 @@
 </section>
 <section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
-<p>Now that you’ve created your first model with FEMORA, you can:</p>
+<p>Now that you’ve created your first model with Femora, you can:</p>
 <ul class="simple">
 <li><p>Explore more complex geometries</p></li>
 <li><p>Try different materials</p></li>

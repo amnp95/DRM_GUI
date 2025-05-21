@@ -5,7 +5,7 @@ Domain Reduction Method (DRM) Examples
 
     <h1>Introduction</h1>
 
-The Domain Reduction Method (DRM) is a powerful technique for modeling seismic wave propagation in a computationally efficient manner. This section provides a series of examples demonstrating how to use FEMORA's DRM capabilities to model increasingly complex scenarios.
+The Domain Reduction Method (DRM) is a powerful technique for modeling seismic wave propagation in a computationally efficient manner. This section provides a series of examples demonstrating how to use Femora's DRM capabilities to model increasingly complex scenarios.
 
 .. raw:: html
 
@@ -33,11 +33,10 @@ This section includes multiple examples demonstrating DRM applications of increa
 .. toctree::
    :maxdepth: 1
 
-   example1
    example2
    example3
 
-These examples progress from simple configurations to more complex geological settings, demonstrating FEMORA's capabilities in handling realistic seismic wave propagation problems.
+These examples progress from simple configurations to more complex geological settings, demonstrating Femora's capabilities in handling realistic seismic wave propagation problems.
 
 
 

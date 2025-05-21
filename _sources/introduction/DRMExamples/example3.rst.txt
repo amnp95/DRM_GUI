@@ -11,11 +11,11 @@ Basin effects represent one of the most significant site amplification phenomena
 The model enhancements in this example include:
 
 * A semi-hemispherical basin embedded in the soil profile, representing a simplified version of real-world geological basin structures
-* Use of external mesh for complex geometry modeling, demonstrating FEMORA's capability to handle non-rectangular geometries
+* Use of external mesh for complex geometry modeling, demonstrating Femora's capability to handle non-rectangular geometries
 * Soft soil materials in the basin with varying shear wave velocities (Vs=150 m/s and Vs=200 m/s) to study velocity contrast effects
 * Comparative analysis of seismic response with different basin properties to quantify amplification factors
 
-This example demonstrates FEMORA's capability to model complex subsurface geometries and analyze their effects on seismic wave propagation, which is essential for site-specific seismic hazard assessment in regions with complex geological conditions.
+This example demonstrates Femora's capability to model complex subsurface geometries and analyze their effects on seismic wave propagation, which is essential for site-specific seismic hazard assessment in regions with complex geological conditions.
 
 Schematic Model Representation
 ------------------------------
@@ -158,7 +158,7 @@ Unlike Example 2 which used consistent material properties throughout each layer
     softMat_nu = (softMat_vs_vp_ratio - 2) / (2 * (softMat_vs_vp_ratio - 1))
     softMat_E = 2 * softMat_rho * (softMat_vs ** 2) * (1 + softMat_nu)
 
-    # Create FEMORA material, element, damping, and region for soft material
+    # Create Femora material, element, damping, and region for soft material
     sofmat = fm.material.create_material("nDMaterial", "ElasticIsotropic",
                                     user_name=f"softMaterial",
                                     E=softMat_E, nu=softMat_nu, rho=softMat_rho)
@@ -234,7 +234,7 @@ For layers 1 and 2 that intersect with the basin, the implementation requires a 
     semihemisphere = mesh.extract_cells(mask)  # Basin part
     boxwithhole = mesh.extract_cells(~mask)    # Regular soil part
 
-    # Add regular soil part to FEMORA
+    # Add regular soil part to Femora
     fm.meshPart.create_mesh_part("General mesh", "External mesh",
                             user_name=f"Layer{layer}",
                             element=ele,
@@ -273,7 +273,7 @@ The external mesh implementation demonstrates several advanced computational tec
    The PyVista library's `extract_cells()` method with a boolean mask provides an efficient way to separate the mesh into two complementary components without needing to recreate the geometry. This preserves the original cell quality and maintains exact matching at the basin-soil interface.
 
 4. **Material Assignment Strategy**:
-   The conditional structure using the `BASIN` flag demonstrates how to create parametric studies in FEMORA. This single variable controls whether the basin contains soft material (realistic scenario) or normal soil material (control scenario), enabling precise quantification of basin effects.
+   The conditional structure using the `BASIN` flag demonstrates how to create parametric studies in Femora. This single variable controls whether the basin contains soft material (realistic scenario) or normal soil material (control scenario), enabling precise quantification of basin effects.
 
 For layers 3-6 which don't intersect with the basin, the implementation remains the same as in Example 2, using regular uniform rectangular grids. This hybrid approach—using external meshes only where geometric complexity demands it—optimizes computational resources while maintaining model accuracy.
 
@@ -298,11 +298,11 @@ To optimize computational performance, the model creates separate assembly secti
 
 This organization strategy demonstrates advanced parallel computing concepts:
 
-1. **Domain Decomposition**: By separating the model into distinct sections (regular layers and basin components), FEMORA can perform domain decomposition, a key technique in parallel computing where different parts of the model are assigned to different processors.
+1. **Domain Decomposition**: By separating the model into distinct sections (regular layers and basin components), Femora can perform domain decomposition, a key technique in parallel computing where different parts of the model are assigned to different processors.
 
 2. **Load Balancing**: The different number of partitions for regular layers (8) versus basin components (2) reflects the relative computational demand and size of these regions. This balanced partitioning helps optimize computational resources.
 
-3. **Interface Management**: During assembly, FEMORA automatically handles the interfaces between different sections, ensuring proper connectivity between the basin and surrounding soil at their shared boundaries.
+3. **Interface Management**: During assembly, Femora automatically handles the interfaces between different sections, ensuring proper connectivity between the basin and surrounding soil at their shared boundaries.
 
 4. **Scalability**: This partitioning approach improves the model's scalability, allowing it to efficiently utilize available computational resources whether running on a laptop or high-performance computing cluster.
 
@@ -367,14 +367,14 @@ This dynamic output organization demonstrates several sophisticated workflow con
    - Output file configuration (vtkhdfrecorder_file) with dynamic path assignment
    - Multi-step gravity initialization (elastic followed by plastic steps) - crucial for establishing proper initial stress states
 
-3. **TCL Command Integration**: The use of `fm.actions.tcl` demonstrates FEMORA's ability to interact directly with the underlying OpenSees TCL interpreter. This allows for direct filesystem operations (creating directories) that would otherwise be more complex to implement.
+3. **TCL Command Integration**: The use of `fm.actions.tcl` demonstrates Femora's ability to interact directly with the underlying OpenSees TCL interpreter. This allows for direct filesystem operations (creating directories) that would otherwise be more complex to implement.
 
-4. **Process Workflow Modification**: The `insert_step` method shows how FEMORA's process can be modified programmatically, inserting the directory creation step at the beginning (index=0) of the simulation process.
+4. **Process Workflow Modification**: The `insert_step` method shows how Femora's process can be modified programmatically, inserting the directory creation step at the beginning (index=0) of the simulation process.
 
 8. Custom DRM Simulation Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The example demonstrates how to customize the default DRM simulation process provided by FEMORA to suit specific modeling needs. The `createDefaultProcess` method in the DRM module offers extensive customization options:
+The example demonstrates how to customize the default DRM simulation process provided by Femora to suit specific modeling needs. The `createDefaultProcess` method in the DRM module offers extensive customization options:
 
 .. code-block:: python
 
@@ -427,7 +427,7 @@ A critical aspect of this example is the use of TCL actions to ensure proper exe
 This code demonstrates several important concepts:
 
 1. **Direct TCL Command Execution**:
-   The `fm.actions.tcl()` function allows direct execution of TCL commands, providing access to the full power of the underlying OpenSees TCL interpreter. In this case, we use it to create a directory - a filesystem operation not directly available through FEMORA's Python API.
+   The `fm.actions.tcl()` function allows direct execution of TCL commands, providing access to the full power of the underlying OpenSees TCL interpreter. In this case, we use it to create a directory - a filesystem operation not directly available through Femora's Python API.
 
 2. **Process Step Insertion**:
    The `insert_step` method is used to place the directory creation step at the beginning (index=0) of the process flow. This ensures the directory exists before any recorders attempt to write to it.
@@ -441,7 +441,7 @@ This code demonstrates several important concepts:
 4. **Adaptive Workflow Creation**:
    By programmatically constructing the workflow, we can adapt to different simulation configurations (Regular, Vs150, Vs200) without manual intervention.
 
-This approach demonstrates how FEMORA allows for flexible process flow management, combining the power of Python for logic and decision-making with direct TCL access for operations not yet exposed through the Python API.
+This approach demonstrates how Femora allows for flexible process flow management, combining the power of Python for logic and decision-making with direct TCL access for operations not yet exposed through the Python API.
 
 .. note::
    This pattern of inserting preparation steps before calling `createDefaultProcess` is particularly important in parametric studies where the same model is run with different configurations. It ensures that the output organization is properly established before simulation begins.
@@ -490,7 +490,7 @@ These results demonstrate that basins with very soft materials (Vs=150 m/s) can 
 Data Visualization and Post-Processing
 --------------------------------------
 
-The response data from the FEMORA simulations is stored in VTKHDF format, which requires post-processing for visualization and analysis. Example3 includes a Python script (plot.py) that processes these files and creates the comparison plots shown above.
+The response data from the Femora simulations is stored in VTKHDF format, which requires post-processing for visualization and analysis. Example3 includes a Python script (plot.py) that processes these files and creates the comparison plots shown above.
 
 .. literalinclude:: ../../../examples/DRM/Example3/plot.py
    :language: python
@@ -500,7 +500,7 @@ The response data from the FEMORA simulations is stored in VTKHDF format, which 
 Code Access
 -----------
 
-The full source code for this example is available in the FEMORA repository:
+The full source code for this example is available in the Femora repository:
 
 * Example directory: ``examples/DRM/Example3/``
 * Python script: ``examples/DRM/Example3/femoramodel.py``
@@ -511,11 +511,11 @@ Below is the complete code for Example3's femoramodel.py:
 .. literalinclude:: ../../../examples/DRM/Example3/femoramodel.py
    :language: python
    :name: example3-code
-   :caption: Complete code for Example3 model
+   :caption: Example3 - Seismic Wave Basin Effects Model with External Mesh
 
 To run this example, ensure that:
 
-1. You have a working installation of FEMORA
+1. You have a working installation of Femora
 2. The ``drmload.h5drm`` file is in the example directory
 3. You execute the script from the Example3 directory to maintain correct paths
 

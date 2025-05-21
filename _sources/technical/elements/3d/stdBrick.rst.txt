@@ -48,7 +48,7 @@ Parameters:
             b3=0.0
         )
 
-        # Via FEMORA
+        # Via Femora
         import femora as fm
          
 

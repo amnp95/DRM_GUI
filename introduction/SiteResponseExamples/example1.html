@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Example 1: Single-Column Site Response Analysis with Frequency Sweep &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>Example 1: Single-Column Site Response Analysis with Frequency Sweep &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=bbbd0671" />
@@ -22,7 +22,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Domain Reduction Method (DRM) Examples" href="../DRMExamples/DRM.html" />
+    <link rel="next" title="Example 2: Multi-Material Site Response Analysis with Transfer Function Comparison" href="example2.html" />
     <link rel="prev" title="Site Response Examples" href="SiteResponse.html" /> 
 </head>
 
@@ -48,7 +48,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples and Tutorials</a><ul class="current">
@@ -63,6 +63,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#code-access">Code Access</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="example2.html">Example 2: Multi-Material Site Response Analysis with Transfer Function Comparison</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../DRMExamples/DRM.html">Domain Reduction Method (DRM) Examples</a></li>
@@ -84,7 +85,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -108,14 +109,14 @@
 <h1>Example 1: Single-Column Site Response Analysis with Frequency Sweep<a class="headerlink" href="#example-1-single-column-site-response-analysis-with-frequency-sweep" title="Link to this heading"></a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>This example demonstrates how to create a 1D site response analysis model using a single column of 3D elements in FEMORA. Unlike the multi-material layered model in the Quick Start guide, this example focuses on:</p>
+<p>This example demonstrates how to create a 1D site response analysis model using a single column of 3D elements in Femora. Unlike the multi-material layered model in the Quick Start guide, this example focuses on:</p>
 <ol class="arabic simple">
 <li><p>Creating a simplified single-material layered soil profile</p></li>
 <li><p>Using frequency sweep input motion to test a wide frequency range</p></li>
 <li><p>Comparing numerical results with analytical transfer functions</p></li>
 <li><p>Running the analysis on a single processor (non-parallel execution)</p></li>
 </ol>
-<p>The example showcases FEMORA’s ability to perform traditional site response analyses with 3D elements while maintaining comparability with analytical solutions. This serves as an excellent verification case for more complex models.</p>
+<p>The example showcases Femora’s ability to perform traditional site response analyses with 3D elements while maintaining comparability with analytical solutions. This serves as an excellent verification case for more complex models.</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/FrequencySweep.jpg"><img alt="Frequency Sweep Input Motion" src="../../_images/FrequencySweep.jpg" style="width: 600px;" />
 </a>
@@ -381,7 +382,7 @@
 <li><p><span class="math notranslate nohighlight">\(V_s\)</span> is the shear wave velocity</p></li>
 <li><p><span class="math notranslate nohighlight">\(R_{damp}\)</span> is a damping coefficient based on Rayleigh damping parameters</p></li>
 </ul>
-<p>The good agreement between numerical and analytical results validates the FEMORA implementation for site response analysis.</p>
+<p>The good agreement between numerical and analytical results validates the Femora implementation for site response analysis.</p>
 </section>
 <section id="effect-of-damping-type-on-transfer-function">
 <h3>Effect of Damping Type on Transfer Function<a class="headerlink" href="#effect-of-damping-type-on-transfer-function" title="Link to this heading"></a></h3>
@@ -415,8 +416,8 @@
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h2>
 <p>This example demonstrates:</p>
 <ol class="arabic simple">
-<li><p>How to create a simplified single-column model for site response analysis in FEMORA</p></li>
-<li><p>How to configure FEMORA for single-processor analysis</p></li>
+<li><p>How to create a simplified single-column model for site response analysis in Femora</p></li>
+<li><p>How to configure Femora for single-processor analysis</p></li>
 <li><p>The validation of numerical results against analytical solutions</p></li>
 <li><p>The importance of proper damping modeling in site response analysis</p></li>
 </ol>
@@ -424,7 +425,7 @@
 </section>
 <section id="code-access">
 <h2>Code Access<a class="headerlink" href="#code-access" title="Link to this heading"></a></h2>
-<p>The full source code for this example is available in the FEMORA repository:</p>
+<p>The full source code for this example is available in the Femora repository:</p>
 <ul class="simple">
 <li><p>Example directory: <code class="docutils literal notranslate"><span class="pre">examples/SiteResponse/Example1/</span></code></p></li>
 <li><p>Python script: <code class="docutils literal notranslate"><span class="pre">examples/SiteResponse/Example1/femoramodel.py</span></code></p></li>
@@ -568,7 +569,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="SiteResponse.html" class="btn btn-neutral float-left" title="Site Response Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../DRMExamples/DRM.html" class="btn btn-neutral float-right" title="Domain Reduction Method (DRM) Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="example2.html" class="btn btn-neutral float-right" title="Example 2: Multi-Material Site Response Analysis with Transfer Function Comparison" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -4,9 +4,9 @@ MeshPart
 Understanding the MeshPartManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``MeshPartManager`` is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing mesh part objects throughout the mesh generation process. Similar to the MaterialManager and ElementRegistry, it implements the Singleton pattern to ensure a single, consistent point of mesh part management across the entire application.
+The ``MeshPartManager`` is a core component of the Femora library that serves as a centralized system for creating, retrieving, tracking, and managing mesh part objects throughout the mesh generation process. Similar to the MaterialManager and ElementRegistry, it implements the Singleton pattern to ensure a single, consistent point of mesh part management across the entire application.
 
-Mesh parts defined in FEMORA are automatically tracked, categorized, and organized by the MeshPartManager, simplifying the process of creating complex models with multiple mesh geometries.
+Mesh parts defined in Femora are automatically tracked, categorized, and organized by the MeshPartManager, simplifying the process of creating complex models with multiple mesh geometries.
 
 Accessing the MeshPartManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,20 +28,20 @@ There are two ways to access the MeshPartManager in your code:
       # Create a mesh part using the manager
       my_mesh_part = manager.create_mesh_part(...)
 
-2. **Through FEMORA** (Recommended): Access via the FEMORA class's .meshPart property
+2. **Through Femora** (Recommended): Access via the Femora class's .meshPart property
    
    .. code-block:: python
       
       import femora as fm
       
-      # Create a FEMORA instance
+      # Create a Femora instance
        
       
       # Access the MeshPartManager through the .meshPart property
       mesh_part_types = fm.meshPart.get_mesh_part_categories()
       my_mesh_part = fm.meshPart.create_mesh_part(...)
 
-The second approach is recommended as it provides a unified interface to all of FEMORA's components and ensures proper initialization of all dependencies.
+The second approach is recommended as it provides a unified interface to all of Femora's components and ensures proper initialization of all dependencies.
 
 How MeshPartManager Works
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,7 +150,7 @@ Available Mesh Part Types
 ..    meshparts/line/index
 ..    meshparts/point/index
 
-The mesh part types available in FEMORA are organized by their geometric dimensionality. Follow the links above to explore the various mesh part types available in each category.
+The mesh part types available in Femora are organized by their geometric dimensionality. Follow the links above to explore the various mesh part types available in each category.
 
 * **Volume mesh**: Three-dimensional mesh parts for modeling solid domains
 * **Surface mesh**: Two-dimensional mesh parts for modeling surface structures 

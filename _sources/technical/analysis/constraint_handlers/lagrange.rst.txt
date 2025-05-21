@@ -17,7 +17,7 @@ Usage Example
 
 .. code-block:: python
 
-    # Create a FEMORA instance
+    # Create a Femora instance
      
     
     # Create a Lagrange constraint handler with default parameters

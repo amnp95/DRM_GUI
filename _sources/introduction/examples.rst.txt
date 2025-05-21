@@ -1,7 +1,7 @@
 Examples and Tutorials
 ======================
 
-This section provides links to examples that demonstrate how to use FEMORA for various applications.
+This section provides links to examples that demonstrate how to use Femora for various applications.
 
 
 .. toctree::

@@ -49,7 +49,7 @@ Usage Example
 
 .. code-block:: python
 
-    # Create a FEMORA instance
+    # Create a Femora instance
      
     
     # Create a Norm Disp Or Unbalance convergence test

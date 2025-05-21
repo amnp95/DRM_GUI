@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Damping &mdash; FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
+  <title>Damping &mdash; Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis) 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=bbbd0671" />
@@ -48,7 +48,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with FEMORA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/getting_started.html">Getting Started with Femora</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/examples.html">Examples and Tutorials</a></li>
@@ -100,7 +100,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FEMORA (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
+          <a href="../index.html">Femora (Fast Efficient Meshing for OpenSees-based Resilience Analysis)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -123,15 +123,15 @@
 <h1>Damping<a class="headerlink" href="#damping" title="Link to this heading"></a></h1>
 <section id="understanding-the-dampingmanager">
 <h2>Understanding the DampingManager<a class="headerlink" href="#understanding-the-dampingmanager" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">DampingManager</span></code> is a core component of the FEMORA library that serves as a centralized system for creating, retrieving, tracking, and managing damping objects. It implements the Singleton pattern to ensure a single, consistent point of damping management across the entire application.</p>
-<p>Damping models defined in FEMORA are automatically tracked, tagged, and organized by the DampingManager, simplifying the process of creating models with appropriate energy dissipation mechanisms.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">DampingManager</span></code> is a core component of the Femora library that serves as a centralized system for creating, retrieving, tracking, and managing damping objects. It implements the Singleton pattern to ensure a single, consistent point of damping management across the entire application.</p>
+<p>Damping models defined in Femora are automatically tracked, tagged, and organized by the DampingManager, simplifying the process of creating models with appropriate energy dissipation mechanisms.</p>
 </section>
 <section id="accessing-the-dampingmanager">
 <h2>Accessing the DampingManager<a class="headerlink" href="#accessing-the-dampingmanager" title="Link to this heading"></a></h2>
 <p>There are two ways to access the DampingManager in your code:</p>
 <ol class="arabic">
 <li><p><strong>Direct Access</strong>: Import and use the DampingManager class directly</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femora.components.Damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">DampingManager</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">Femora.components.Damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">DampingManager</span>
 
 <span class="c1"># Get the singleton instance</span>
 <span class="n">damping_manager</span> <span class="o">=</span> <span class="n">DampingManager</span><span class="p">()</span>
@@ -141,10 +141,10 @@
 </pre></div>
 </div>
 </li>
-<li><p><strong>Through FEMORA</strong> (Recommended): Access via the FEMORA class’s .damping property</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
+<li><p><strong>Through Femora</strong> (Recommended): Access via the Femora class’s .damping property</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">Femora</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fm</span>
 
-<span class="c1"># Create a FEMORA instance</span>
+<span class="c1"># Create a Femora instance</span>
 
 
 <span class="c1"># Access the DampingManager through the .damping property</span>
@@ -153,7 +153,7 @@
 </div>
 </li>
 </ol>
-<p>The second approach is recommended as it provides a unified interface to all of FEMORA’s components and ensures proper initialization of all dependencies.</p>
+<p>The second approach is recommended as it provides a unified interface to all of Femora’s components and ensures proper initialization of all dependencies.</p>
 </section>
 <section id="how-dampingmanager-works">
 <h2>How DampingManager Works<a class="headerlink" href="#how-dampingmanager-works" title="Link to this heading"></a></h2>
@@ -354,7 +354,7 @@ updates the tags of the remaining damping instances to maintain sequential numbe
 <p>The DampingManager handles all the details of creating the appropriate damping object based on these parameters, ensuring type safety and parameter validation.</p>
 <section id="usage-example">
 <h3>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femora.components.Damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">DampingManager</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">Femora.components.Damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">DampingManager</span>
 
 <span class="c1"># Get the damping manager instance</span>
 <span class="n">damping_manager</span> <span class="o">=</span> <span class="n">DampingManager</span><span class="p">()</span>
@@ -402,7 +402,7 @@ updates the tags of the remaining damping instances to maintain sequential numbe
 </li>
 </ul>
 </div>
-<p>The damping models available in FEMORA provide various approaches to energy dissipation in dynamic analysis. Follow the link above to explore the different damping models available.</p>
+<p>The damping models available in Femora provide various approaches to energy dissipation in dynamic analysis. Follow the link above to explore the different damping models available.</p>
 <p>Each damping type has its own documentation page with detailed parameter descriptions and usage examples.</p>
 </section>
 </section>

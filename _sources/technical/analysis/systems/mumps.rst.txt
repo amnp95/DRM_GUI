@@ -36,7 +36,7 @@ Usage Example
 
 .. code-block:: python
 
-   # Create a FEMORA instance
+   # Create a Femora instance
     
 
    # Create a MUMPS system solver with default settings
